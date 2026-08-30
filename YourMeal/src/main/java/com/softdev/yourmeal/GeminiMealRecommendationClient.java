@@ -24,7 +24,7 @@ public class GeminiMealRecommendationClient {
     public GeminiMealRecommendationClient(
             ObjectMapper objectMapper,
             @Value("${gemini.api-key:}") String apiKey,
-            @Value("${gemini.model:gemini-2.5-flash}") String model) {
+            @Value("${gemini-3.6-flash}") String model) {
         this.restClient = RestClient.builder().baseUrl("https://generativelanguage.googleapis.com/v1beta").build();
         this.objectMapper = objectMapper;
         this.apiKey = apiKey;
