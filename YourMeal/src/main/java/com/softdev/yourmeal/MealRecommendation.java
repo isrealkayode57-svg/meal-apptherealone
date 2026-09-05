@@ -1,4 +1,12 @@
 package com.softdev.yourmeal;
 
-public record MealRecommendation(String name, String reason, String tags) {
+import java.util.List;
+
+public record MealRecommendation(
+        String name,
+        String reason,
+        String tags,
+        List<String> ingredients,
+        List<String> instructions
+) {
 }
