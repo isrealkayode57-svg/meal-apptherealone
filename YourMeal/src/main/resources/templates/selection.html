@@ -1,197 +1,1022 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <title>Dietary Setup</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MealMate | Dietary Setup</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
 
     <style>
-        body {
+
+        /* ==========================
+           RESET
+        ========================== */
+
+        * {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fb;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
+
+        body {
+            background: #F8FAF8;
+            color: #1F2937;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ==========================
+           NAVIGATION
+        ========================== */
+
         nav {
+            width: 100%;
+            padding: 22px 40px;
+
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 40px;
+
+            background: white;
+            border-bottom: 1px solid #E5E7EB;
         }
 
-        .logo img {
-            width: 80px;
-            height: 80px;
+        .logo {
+            text-decoration: none;
+            font-size: 28px;
+            font-weight: 700;
+            color: #5F8D4E;
         }
 
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 10px;
         }
 
-        .nav-links a {
+        .nav-links a,
+        .nav-links button {
             text-decoration: none;
-            color: black;
-            font-size: 18px;
+
+            color: #374151;
+            background: transparent;
+
+            border: none;
+
+            padding: 11px 16px;
+            border-radius: 12px;
+
+            font-size: 15px;
+            font-weight: 500;
+
+            cursor: pointer;
+
+            transition: all .25s ease;
         }
 
-        .nav-links .btn {
-            background-color: black;
+        .nav-links a:hover {
+            background: #EEF6EE;
+            color: #5F8D4E;
+        }
+
+        .nav-links .green-btn {
+            background: #5F8D4E;
             color: white;
-            padding: 10px 16px;
-            border-radius: 8px;
         }
 
-        .btn:hover {
-            background-color: #333;
+        .nav-links .green-btn:hover {
+            background: #4F7641;
+            color: white;
+            transform: translateY(-2px);
         }
 
-        .container {
-            max-width: 800px;
-            margin: 60px auto;
-            background-color: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        .nav-links .logout-btn:hover {
+            background: #FEE2E2;
+            color: #DC2626;
         }
 
-        h1 {
-            margin-top: 0;
-            font-size: 42px;
+        .nav-links form {
+            margin: 0;
         }
 
-        .subtitle {
-            color: gray;
+        /* ==========================
+           PAGE
+        ========================== */
+
+        .page {
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 55px 25px 70px;
+        }
+
+        /* ==========================
+           HEADER
+        ========================== */
+
+        .page-header {
+            text-align: center;
             margin-bottom: 40px;
         }
 
+        .food-icon {
+            width: 72px;
+            height: 72px;
+
+            margin: 0 auto 20px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            background: #EEF6EE;
+            border-radius: 20px;
+
+            font-size: 38px;
+
+            box-shadow: 0 10px 25px rgba(95, 141, 78, .10);
+        }
+
+        .welcome {
+            color: #5F8D4E;
+            font-size: 16px;
+            font-weight: 600;
+
+            margin-bottom: 6px;
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: 700;
+
+            color: #1F2937;
+
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            max-width: 650px;
+            margin: 0 auto;
+
+            color: #6B7280;
+
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        /* ==========================
+           FORM
+        ========================== */
+
+        .setup-form {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* ==========================
+           SECTIONS
+        ========================== */
+
         .section {
-            margin-bottom: 35px;
+            background: white;
+
+            border: 1px solid #E5E7EB;
+            border-radius: 24px;
+
+            padding: 30px;
+
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .05);
+
+            animation: fadeUp .6s ease;
         }
 
         .section h2 {
-            font-size: 24px;
-            margin-bottom: 15px;
+            font-size: 23px;
+            font-weight: 600;
+
+            color: #1F2937;
+
+            margin-bottom: 22px;
         }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            margin-bottom: 22px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+        }
+
+        .section-icon {
+            font-size: 24px;
+        }
+
+        /* ==========================
+           CHECKBOX GRID
+        ========================== */
 
         .checkbox-group {
             display: grid;
+
             grid-template-columns: repeat(2, 1fr);
+
             gap: 12px;
         }
 
-        label {
-            font-size: 18px;
+        .option {
+            display: flex;
+            align-items: center;
+
+            padding: 14px 16px;
+
+            background: #FAFBFA;
+
+            border: 1px solid #E5E7EB;
+            border-radius: 14px;
+
+            color: #374151;
+
+            font-size: 14px;
+            font-weight: 500;
+
+            cursor: pointer;
+
+            transition: all .25s ease;
+        }
+
+        .option:hover {
+            border-color: #A3B18A;
+            background: #EEF6EE;
+
+            transform: translateY(-2px);
         }
 
         input[type="checkbox"],
         input[type="radio"] {
-            margin-right: 8px;
+            appearance: none;
+
+            width: 19px;
+            height: 19px;
+
+            min-width: 19px;
+
+            margin-right: 11px;
+
+            border: 2px solid #D1D5DB;
+            border-radius: 5px;
+
+            background: white;
+
+            cursor: pointer;
+
+            position: relative;
+
+            transition: all .2s ease;
         }
 
+        input[type="checkbox"]:checked {
+            background: #5F8D4E;
+            border-color: #5F8D4E;
+        }
+
+        input[type="checkbox"]:checked::after {
+            content: "✓";
+
+            position: absolute;
+
+            color: white;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            left: 3px;
+            top: -1px;
+        }
+
+        /* ==========================
+           RADIO BUTTONS
+        ========================== */
+
+        input[type="radio"] {
+            border-radius: 50%;
+        }
+
+        input[type="radio"]:checked {
+            border-color: #5F8D4E;
+
+            box-shadow: inset 0 0 0 4px white;
+
+            background: #5F8D4E;
+        }
+
+        /* ==========================
+           CUSTOM INPUT AREAS
+        ========================== */
+
+        .custom-option {
+            grid-column: 1 / -1;
+
+            margin-top: 5px;
+        }
+
+        .custom-option p {
+            color: #6B7280;
+
+            font-size: 13px;
+            font-weight: 500;
+
+            margin-bottom: 8px;
+        }
+
+        .custom-input {
+            width: 100%;
+
+            padding: 13px 15px;
+
+            border: 1px solid #D1D5DB;
+            border-radius: 12px;
+
+            background: white;
+
+            font-size: 14px;
+            color: #1F2937;
+
+            outline: none;
+
+            transition: all .25s ease;
+        }
+
+        .custom-input::placeholder {
+            color: #9CA3AF;
+        }
+
+        .custom-input:focus {
+            border-color: #5F8D4E;
+
+            box-shadow:
+                0 0 0 4px rgba(95, 141, 78, .12);
+        }
+
+        /* ==========================
+           GOALS
+        ========================== */
+
         .goal-group {
+            display: grid;
+
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 12px;
+        }
+
+        /* ==========================
+           SAVE BUTTON
+        ========================== */
+
+        .save-container {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
+            justify-content: center;
+
+            padding-top: 5px;
         }
 
         .save-btn {
-            margin-top: 30px;
-            background-color: black;
+            min-width: 220px;
+
+            padding: 15px 30px;
+
+            background: #5F8D4E;
             color: white;
+
             border: none;
-            padding: 14px 24px;
-            border-radius: 10px;
-            font-size: 18px;
+            border-radius: 14px;
+
+            font-size: 15px;
+            font-weight: 600;
+
             cursor: pointer;
+
+            transition: all .25s ease;
         }
 
         .save-btn:hover {
-            background-color: #333;
+            background: #4F7641;
+
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 12px 25px rgba(95, 141, 78, .20);
         }
+
+        .save-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ==========================
+           SUCCESS MESSAGE
+        ========================== */
+
+        .form-success {
+            margin-top: 15px;
+
+            text-align: center;
+
+            color: #5F8D4E;
+
+            background: #EEF6EE;
+
+            border: 1px solid #D7E8D3;
+
+            border-radius: 12px;
+
+            padding: 12px;
+
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* ==========================
+           DECORATION
+        ========================== */
+
+        .decoration {
+            position: fixed;
+
+            width: 250px;
+            height: 250px;
+
+            border-radius: 50%;
+
+            background: #EEF6EE;
+
+            opacity: .55;
+
+            z-index: -1;
+        }
+
+        .decoration.one {
+            top: -120px;
+            left: -100px;
+        }
+
+        .decoration.two {
+            bottom: -130px;
+            right: -100px;
+
+            width: 300px;
+            height: 300px;
+        }
+
+        /* ==========================
+           ANIMATION
+        ========================== */
+
+        @keyframes fadeUp {
+
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        }
+
+        /* ==========================
+           SCROLLBAR
+        ========================== */
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #F3F4F6;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #A3B18A;
+            border-radius: 20px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5F8D4E;
+        }
+
+        /* ==========================
+           MOBILE
+        ========================== */
+
+        @media (max-width: 750px) {
+
+            nav {
+                padding: 18px 20px;
+            }
+
+            .logo {
+                font-size: 23px;
+            }
+
+            .nav-links {
+                gap: 2px;
+            }
+
+            .nav-links a,
+            .nav-links button {
+                padding: 9px 8px;
+                font-size: 12px;
+            }
+
+            .page {
+                padding: 40px 15px 60px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .section {
+                padding: 24px 20px;
+                border-radius: 20px;
+            }
+
+            .checkbox-group,
+            .goal-group {
+                grid-template-columns: 1fr;
+            }
+
+            .custom-option {
+                grid-column: auto;
+            }
+
+            .save-btn {
+                width: 100%;
+            }
+
+        }
+
     </style>
 
 </head>
 
 <body>
-<nav>
-    <div class="logo">
-        <a href="/">
-        <img src="https://cdn.britannica.com/98/235798-050-3C3BA15D/Hamburger-and-french-fries-paper-box.jpg" alt="logo">
+
+    <!-- Decorative Background -->
+
+    <div class="decoration one"></div>
+    <div class="decoration two"></div>
+
+
+    <!-- ==========================
+         NAVIGATION
+    ========================== -->
+
+    <nav>
+
+        <a href="/" class="logo">
+            🍽 MealMate
         </a>
-    </div>
 
-    <div class="nav-links">
-<!--        <a href="about.html">About</a>-->
-        <a href="/login">Sign In</a>
-        <a href="/register">Get Started</a>
-        <form action="/dashboard/dashboard" method="post"><button class="btn" type="submit">Home</button></form>
-        <form action="/logout" method="post"><button class="btn" type="submit" style="font-size: 18px">Log out</button></form>
-    </div>
-</nav>
+        <div class="nav-links">
 
-<div class="container">
-    <h2>Welcome <span th:text="${name}">name</span></h2>
-    <h1>Let's personalize your meals</h1>
+            <a href="/login">
+                Sign In
+            </a>
 
-    <div class="subtitle">
-        Tell us about your dietary needs so we can recommend meals that fit you.
-    </div>
-    <form action="/selection" method="post">
-    <div class="section">
-        <h2>Dietary Restrictions</h2>
+            <a href="/register" class="green-btn">
+                Get Started
+            </a>
 
-        <div class="checkbox-group">
-            <label><input type="checkbox" name="vegetarian" value="true" th:checked="${profile.vegetarian}"> Vegetarian</label>
-            <label><input type="checkbox" name="vegan" value="true" th:checked="${profile.vegan}"> Vegan</label>
-            <label><input type="checkbox" name="dairy" value="true" th:checked="${profile.dairyFree}"> Dairy</label>
-            <label><input type="checkbox" name="egg" value="true" th:checked="${profile.eggFree}"> Eggs</label>
-            <label><input type="checkbox" name="gluten" value="true" th:checked="${profile.glutenFree}"> Gluten</label>
-            <label><input type="checkbox" name="peanuts" value="true" th:checked="${profile.peanutFree}"> Peanuts</label>
-            <label><input type="checkbox" name="shellfish" value="true" th:checked="${profile.shellfishFree}"> Shellfish</label>
-            <label><input type="checkbox" name="soy" value="true" th:checked="${profile.soyFree}"> Soy</label>
-            <label><input type="checkbox" name="nuts" value="true" th:checked="${profile.nutFree}"> Tree Nuts</label>
-            <label><input type="checkbox" name="fish" value="true" th:checked="${profile.fishFree}"> Fish</label>
-            <div>
-                <p>Type Other Restrictions Here.</p>
-                <label><input type="text" name="otherRestrictions" placeholder="Seperate by commas."></label>
-            </div>
+            <form action="/dashboard/dashboard" method="post">
+
+                <button type="submit">
+                    Home
+                </button>
+
+            </form>
+
+            <form action="/logout" method="post">
+
+                <button type="submit" class="logout-btn">
+                    Log out
+                </button>
+
+            </form>
+
         </div>
-    </div>
 
-    <div class="section">
-        <h2>Health Conditions</h2>
+    </nav>
 
-        <div class="checkbox-group">
-            <label><input type="checkbox" name="diabetes" value="true" th:checked="${profile.diabetes}"> Diabetes</label>
-            <label><input type="checkbox" name="HBP" value="true" th:checked="${profile.HBP}"> High Blood Pressure</label>
-            <label><input type="checkbox" name="kidney" value="true" th:checked="${profile.kidneyDisease}"> Kidney Disease</label>
-            <label><input type="checkbox" name="IBS" value="true" th:checked="${profile.IBS}"> IBS</label>
-            <label><input type="checkbox" name="celiac" value="true" th:checked="${profile.celiac}"> Celiac Disease</label>
-            <div>
-                <p>Type Other Conditions Here.</p>
-                <label><input type="text" name="otherConditions" placeholder="Seperate by commas."></label>
+
+    <!-- ==========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="page">
+
+
+        <!-- HEADER -->
+
+        <div class="page-header">
+
+            <div class="food-icon">
+                🥗
             </div>
-        </div>
-    </div>
 
-    <div class="section">
-        <h2>Your Goal</h2>
-
-        <div class="goal-group">
-            <label><input type="radio" name="goal" value="highProtein" th:checked="${profile.goal == 'highProtein'}"> High Protein</label>
-            <label><input type="radio" name="goal" value="weightLoss" th:checked="${profile.goal == 'weightLoss'}"> Weight Loss</label>
-            <label><input type="radio" name="goal" value="balancedNutrition" th:checked="${profile.goal == 'balancedNutrition'}"> Balanced Nutrition</label>
-            <label><input type="radio" name="goal" value="budgetFriendly" th:checked="${profile.goal == 'budgetFriendly'}"> Budget Friendly</label>
-            <div>
-                <p>Type Other Goals Here.</p>
-                <label><input type="text" name="otherGoal" placeholder="Seperate by commas."></label>
+            <div class="welcome">
+                Welcome, <span th:text="${name}">name</span>
             </div>
+
+            <h1>
+                Let's personalize your meals
+            </h1>
+
+            <p class="subtitle">
+                Tell us about your dietary needs so we can recommend
+                meals that fit your lifestyle.
+            </p>
+
         </div>
-    </div>
 
-    <button class="save-btn" type="submit">Save</button>
-    <p class="form-success" th:if="${param.saved}">Dietary restrictions saved.</p>
-    </form>
 
-    </div>
+        <!-- ==========================
+             FORM
+        ========================== -->
+
+        <form class="setup-form"
+              action="/selection"
+              method="post">
+
+
+            <!-- ==========================
+                 DIETARY RESTRICTIONS
+            ========================== -->
+
+            <div class="section">
+
+                <div class="section-header">
+
+                    <span class="section-icon">
+                        🥗
+                    </span>
+
+                    <h2>
+                        Dietary Restrictions
+                    </h2>
+
+                </div>
+
+
+                <div class="checkbox-group">
+
+                    <label class="option">
+                        <input
+                            type="checkbox"
+                            name="vegetarian"
+                            value="true"
+                            th:checked="${profile.vegetarian}">
+                        Vegetarian
+                    </label>
+
+
+                    <label class="option">
+                        <input
+                            type="checkbox"
+                            name="vegan"
+                            value="true"
+                            th:checked="${profile.vegan}">
+                        Vegan
+                    </label>
+
+
+                    <label class="option">
+                        <input
+                            type="checkbox"
+                            name="dairy"
+                            value="true"
+                            th:checked="${profile.dairyFree}">
+                        Dairy
+                    </label>
+
+
+                    <label class="option">
+                        <input
+                            type="checkbox"
+                            name="egg"
+                            value="true"
+                            th:checked="${profile.eggFree}">
+                        Eggs
+                    </label>
+
+
+                    <label class="option">
+                        <input
+                            type="checkbox"
+                            name="gluten"
+                            value="true"
+                            th:checked="${profile.glutenFree}">
+                        Gluten
+                    </label>
+
+
+                    <label class="option">
+                        <input
+                            type="checkbox"
+                            name="peanuts"
+                            value="true"
+                            th:checked="${profile.peanutFree}">
+                        Peanuts
+                    </label>
+
+
+                    <label class="option">
+                        <input
+                            type="checkbox"
+                            name="shellfish"
+                            value="true"
+                            th:checked="${profile.shellfishFree}">
+                        Shellfish
+                    </label>
+
+
+                    <label class="option">
+                        <input
+                            type="checkbox"
+                            name="soy"
+                            value="true"
+                            th:checked="${profile.soyFree}">
+                        Soy
+                    </label>
+
+
+                    <label class="option">
+                        <input
+                            type="checkbox"
+                            name="nuts"
+                            value="true"
+                            th:checked="${profile.nutFree}">
+                        Tree Nuts
+                    </label>
+
+
+                    <label class="option">
+                        <input
+                            type="checkbox"
+                            name="fish"
+                            value="true"
+                            th:checked="${profile.fishFree}">
+                        Fish
+                    </label>
+
+
+                    <div class="custom-option">
+
+                        <p>
+                            Other Dietary Restrictions
+                        </p>
+
+                        <input
+                            class="custom-input"
+                            type="text"
+                            name="otherRestrictions"
+                            placeholder="Separate multiple restrictions with commas">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==========================
+                 HEALTH CONDITIONS
+            ========================== -->
+
+            <div class="section">
+
+                <div class="section-header">
+
+                    <span class="section-icon">
+                        ❤️
+                    </span>
+
+                    <h2>
+                        Health Conditions
+                    </h2>
+
+                </div>
+
+
+                <div class="checkbox-group">
+
+                    <label class="option">
+                        <input
+                            type="checkbox"
+                            name="diabetes"
+                            value="true"
+                            th:checked="${profile.diabetes}">
+                        Diabetes
+                    </label>
+
+
+                    <label class="option">
+                        <input
+                            type="checkbox"
+                            name="HBP"
+                            value="true"
+                            th:checked="${profile.HBP}">
+                        High Blood Pressure
+                    </label>
+
+
+                    <label class="option">
+                        <input
+                            type="checkbox"
+                            name="kidney"
+                            value="true"
+                            th:checked="${profile.kidneyDisease}">
+                        Kidney Disease
+                    </label>
+
+
+                    <label class="option">
+                        <input
+                            type="checkbox"
+                            name="IBS"
+                            value="true"
+                            th:checked="${profile.IBS}">
+                        IBS
+                    </label>
+
+
+                    <label class="option">
+                        <input
+                            type="checkbox"
+                            name="celiac"
+                            value="true"
+                            th:checked="${profile.celiac}">
+                        Celiac Disease
+                    </label>
+
+
+                    <div class="custom-option">
+
+                        <p>
+                            Other Health Conditions
+                        </p>
+
+                        <input
+                            class="custom-input"
+                            type="text"
+                            name="otherConditions"
+                            placeholder="Separate multiple conditions with commas">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==========================
+                 GOALS
+            ========================== -->
+
+            <div class="section">
+
+                <div class="section-header">
+
+                    <span class="section-icon">
+                        🎯
+                    </span>
+
+                    <h2>
+                        Your Goal
+                    </h2>
+
+                </div>
+
+
+                <div class="goal-group">
+
+                    <label class="option">
+
+                        <input
+                            type="radio"
+                            name="goal"
+                            value="highProtein"
+                            th:checked="${profile.goal == 'highProtein'}">
+
+                        High Protein
+
+                    </label>
+
+
+                    <label class="option">
+
+                        <input
+                            type="radio"
+                            name="goal"
+                            value="weightLoss"
+                            th:checked="${profile.goal == 'weightLoss'}">
+
+                        Weight Loss
+
+                    </label>
+
+
+                    <label class="option">
+
+                        <input
+                            type="radio"
+                            name="goal"
+                            value="balancedNutrition"
+                            th:checked="${profile.goal == 'balancedNutrition'}">
+
+                        Balanced Nutrition
+
+                    </label>
+
+
+                    <label class="option">
+
+                        <input
+                            type="radio"
+                            name="goal"
+                            value="budgetFriendly"
+                            th:checked="${profile.goal == 'budgetFriendly'}">
+
+                        Budget Friendly
+
+                    </label>
+
+
+                    <div class="custom-option">
+
+                        <p>
+                            Other Goals
+                        </p>
+
+                        <input
+                            class="custom-input"
+                            type="text"
+                            name="otherGoal"
+                            placeholder="Separate multiple goals with commas">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==========================
+                 SAVE
+            ========================== -->
+
+            <div class="save-container">
+
+                <button
+                    class="save-btn"
+                    type="submit">
+
+                    Save Preferences
+
+                </button>
+
+            </div>
+
+
+            <!-- SUCCESS -->
+
+            <p
+                class="form-success"
+                th:if="${param.saved}">
+
+                ✓ Dietary preferences saved successfully.
+
+            </p>
+
+        </form>
+
+    </main>
+
 </body>
+
 </html>
