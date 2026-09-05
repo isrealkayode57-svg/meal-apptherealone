@@ -3,594 +3,536 @@
 
 <head>
 
-<title>Meals | MealMate</title>
+    <title>Meals | MealMate</title>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
 
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
 
-<style>
+        body {
+            background: #F8FAF8;
+            color: #1F2937;
+            min-height: 100vh;
+        }
 
 
-*{
+        /* ======================
+           MENU BUTTON
+        ====================== */
 
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
+        .menu {
+            position: fixed;
+            top: 20px;
+            left: 20px;
 
-}
+            width: 54px;
+            height: 54px;
 
+            border-radius: 16px;
 
-body{
+            background: white;
+            color: #5F8D4E;
 
-    background:#F8FAF8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
-    color:#1F2937;
+            font-size: 28px;
+            cursor: pointer;
 
-    min-height:100vh;
+            border: 1px solid #E5E7EB;
 
-}
+            box-shadow: 0 10px 25px rgba(0,0,0,.06);
 
+            z-index: 1001;
 
+            transition: .3s;
+        }
 
-/* ======================
-   MENU BUTTON
-====================== */
+        .menu:hover {
+            background: #5F8D4E;
+            color: white;
+        }
 
 
-.menu{
+        /* ======================
+           SIDEBAR
+        ====================== */
 
-    position:fixed;
+        .sidebar {
+            position: fixed;
 
-    top:20px;
+            top: 0;
+            left: -260px;
 
-    left:20px;
+            width: 250px;
+            height: 100vh;
 
-    width:54px;
+            background: white;
 
-    height:54px;
+            border-right: 1px solid #E5E7EB;
 
-    border-radius:16px;
+            padding: 30px;
 
-    background:white;
+            transition: .35s;
 
-    color:#5F8D4E;
+            box-shadow: 5px 0 25px rgba(0,0,0,.05);
 
-    display:flex;
+            z-index: 1000;
+        }
 
-    justify-content:center;
+        .sidebar.active {
+            left: 0;
+        }
 
-    align-items:center;
+        .logo {
+            margin-top: 70px;
+            margin-bottom: 40px;
 
-    font-size:28px;
+            font-size: 32px;
+            font-weight: 700;
 
-    cursor:pointer;
+            color: #5F8D4E;
+        }
 
-    border:1px solid #E5E7EB;
+        .sidebar a {
+            display: block;
 
-    box-shadow:0 10px 25px rgba(0,0,0,.06);
+            text-decoration: none;
 
-    z-index:1001;
+            color: #374151;
 
-    transition:.3s;
+            padding: 15px;
 
-}
+            border-radius: 12px;
 
+            margin-bottom: 8px;
 
-.menu:hover{
+            transition: .25s;
+        }
 
-    background:#5F8D4E;
+        .sidebar a:hover {
+            background: #EEF6EE;
+            color: #5F8D4E;
 
-    color:white;
+            transform: translateX(5px);
+        }
 
-}
+        .sidebar button {
+            width: 100%;
 
+            background: none;
 
+            border: none;
 
-/* ======================
-   SIDEBAR
-====================== */
+            text-align: left;
 
+            padding: 15px;
 
-.sidebar{
+            border-radius: 12px;
 
-    position:fixed;
+            color: #374151;
 
-    top:0;
+            cursor: pointer;
 
-    left:-260px;
+            font-size: 15px;
+        }
 
-    width:250px;
+        .sidebar button:hover {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
 
-    height:100vh;
 
-    background:white;
+        /* ======================
+           MAIN
+        ====================== */
 
-    border-right:1px solid #E5E7EB;
+        .main {
+            padding: 40px;
+            transition: .35s;
+        }
 
-    padding:30px;
+        .main.active {
+            margin-left: 250px;
+        }
 
-    transition:.35s;
 
-    box-shadow:5px 0 25px rgba(0,0,0,.05);
+        /* ======================
+           HEADER
+        ====================== */
 
-    z-index:1000;
+        .header {
+            margin-top: 80px;
+            margin-bottom: 35px;
+        }
 
-}
+        .header h1 {
+            font-size: 42px;
+        }
 
+        .header p {
+            color: #6B7280;
+            margin-top: 8px;
+        }
 
-.sidebar.active{
 
-    left:0;
+        /* ======================
+           MEAL GRID
+        ====================== */
 
-}
+        .meal-grid {
+            display: grid;
 
+            grid-template-columns:
+                repeat(auto-fit, minmax(340px, 1fr));
 
-.logo{
+            gap: 28px;
 
-    margin-top:70px;
+            margin-top: 28px;
+        }
 
-    margin-bottom:40px;
 
-    font-size:32px;
+        /* ======================
+           MEAL CARD
+        ====================== */
 
-    font-weight:700;
+        .meal-card {
+            background: white;
 
-    color:#5F8D4E;
+            border: 1px solid #E5E7EB;
 
-}
+            border-radius: 24px;
 
+            padding: 25px;
 
-.sidebar a{
+            box-shadow:
+                0 12px 30px rgba(0,0,0,.05);
 
-    display:block;
+            transition: .3s;
 
-    text-decoration:none;
+            cursor: default;
+        }
 
-    color:#374151;
+        .meal-card:hover {
+            transform: translateY(-6px);
 
-    padding:15px;
+            box-shadow:
+                0 20px 35px rgba(95,141,78,.15);
+        }
 
-    border-radius:12px;
 
-    margin-bottom:8px;
+        /* ======================
+           MEAL TOP
+        ====================== */
 
-    transition:.25s;
+        .meal-top {
+            display: flex;
 
-}
+            justify-content: space-between;
 
+            align-items: flex-start;
 
-.sidebar a:hover{
+            margin-bottom: 15px;
+        }
 
-    background:#EEF6EE;
+        .meal-title {
+            display: flex;
 
-    color:#5F8D4E;
+            align-items: center;
 
-    transform:translateX(5px);
+            gap: 12px;
+        }
 
-}
+        .meal-title input {
+            width: 20px;
+            height: 20px;
 
+            accent-color: #5F8D4E;
 
+            cursor: pointer;
+        }
 
-.sidebar button{
+        .meal-card h3 {
+            color: #1F2937;
 
-    width:100%;
+            font-size: 22px;
+        }
 
-    background:none;
+        .meal-card p {
+            color: #6B7280;
 
-    border:none;
+            line-height: 1.7;
 
-    text-align:left;
+            margin-top: 12px;
+        }
 
-    padding:15px;
 
-    border-radius:12px;
+        /* ======================
+           TAGS
+        ====================== */
 
-    color:#374151;
+        .tags {
+            margin-top: 18px;
+        }
 
-    cursor:pointer;
+        .tag {
+            display: inline-block;
 
-    font-size:15px;
+            padding: 7px 12px;
 
-}
+            background: #EEF6EE;
 
+            color: #5F8D4E;
 
-.sidebar button:hover{
+            border-radius: 30px;
 
-    background:#FEE2E2;
+            font-size: 12px;
 
-    color:#DC2626;
+            font-weight: 600;
 
-}
+            margin: 4px 3px;
+        }
 
 
+        /* ======================
+           RECIPE SECTION
+        ====================== */
 
-/* ======================
-   MAIN
-====================== */
+        .recipe-section {
+            margin-top: 24px;
 
+            padding-top: 20px;
 
-.main{
+            border-top: 1px solid #E5E7EB;
+        }
 
-    padding:40px;
+        .recipe-section h4 {
+            font-size: 18px;
 
-    transition:.35s;
+            color: #1F2937;
 
-}
+            margin-bottom: 14px;
+        }
 
+        .ingredient-list,
+        .instruction-list {
+            margin: 0;
 
-.main.active{
+            padding-left: 22px;
+        }
 
-    margin-left:250px;
+        .ingredient-list li,
+        .instruction-list li {
+            color: #4B5563;
 
-}
+            line-height: 1.6;
 
+            margin-bottom: 8px;
+        }
 
+        .ingredient-list li::marker,
+        .instruction-list li::marker {
+            color: #5F8D4E;
+        }
 
-/* ======================
-   HEADER
-====================== */
+        .instruction-list li {
+            padding-left: 5px;
+        }
 
 
-.header{
+        /* ======================
+           EMPTY STATE
+        ====================== */
 
-    margin-top:80px;
+        .empty-card {
+            background: white;
 
-    margin-bottom:35px;
+            border-radius: 24px;
 
-}
+            padding: 40px;
 
+            text-align: center;
 
-.header h1{
+            border: 1px solid #E5E7EB;
 
-    font-size:42px;
+            color: #6B7280;
 
-}
+            margin-top: 25px;
+        }
 
 
-.header p{
+        /* ======================
+           SAVE BUTTON
+        ====================== */
 
-    color:#6B7280;
+        .save-area {
+            margin-top: 35px;
 
-    margin-top:8px;
+            display: flex;
 
-}
-/* ======================
-   MEAL GRID
-====================== */
+            justify-content: center;
+        }
 
-.meal-grid{
+        .save-btn {
+            background: #5F8D4E;
 
-    display:grid;
+            color: white;
 
-    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+            border: none;
 
-    gap:38px;
+            padding: 15px 35px;
 
-    margin-top:28px;
+            border-radius: 14px;
 
-}
+            cursor: pointer;
 
+            font-size: 16px;
 
+            font-weight: 600;
 
-/* ======================
-   MEAL CARD
-====================== */
+            transition: .25s;
+        }
 
+        .save-btn:hover {
+            background: #4F7641;
 
-.meal-card{
+            transform: translateY(-3px);
+        }
 
-    background:white;
+        .save-btn:disabled {
+            opacity: .75;
 
-    border:1px solid #E5E7EB;
+            cursor: wait;
 
-    border-radius:24px;
+            transform: none;
+        }
 
-    padding:25px;
 
-    box-shadow:0 12px 30px rgba(0,0,0,.05);
+        /* ======================
+           AI LOADING
+        ====================== */
 
-    transition:.3s;
+        .ai-loading {
+            display: none;
 
-    cursor:pointer;
+            max-width: 520px;
 
-}
+            margin: 18px auto 0;
 
+            background: white;
 
-.meal-card:hover{
+            border: 1px solid #E5E7EB;
 
-    transform:translateY(-6px);
+            border-radius: 14px;
 
-    box-shadow:0 20px 35px rgba(95,141,78,.15);
+            padding: 14px 16px;
 
-}
+            box-shadow:
+                0 12px 30px rgba(0,0,0,.05);
+        }
 
+        .ai-loading.active {
+            display: block;
+        }
 
+        .ai-loading p {
+            color: #6B7280;
 
-/* checkbox */
+            font-size: 14px;
 
-.meal-card input{
+            margin-bottom: 10px;
+        }
 
-    width:20px;
+        .loading-track {
+            height: 10px;
 
-    height:20px;
+            background: #EEF6EE;
 
-    accent-color:#5F8D4E;
+            border-radius: 50px;
 
-    cursor:pointer;
+            overflow: hidden;
+        }
 
-}
+        .loading-bar {
+            height: 100%;
 
+            width: 45%;
 
+            border-radius: 50px;
 
-.meal-top{
+            background: #5F8D4E;
 
-    display:flex;
+            animation:
+                loadingBar 1.2s
+                ease-in-out
+                infinite;
+        }
 
-    justify-content:space-between;
+        @keyframes loadingBar {
 
-    align-items:center;
+            0% {
+                transform: translateX(-110%);
+            }
 
-    margin-bottom:20px;
+            100% {
+                transform: translateX(240%);
+            }
+        }
 
-}
 
+        /* ======================
+           RESPONSIVE
+        ====================== */
 
+        @media(max-width: 700px) {
 
-.meal-card h3{
+            .main {
+                padding: 25px;
+            }
 
-    color:#1F2937;
+            .main.active {
+                margin-left: 0;
+            }
 
-    font-size:22px;
+            .header h1 {
+                font-size: 34px;
+            }
 
-}
+            .meal-grid {
+                grid-template-columns: 1fr;
+            }
 
+            .meal-card {
+                padding: 20px;
+            }
+        }
 
-
-.meal-card p{
-
-    color:#6B7280;
-
-    line-height:1.7;
-
-    margin-top:12px;
-
-}
-
-
-
-/* ======================
-   TAGS
-====================== */
-
-
-.tags{
-
-    margin-top:20px;
-
-}
-
-
-.tag{
-
-    display:inline-block;
-
-    padding:8px 14px;
-
-    background:#EEF6EE;
-
-    color:#5F8D4E;
-
-    border-radius:30px;
-
-    font-size:13px;
-
-    font-weight:600;
-
-    margin:4px;
-
-}
-
-
-
-/* ======================
-   EMPTY STATE
-====================== */
-
-
-.empty-card{
-
-    background:white;
-
-    border-radius:24px;
-
-    padding:40px;
-
-    text-align:center;
-
-    border:1px solid #E5E7EB;
-
-    color:#6B7280;
-
-}
-
-
-
-/* ======================
-   SAVE BUTTON
-====================== */
-
-
-.save-area{
-
-    margin-top:35px;
-
-    display:flex;
-
-    justify-content:center;
-
-}
-
-
-.save-btn{
-
-    background:#5F8D4E;
-
-    color:white;
-
-    border:none;
-
-    padding:15px 35px;
-
-    border-radius:14px;
-
-    cursor:pointer;
-
-    font-size:16px;
-
-    font-weight:600;
-
-    transition:.25s;
-
-}
-
-
-.save-btn:hover{
-
-    background:#4F7641;
-
-    transform:translateY(-3px);
-
-}
-
-.save-btn:disabled{
-
-    opacity:.75;
-
-    cursor:wait;
-
-    transform:none;
-
-}
-
-.ai-loading{
-
-    display:none;
-
-    max-width:520px;
-
-    margin:18px auto 0;
-
-    background:white;
-
-    border:1px solid #E5E7EB;
-
-    border-radius:14px;
-
-    padding:14px 16px;
-
-    box-shadow:0 12px 30px rgba(0,0,0,.05);
-
-}
-
-.ai-loading.active{
-
-    display:block;
-
-}
-
-.ai-loading p{
-
-    color:#6B7280;
-
-    font-size:14px;
-
-    margin-bottom:10px;
-
-}
-
-.loading-track{
-
-    height:10px;
-
-    background:#EEF6EE;
-
-    border-radius:50px;
-
-    overflow:hidden;
-
-}
-
-.loading-bar{
-
-    height:100%;
-
-    width:45%;
-
-    border-radius:50px;
-
-    background:#5F8D4E;
-
-    animation:loadingBar 1.2s ease-in-out infinite;
-
-}
-
-@keyframes loadingBar{
-
-    0%{ transform:translateX(-110%); }
-
-    100%{ transform:translateX(240%); }
-
-}
-
-
-
-/* ======================
-   RESPONSIVE
-====================== */
-
-
-@media(max-width:700px){
-
-
-    .main{
-
-        padding:25px;
-
-    }
-
-
-    .main.active{
-
-        margin-left:0;
-
-    }
-
-
-    .header h1{
-
-        font-size:34px;
-
-    }
-
-
-    .meal-grid{
-
-        grid-template-columns:1fr;
-
-    }
-
-}
-</style>
+    </style>
 
 </head>
 
@@ -598,405 +540,514 @@ body{
 <body>
 
 
-<div class="menu" onclick="toggleSidebar()">
+    <!-- ======================
+         MENU
+    ====================== -->
 
-☰
+    <div
+        class="menu"
+        onclick="toggleSidebar()"
+    >
+        ☰
+    </div>
 
-</div>
 
+    <!-- ======================
+         SIDEBAR
+    ====================== -->
 
+    <div class="sidebar">
 
-<div class="sidebar">
+        <div class="logo">
+            🍽 MealMate
+        </div>
 
 
-<div class="logo">
+        <a href="/dashboard/dashboard">
+            Dashboard
+        </a>
 
-🍽 MealMate
 
-</div>
+        <a href="/dashboard/meals">
+            Meals
+        </a>
 
 
-<a href="/dashboard/dashboard">
-Dashboard
-</a>
+        <a href="/dashboard/planner">
+            Planner
+        </a>
 
 
-<a href="/dashboard/meals">
-Meals
-</a>
+        <a href="/dashboard/grocery">
+            Grocery
+        </a>
 
 
-<a href="/dashboard/planner">
-Planner
-</a>
+        <a href="/selection">
+            Change Restrictions
+        </a>
 
 
-<a href="/dashboard/grocery">
-Grocery
-</a>
+        <a href="/settings">
+            Settings
+        </a>
 
 
-<a href="settings.html">
-Settings
-</a>
+        <form
+            action="/logout"
+            method="post"
+        >
 
+            <button type="submit">
+                Logout
+            </button>
 
+        </form>
 
-<form action="/logout" method="post">
+    </div>
 
-<button type="submit">
 
-Logout
+    <!-- ======================
+         MAIN
+    ====================== -->
 
-</button>
+    <div class="main">
 
-</form>
 
+        <!-- HEADER -->
 
-</div>
+        <div class="header">
 
+            <h1>
+                Choose Your Meals
+            </h1>
 
+            <p>
+                Discover meals personalized to your dietary needs.
+            </p>
 
+        </div>
 
-<div class="main">
 
+        <!-- ======================
+             FIND MORE MEALS
+        ====================== -->
 
+        <form
+            action="/dashboard/meals/recommend"
+            method="post"
+            class="ai-form"
+        >
 
-<div class="header">
+            <div class="save-area">
 
-<h1>
-Choose Your Meals
-</h1>
+                <button
+                    class="save-btn"
+                    type="submit"
+                >
+                    Find More Meal Suggestions
+                </button>
 
+            </div>
 
-<p>
-Here are the meals you have saved for later.
-</p>
 
+            <div class="ai-loading">
 
-</div>
+                <p>
+                    Generating personalized meals and recipes...
+                </p>
 
+                <div class="loading-track">
 
+                    <div class="loading-bar"></div>
 
+                </div>
 
-<form action="/dashboard/meals/recommend" method="post" class="ai-form">
+            </div>
 
+        </form>
 
 
-<div class="save-area">
+        <!-- ======================
+             SAVED MEALS
+        ====================== -->
 
-<button class="save-btn" type="submit">
+        <div
+            class="meal-grid"
+            th:if="${hasSavedMeals and !showRecommendations}"
+        >
 
-Find More Meal Suggestions
+            <div
+                class="meal-card"
+                th:each="meal : ${savedMeals}"
+            >
 
-</button>
+                <div class="meal-top">
 
-</div>
+                    <h3
+                        th:text="${meal.mealNames}"
+                    >
+                        Saved Meal
+                    </h3>
 
-<div class="ai-loading">
+                </div>
 
-<p>
-Generating meal suggestions...
-</p>
 
-<div class="loading-track">
+                <p>
+                    Saved to your meal list.
+                </p>
 
-<div class="loading-bar">
-</div>
 
-</div>
+                <div class="tags">
 
-</div>
+                    <span class="tag">
+                        Saved
+                    </span>
 
+                </div>
 
+            </div>
 
-</form>
+        </div>
 
 
+        <!-- ======================
+             NO SAVED MEALS
+        ====================== -->
 
-<div class="meal-grid" th:if="${hasSavedMeals and !showRecommendations}">
+        <div
+            class="empty-card"
+            th:unless="${hasSavedMeals or showRecommendations}"
+        >
 
+            <p>
+                No saved meals yet.
+                Click the button above to get personalized meal suggestions.
+            </p>
 
+        </div>
 
-<div
-class="meal-card"
-th:each="meal : ${savedMeals}">
 
+        <!-- ======================
+             RECOMMENDATIONS
+        ====================== -->
 
+        <div
+            th:if="${showRecommendations}"
+        >
 
-<div class="meal-top">
+            <form
+                action="/dashboard/meals"
+                method="post"
+            >
 
 
-<h3
-th:text="${meal.mealNames}">
-Saved Meal
-</h3>
+                <div class="meal-grid">
 
 
+                    <!-- ======================
+                         RECOMMENDED MEAL
+                    ====================== -->
 
-</div>
+                    <div
+                        class="meal-card"
+                        th:if="${hasRecommendations}"
+                        th:each="meal : ${recommendations}"
+                    >
 
 
+                        <!-- MEAL TITLE -->
 
-<p>
-Saved to your meal list.
-</p>
+                        <div class="meal-top">
 
+                            <div class="meal-title">
 
+                                <input
+                                    type="checkbox"
+                                    name="meal"
+                                    th:value="${meal.name()}"
+                                >
 
-<div class="tags">
+                                <h3
+                                    th:text="${meal.name()}"
+                                >
+                                    Meal Name
+                                </h3>
 
+                            </div>
 
-<span class="tag">
-Saved
-</span>
+                        </div>
 
 
-</div>
+                        <!-- REASON -->
 
+                        <p
+                            th:text="${meal.reason()}"
+                        >
+                            Meal reason goes here.
+                        </p>
 
-</div>
-</div>
 
+                        <!-- TAGS -->
 
-<div
-class="empty-card"
-th:unless="${hasSavedMeals or showRecommendations}">
+                        <div class="tags">
 
-<p>
-No saved meals yet. Click the button above when you want new suggestions.
-</p>
+                            <span
+                                class="tag"
+                                th:each="tag : ${#strings.arraySplit(meal.tags(), ',')}"
+                                th:text="${tag.trim()}"
+                            >
+                                Healthy
+                            </span>
 
-</div>
+                        </div>
 
 
-<div th:if="${showRecommendations}">
+                        <!-- ======================
+                             INGREDIENTS
+                        ====================== -->
 
+                        <div class="recipe-section">
 
-<form action="/dashboard/meals" method="post">
+                            <h4>
+                                🛒 Ingredients
+                            </h4>
 
 
+                            <ul class="ingredient-list">
 
-<div class="meal-grid">
+                                <li
+                                    th:each="ingredient : ${meal.ingredients()}"
+                                    th:text="${ingredient}"
+                                >
+                                    Ingredient
+                                </li>
 
+                            </ul>
 
+                        </div>
 
-<div 
-class="meal-card"
-th:if="${hasRecommendations}"
-th:each="meal : ${recommendations}">
 
+                        <!-- ======================
+                             RECIPE
+                        ====================== -->
 
+                        <div class="recipe-section">
 
-<div class="meal-top">
+                            <h4>
+                                👨‍🍳 Recipe
+                            </h4>
 
 
-<input 
-type="checkbox"
-name="meal"
-th:value="${meal.name()}">
+                            <ol class="instruction-list">
 
+                                <li
+                                    th:each="instruction : ${meal.instructions()}"
+                                    th:text="${instruction}"
+                                >
+                                    Cooking instruction
+                                </li>
 
+                            </ol>
 
-<h3 
-th:text="${meal.name()}">
-Meal Name
-</h3>
+                        </div>
 
 
+                    </div>
 
-</div>
+                </div>
 
 
+                <!-- ======================
+                     NO RECOMMENDATIONS
+                ====================== -->
 
-<p
-th:text="${meal.reason()}">
-Meal reason goes here.
-</p>
+                <div
+                    class="empty-card"
+                    th:unless="${hasRecommendations}"
+                >
 
+                    <p
+                        th:text="${recommendationStatus}"
+                    >
+                        No meals available.
+                    </p>
 
+                </div>
 
-<div class="tags">
 
+                <!-- ======================
+                     SAVE SELECTED
+                ====================== -->
 
-<span class="tag">
-Healthy
-</span>
+                <div class="save-area">
 
+                    <button
+                        class="save-btn"
+                        type="submit"
+                    >
+                        Save Selected Meals
+                    </button>
 
-<span class="tag">
-Recommended
-</span>
+                </div>
 
 
-</div>
+            </form>
 
+        </div>
 
-</div>
-</div>
 
+    </div>
 
-<!-- EMPTY STATE -->
 
-<div 
-class="empty-card"
-th:unless="${hasRecommendations}">
+    <!-- ======================
+         JAVASCRIPT
+    ====================== -->
 
-<p th:text="${recommendationStatus}">
-No meals available.
-</p>
+    <script>
 
-</div>
+        const sidebar =
+            document.querySelector(".sidebar");
 
+        const main =
+            document.querySelector(".main");
 
+        const menu =
+            document.querySelector(".menu");
 
-<div class="save-area">
 
-<button class="save-btn" type="submit">
+        /*
+         * Toggle sidebar
+         */
 
-Save Selected Meals
+        function toggleSidebar() {
 
-</button>
+            sidebar.classList.toggle("active");
 
-</div>
-
-
-
-</form>
-
-
-</div>
-
-
-</div>
-
-
-
-<script>
-
-
-const sidebar = document.querySelector(".sidebar");
-
-const main = document.querySelector(".main");
-
-const menu = document.querySelector(".menu");
-
-
-
-function toggleSidebar(){
-
-
-    sidebar.classList.toggle("active");
-
-
-    main.classList.toggle("active");
-
-
-}
-
-
-
-document.querySelectorAll(".ai-form").forEach((form)=>{
-
-    form.addEventListener("submit",()=>{
-
-        const button = form.querySelector("button[type='submit']");
-
-        const loading = form.querySelector(".ai-loading");
-
-        if(button){
-
-            button.disabled = true;
-
-            button.textContent = "Working...";
+            main.classList.toggle("active");
 
         }
 
-        if(loading){
 
-            loading.classList.add("active");
+        /*
+         * AI loading animation
+         */
 
-        }
+        document
+            .querySelectorAll(".ai-form")
+            .forEach((form) => {
 
-    });
+                form.addEventListener(
+                    "submit",
+                    () => {
 
-});
+                        const button =
+                            form.querySelector(
+                                "button[type='submit']"
+                            );
 
-
-
-
-// close sidebar when clicking outside
-
-document.addEventListener("click", function(event){
-
-
-    if(
-
-        !sidebar.contains(event.target)
-
-        &&
-
-        !menu.contains(event.target)
-
-    ){
+                        const loading =
+                            form.querySelector(
+                                ".ai-loading"
+                            );
 
 
-        sidebar.classList.remove("active");
+                        if (button) {
+
+                            button.disabled = true;
+
+                            button.textContent =
+                                "Generating...";
+                        }
 
 
-        main.classList.remove("active");
+                        if (loading) {
+
+                            loading.classList.add(
+                                "active"
+                            );
+                        }
+
+                    }
+                );
+
+            });
 
 
-    }
+        /*
+         * Close sidebar when clicking outside
+         */
+
+        document.addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    !sidebar.contains(event.target)
+                    &&
+                    !menu.contains(event.target)
+                ) {
+
+                    sidebar.classList.remove(
+                        "active"
+                    );
+
+                    main.classList.remove(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
 
 
-});
+        /*
+         * Meal card animation
+         */
+
+        window.addEventListener(
+            "load",
+            () => {
+
+                const cards =
+                    document.querySelectorAll(
+                        ".meal-card"
+                    );
 
 
+                cards.forEach(
+                    (card, index) => {
+
+                        card.style.opacity = "0";
+
+                        card.style.transform =
+                            "translateY(20px)";
 
 
-// card animation
+                        setTimeout(
+                            () => {
 
-window.addEventListener("load",()=>{
+                                card.style.transition =
+                                    ".5s";
 
+                                card.style.opacity =
+                                    "1";
 
-    const cards=document.querySelectorAll(".meal-card");
+                                card.style.transform =
+                                    "translateY(0)";
 
+                            },
+                            index * 120
+                        );
 
-    cards.forEach((card,index)=>{
+                    }
+                );
 
+            }
+        );
 
-        card.style.opacity="0";
-
-
-        card.style.transform="translateY(20px)";
-
-
-        setTimeout(()=>{
-
-
-            card.style.transition=".5s";
-
-
-            card.style.opacity="1";
-
-
-            card.style.transform="translateY(0)";
-
-
-        },index*120);
-
-
-
-    });
-
-
-
-});
-
-
-
-</script>
+    </script>
 
 
 </body>
