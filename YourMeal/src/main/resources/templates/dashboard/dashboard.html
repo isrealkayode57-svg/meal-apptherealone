@@ -1,1201 +1,1449 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>MealMate Dashboard</title>
+    <title>MealMate Dashboard</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
 
-<style>
+    <style>
 
-/* ==========================
-   GOOGLE STYLE RESET
-========================== */
+        /* ==========================
+           RESET
+        ========================== */
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
 
-body{
+        body {
+            background: #F8FAF8;
+            color: #1F2937;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-    background:#F8FAF8;
 
-    color:#1F2937;
+        /* ==========================
+           MENU BUTTON
+        ========================== */
 
-    min-height:100vh;
+        .menu {
+            position: fixed;
 
-    overflow-x:hidden;
+            top: 20px;
+            left: 20px;
 
-}
+            width: 54px;
+            height: 54px;
 
-/* ==========================
-   MENU BUTTON
-========================== */
+            background: white;
 
-.menu{
+            border-radius: 16px;
 
-    position:fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
-    top:20px;
+            cursor: pointer;
 
-    left:20px;
+            font-size: 30px;
+            color: #5F8D4E;
 
-    width:54px;
+            border: 1px solid #E5E7EB;
 
-    height:54px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .06);
 
-    background:white;
+            transition: all .25s ease;
 
-    border-radius:16px;
+            z-index: 1001;
+        }
 
-    display:flex;
+        .menu:hover {
+            background: #5F8D4E;
+            color: white;
+        }
 
-    justify-content:center;
 
-    align-items:center;
+        /* ==========================
+           SIDEBAR
+        ========================== */
 
-    cursor:pointer;
+        .sidebar {
+            position: fixed;
 
-    font-size:30px;
+            left: -260px;
+            top: 0;
 
-    color:#5F8D4E;
+            width: 250px;
+            height: 100vh;
 
-    border:1px solid #E5E7EB;
+            background: white;
 
-    box-shadow:0 10px 25px rgba(0,0,0,.06);
+            border-right: 1px solid #E5E7EB;
 
-    transition:.3s;
+            box-shadow: 5px 0 25px rgba(0, 0, 0, .05);
 
-    z-index:1001;
+            padding: 30px;
 
-}
+            transition: .35s;
 
-.menu:hover{
+            z-index: 1000;
+        }
 
-    background:#5F8D4E;
+        .sidebar.active {
+            left: 0;
+        }
 
-    color:white;
+        .logo {
+            margin-top: 70px;
+            margin-bottom: 40px;
 
-}
+            font-size: 32px;
+            font-weight: 700;
 
-/* ==========================
-   SIDEBAR
-========================== */
+            color: #5F8D4E;
+        }
 
-.sidebar{
+        .sidebar a {
+            display: block;
 
-    position:fixed;
+            text-decoration: none;
 
-    left:-260px;
+            color: #374151;
 
-    top:0;
+            padding: 15px;
 
-    width:250px;
+            border-radius: 12px;
 
-    height:100vh;
+            margin-bottom: 8px;
 
-    background:white;
+            transition: all .25s ease;
+        }
 
-    border-right:1px solid #E5E7EB;
+        .sidebar a:hover {
+            background: #EEF6EE;
 
-    box-shadow:5px 0 25px rgba(0,0,0,.05);
+            color: #5F8D4E;
 
-    padding:30px;
+            transform: translateX(6px);
+        }
 
-    transition:.35s;
+        .sidebar button {
+            width: 100%;
 
-    z-index:1000;
+            background: none;
 
-}
+            border: none;
 
-.sidebar.active{
+            text-align: left;
 
-    left:0;
+            padding: 15px;
 
-}
+            border-radius: 12px;
 
-.logo{
+            cursor: pointer;
 
-    margin-top:70px;
+            color: #374151;
 
-    margin-bottom:40px;
+            font-size: 15px;
 
-    font-size:32px;
+            transition: all .25s ease;
+        }
 
-    font-weight:700;
+        .sidebar button:hover {
+            background: #FEE2E2;
 
-    color:#5F8D4E;
+            color: #DC2626;
+        }
 
-}
 
-.sidebar a{
+        /* ==========================
+           MAIN CONTENT
+        ========================== */
 
-    display:block;
+        .main {
+            padding: 40px;
 
-    text-decoration:none;
+            transition: .35s;
+        }
 
-    color:#374151;
+        .main.active {
+            margin-left: 250px;
+        }
 
-    padding:15px;
 
-    border-radius:12px;
+        /* ==========================
+           HERO
+        ========================== */
 
-    margin-bottom:8px;
+        .hero {
+            margin-top: 80px;
 
-    transition:.25s;
+            background: white;
 
-}
+            border-radius: 28px;
 
-.sidebar a:hover{
+            padding: 40px;
 
-    background:#EEF6EE;
+            display: flex;
 
-    color:#5F8D4E;
+            justify-content: space-between;
 
-    transform:translateX(6px);
+            align-items: center;
 
-}
+            flex-wrap: wrap;
 
-.sidebar button{
+            border: 1px solid #E5E7EB;
 
-    width:100%;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, .05);
+        }
 
-    background:none;
+        .hero h1 {
+            font-size: 42px;
 
-    border:none;
+            font-weight: 700;
 
-    text-align:left;
+            color: #1F2937;
+        }
 
-    padding:15px;
+        .hero p {
+            margin-top: 10px;
 
-    border-radius:12px;
+            color: #6B7280;
 
-    cursor:pointer;
+            font-size: 16px;
+        }
 
-    color:#374151;
+        .hero .emoji {
+            font-size: 65px;
+        }
 
-    font-size:15px;
 
-    transition:.25s;
+        /* ==========================
+           GRID
+        ========================== */
 
-}
+        .grid {
+            margin-top: 35px;
 
-.sidebar button:hover{
+            display: grid;
 
-    background:#FEE2E2;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(240px, 1fr)
+            );
 
-    color:#DC2626;
+            gap: 22px;
+        }
 
-}
 
-/* ==========================
-   MAIN CONTENT
-========================== */
+        /* ==========================
+           CARDS
+        ========================== */
 
-.main{
+        .card {
+            background: white;
 
-    padding:40px;
+            border-radius: 22px;
 
-    transition:.35s;
+            padding: 25px;
 
-}
+            border: 1px solid #E5E7EB;
 
-.main.active{
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .05);
 
-    margin-left:250px;
+            transition: all .25s ease;
+        }
 
-}
+        .card:hover {
+            transform: translateY(-6px);
 
-/* ==========================
-   HERO
-========================== */
+            box-shadow:
+                0 20px 35px rgba(95, 141, 78, .12);
+        }
 
-.hero{
+        .card h3 {
+            font-size: 15px;
 
-    margin-top:80px;
+            color: #6B7280;
 
-    background:white;
+            margin-bottom: 12px;
+        }
 
-    border-radius:28px;
+        .value {
+            font-size: 42px;
 
-    padding:40px;
+            font-weight: 700;
 
-    display:flex;
+            color: #5F8D4E;
+        }
 
-    justify-content:space-between;
 
-    align-items:center;
+        /* ==========================
+           BUTTONS
+        ========================== */
 
-    flex-wrap:wrap;
+        .actions {
+            display: flex;
 
-    border:1px solid #E5E7EB;
+            flex-wrap: wrap;
 
-    box-shadow:0 15px 35px rgba(0,0,0,.05);
+            gap: 15px;
 
-}
+            margin: 35px 0;
+        }
 
-.hero h1{
+        .actions form {
+            margin: 0;
+        }
 
-    font-size:42px;
+        .action {
+            padding: 15px 24px;
 
-    font-weight:700;
+            background: #5F8D4E;
 
-    color:#1F2937;
+            color: white;
 
-}
+            border: none;
 
-.hero p{
+            border-radius: 14px;
 
-    margin-top:10px;
+            cursor: pointer;
 
-    color:#6B7280;
+            font-weight: 600;
 
-    font-size:16px;
+            transition: all .25s ease;
+        }
 
-}
+        .action:hover {
+            background: #4F7641;
 
-.hero .emoji{
+            transform: translateY(-3px);
 
-    font-size:65px;
+            box-shadow:
+                0 10px 20px rgba(95, 141, 78, .15);
+        }
 
-}
 
-/* ==========================
-   GRID
-========================== */
+        /* ==========================
+           PANELS
+        ========================== */
 
-.grid{
+        .section {
+            display: grid;
 
-    margin-top:35px;
+            grid-template-columns:
+                repeat(auto-fit, minmax(360px, 1fr));
 
-    display:grid;
+            gap: 24px;
 
-    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+            margin-top: 10px;
+        }
 
-    gap:22px;
+        .panel {
+            background: white;
 
-}
+            border: 1px solid #E5E7EB;
 
-/* ==========================
-   CARDS
-========================== */
+            border-radius: 24px;
 
-.card{
+            padding: 28px;
 
-    background:white;
+            box-shadow:
+                0 12px 30px rgba(0, 0, 0, .05);
 
-    border-radius:22px;
+            transition: all .25s ease;
+        }
 
-    padding:25px;
+        .panel:hover {
+            transform: translateY(-5px);
 
-    border:1px solid #E5E7EB;
+            box-shadow:
+                0 20px 35px rgba(95, 141, 78, .10);
+        }
 
-    box-shadow:0 12px 30px rgba(0,0,0,.05);
+        .panel h2 {
+            font-size: 24px;
 
-    transition:.3s;
+            color: #1F2937;
 
-}
+            margin-bottom: 20px;
+        }
 
-.card:hover{
+        .panel h3 {
+            color: #374151;
 
-    transform:translateY(-6px);
+            margin-bottom: 12px;
+        }
 
-    box-shadow:0 20px 35px rgba(95,141,78,.12);
+        .panel p {
+            color: #6B7280;
 
-}
+            line-height: 1.7;
+        }
 
-.card h3{
 
-    font-size:15px;
+        /* ==========================
+           LISTS
+        ========================== */
 
-    color:#6B7280;
+        ul {
+            list-style: none;
 
-    margin-bottom:12px;
+            padding: 0;
+        }
 
-}
+        li {
+            padding: 12px 0;
 
-.value{
+            border-bottom: 1px solid #F3F4F6;
 
-    font-size:42px;
+            color: #374151;
+        }
 
-    font-weight:700;
+        li:last-child {
+            border-bottom: none;
+        }
 
-    color:#5F8D4E;
 
-}
+        /* ==========================
+           TAGS
+        ========================== */
 
-/* ==========================
-   BUTTONS
-========================== */
+        .tag {
+            display: inline-block;
 
-.actions{
+            background: #EEF6EE;
 
-    display:flex;
+            color: #5F8D4E;
 
-    flex-wrap:wrap;
+            padding: 8px 14px;
 
-    gap:15px;
+            border-radius: 30px;
 
-    margin:35px 0;
+            font-size: 13px;
 
-}
+            font-weight: 600;
 
-.action{
+            margin: 5px;
+        }
 
-    padding:15px 24px;
 
-    background:#5F8D4E;
+        /* ==========================
+           TABLE
+        ========================== */
 
-    color:white;
+        table {
+            width: 100%;
 
-    border:none;
+            border-collapse: collapse;
+        }
 
-    border-radius:14px;
+        td {
+            padding: 14px 0;
 
-    cursor:pointer;
+            border-bottom: 1px solid #F3F4F6;
 
-    font-weight:600;
+            color: #374151;
+        }
 
-    transition:.25s;
+        tr:last-child td {
+            border-bottom: none;
+        }
 
-}
 
-.action:hover{
+        /* ==========================
+           LINKS
+        ========================== */
 
-    background:#4F7641;
+        a {
+            transition: .25s;
+        }
 
-    transform:translateY(-3px);
 
-}
-/* ==========================
-   PANELS
-========================== */
+        /* ==========================
+           INPUTS
+        ========================== */
 
-.section{
+        input,
+        select,
+        textarea {
+            width: 100%;
 
-    display:grid;
+            padding: 14px;
 
-    grid-template-columns:repeat(auto-fit,minmax(360px,1fr));
+            border: 1px solid #D1D5DB;
 
-    gap:24px;
+            border-radius: 12px;
 
-    margin-top:10px;
+            font-size: 15px;
 
-}
+            outline: none;
 
-.panel{
+            transition: .25s;
 
-    background:white;
+            background: white;
+        }
 
-    border:1px solid #E5E7EB;
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #5F8D4E;
 
-    border-radius:24px;
+            box-shadow:
+                0 0 0 4px rgba(95, 141, 78, .12);
+        }
 
-    padding:28px;
 
-    box-shadow:0 12px 30px rgba(0,0,0,.05);
+        /* ==========================
+           SCROLLBAR
+        ========================== */
 
-    transition:.3s;
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
 
-}
+        ::-webkit-scrollbar-track {
+            background: #F3F4F6;
+        }
 
-.panel:hover{
+        ::-webkit-scrollbar-thumb {
+            background: #A3B18A;
 
-    transform:translateY(-5px);
+            border-radius: 20px;
+        }
 
-    box-shadow:0 20px 35px rgba(95,141,78,.10);
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5F8D4E;
+        }
 
-}
 
-.panel h2{
+        /* ==========================
+           ANIMATIONS
+        ========================== */
 
-    font-size:24px;
+        .card,
+        .panel,
+        .hero {
+            animation: fadeUp .6s ease;
+        }
 
-    color:#1F2937;
+        @keyframes fadeUp {
 
-    margin-bottom:20px;
+            from {
+                opacity: 0;
 
-}
+                transform: translateY(20px);
+            }
 
-.panel h3{
+            to {
+                opacity: 1;
 
-    color:#374151;
+                transform: translateY(0);
+            }
 
-    margin-bottom:12px;
+        }
 
-}
 
-.panel p{
+        /* ==========================
+           TRANSITIONS
+        ========================== */
 
-    color:#6B7280;
+        button,
+        .card,
+        .panel,
+        .sidebar,
+        .menu,
+        .tag {
+            transition: all .25s ease;
+        }
 
-    line-height:1.7;
 
-}
+        /* ==========================
+           MOBILE
+        ========================== */
 
-/* ==========================
-   LISTS
-========================== */
+        @media (max-width: 900px) {
 
-ul{
+            .hero {
+                flex-direction: column;
 
-    list-style:none;
+                text-align: center;
 
-    padding:0;
+                gap: 25px;
+            }
 
-}
+            .hero h1 {
+                font-size: 34px;
+            }
 
-li{
+            .hero .emoji {
+                font-size: 52px;
+            }
 
-    padding:12px 0;
+            .main {
+                padding: 25px;
+            }
 
-    border-bottom:1px solid #F3F4F6;
+        }
 
-    color:#374151;
+        @media (max-width: 700px) {
 
-}
+            .main.active {
+                margin-left: 0;
+            }
 
-li:last-child{
+            .actions {
+                flex-direction: column;
+            }
 
-    border-bottom:none;
+            .actions form {
+                width: 100%;
+            }
 
-}
+            .action {
+                width: 100%;
+            }
 
-/* ==========================
-   TAGS
-========================== */
+            .section {
+                grid-template-columns: 1fr;
+            }
 
-.tag{
+            .grid {
+                grid-template-columns: 1fr;
+            }
 
-    display:inline-block;
+        }
 
-    background:#EEF6EE;
 
-    color:#5F8D4E;
+        /* ==========================
+           LITTLE DETAILS
+        ========================== */
 
-    padding:8px 14px;
+        ::selection {
+            background: #5F8D4E;
 
-    border-radius:30px;
+            color: white;
+        }
 
-    font-size:13px;
+        strong {
+            color: #5F8D4E;
+        }
 
-    font-weight:600;
+        hr {
+            border: none;
 
-    margin:5px;
+            height: 1px;
 
-}
+            background: #E5E7EB;
 
-/* ==========================
-   TABLES
-========================== */
+            margin: 20px 0;
+        }
 
-table{
-
-    width:100%;
-
-    border-collapse:collapse;
-
-}
-
-td{
-
-    padding:14px 0;
-
-    border-bottom:1px solid #F3F4F6;
-
-    color:#374151;
-
-}
-
-tr:last-child td{
-
-    border-bottom:none;
-
-}
-
-/* ==========================
-   LINKS
-========================== */
-
-a{
-
-    transition:.25s;
-
-}
-
-/* ==========================
-   INPUTS (Future Proof)
-========================== */
-
-input,
-select,
-textarea{
-
-    width:100%;
-
-    padding:14px;
-
-    border:1px solid #D1D5DB;
-
-    border-radius:12px;
-
-    font-size:15px;
-
-    outline:none;
-
-    transition:.25s;
-
-    background:white;
-
-}
-
-input:focus,
-select:focus,
-textarea:focus{
-
-    border-color:#5F8D4E;
-
-    box-shadow:0 0 0 4px rgba(95,141,78,.12);
-
-}
-
-/* ==========================
-   SCROLLBAR
-========================== */
-
-::-webkit-scrollbar{
-
-    width:10px;
-
-}
-
-::-webkit-scrollbar-track{
-
-    background:#F3F4F6;
-
-}
-
-::-webkit-scrollbar-thumb{
-
-    background:#A3B18A;
-
-    border-radius:20px;
-
-}
-
-::-webkit-scrollbar-thumb:hover{
-
-    background:#5F8D4E;
-
-}
-
-/* ==========================
-   ANIMATIONS
-========================== */
-
-.card,
-.panel,
-.hero{
-
-    animation:fadeUp .6s ease;
-
-}
-
-@keyframes fadeUp{
-
-    from{
-
-        opacity:0;
-
-        transform:translateY(20px);
-
-    }
-
-    to{
-
-        opacity:1;
-
-        transform:translateY(0);
-
-    }
-
-}
-
-/* ==========================
-   NICE TRANSITIONS
-========================== */
-
-button,
-.card,
-.panel,
-.sidebar,
-.menu,
-.tag{
-
-    transition:all .25s ease;
-
-}
-
-/* ==========================
-   MOBILE
-========================== */
-
-@media(max-width:900px){
-
-    .hero{
-
-        flex-direction:column;
-
-        text-align:center;
-
-        gap:25px;
-
-    }
-
-    .hero h1{
-
-        font-size:34px;
-
-    }
-
-    .hero .emoji{
-
-        font-size:52px;
-
-    }
-
-    .main{
-
-        padding:25px;
-
-    }
-
-}
-
-@media(max-width:700px){
-
-    .main.active{
-
-        margin-left:0;
-
-    }
-
-    .actions{
-
-        flex-direction:column;
-
-    }
-
-    .action{
-
-        width:100%;
-
-    }
-
-    .section{
-
-        grid-template-columns:1fr;
-
-    }
-
-    .grid{
-
-        grid-template-columns:1fr;
-
-    }
-
-}
-
-/* ==========================
-   LITTLE DETAILS
-========================== */
-
-::selection{
-
-    background:#5F8D4E;
-
-    color:white;
-
-}
-
-strong{
-
-    color:#5F8D4E;
-
-}
-
-hr{
-
-    border:none;
-
-    height:1px;
-
-    background:#E5E7EB;
-
-    margin:20px 0;
-
-}
-
-</style>
+    </style>
 
 </head>
 
+
 <body>
 
-<div class="menu" onclick="toggleSidebar()">
 
-☰
+    <!-- ==========================
+         MENU BUTTON
+    ========================== -->
 
-</div>
+    <div class="menu" onclick="toggleSidebar()">
+        ☰
+    </div>
 
-<div class="sidebar">
 
-<div class="logo">
+    <!-- ==========================
+         SIDEBAR
+    ========================== -->
 
-🍽 MealMate
+    <div class="sidebar">
 
-</div>
-
-<a href="/dashboard/dashboard">🏠 Dashboard</a>
-
-<a href="/dashboard/meals">🍔 Meals</a>
-
-<a href="/dashboard/planner">📅 Planner</a>
-
-<a href="/dashboard/grocery">🛒 Grocery</a>
-
-<a href="#">⚙ Settings</a>
-
-<form action="/logout" method="post">
-
-<button type="submit">
-
-🚪 Logout
-
-</button>
-
-</form>
-
-</div>
-
-<div class="main">
-
-<div class="hero">
-
-<div>
-
-<h1>
-
-Welcome,
-
-<span th:text="${name}"></span>
-
-👋
-
-</h1>
-
-<p>
-
-Track your nutrition, discover meals, and stay healthy.
-
-</p>
-
-</div>
-
-<div class="emoji">
-
-🥗
-
-</div>
-
-</div>
-<!-- ===================== -->
-<!-- STAT CARDS -->
-<!-- ===================== -->
-
-<div class="grid">
-
-    <div class="card">
-
-        <h3>🚫 Restrictions</h3>
-
-        <div class="value" th:text="${restrictionsCount}">
-            0
+        <div class="logo">
+            🍽 MealMate
         </div>
 
-        <p style="color:#94a3b8;margin-top:12px;">
-            Active dietary restrictions.
-        </p>
+
+        <a href="/dashboard/dashboard">
+            🏠 Dashboard
+        </a>
+
+
+        <!-- NEW: SELECT / CHANGE RESTRICTIONS -->
+
+        <a href="/selection">
+            🥗 Select/Change Restrictions
+        </a>
+
+
+        <a href="/dashboard/meals">
+            🍔 Meals
+        </a>
+
+
+        <a href="/dashboard/planner">
+            📅 Planner
+        </a>
+
+
+        <a href="/dashboard/grocery">
+            🛒 Grocery
+        </a>
+
+
+        <a href="#">
+            ⚙ Settings
+        </a>
+
+
+        <form action="/logout" method="post">
+
+            <button type="submit">
+                🚪 Logout
+            </button>
+
+        </form>
 
     </div>
 
-    <div class="card">
 
-        <h3>💰 Weekly Cost</h3>
+    <!-- ==========================
+         MAIN CONTENT
+    ========================== -->
 
-        <div class="value" th:text="${weeklyCost}">
-            $0
-        </div>
+    <div class="main">
 
-        <p style="color:#94a3b8;margin-top:12px;">
-            Estimated spending this week.
-        </p>
 
-    </div>
+        <!-- ==========================
+             HERO
+        ========================== -->
 
-    <div class="card">
-
-        <h3>⭐ Saved Meals</h3>
-
-        <div class="value" th:text="${savedMealsCount}">
-            0
-        </div>
-
-        <p style="color:#94a3b8;margin-top:12px;">
-            Meals saved to your favorites.
-        </p>
-
-    </div>
-
-</div>
-
-<!-- ===================== -->
-<!-- QUICK ACTIONS -->
-<!-- ===================== -->
-
-<div class="actions">
-    <form action="/dashboard/meals/recommend" method="post">
-        <button class="action" type="submit">
-            🔍 Find Meals
-        </button>
-    </form>
-
-    <button class="action">
-        📅 Meal Planner
-    </button>
-
-    <form action="/dashboard/grocery" method="post">
-        <button class="action">
-            🛒 Grocery List
-        </button>
-    </form>
-
-</div>
-
-<!-- ===================== -->
-<!-- PANELS -->
-<!-- ===================== -->
-
-<div class="section">
-
-<div class="panel">
-
-<h2>
-🥗 Dietary Restrictions
-</h2>
-
-<p
-th:if="${#lists.isEmpty(restrictions)}"
-style="color:#cbd5e1;">
-No restrictions selected yet.
-</p>
-
-<ul
-th:unless="${#lists.isEmpty(restrictions)}">
-
-<li
-th:each="restriction : ${restrictions}"
-th:text="${restriction}">
-Restriction
-</li>
-
-</ul>
-
-</div>
-
-<div class="panel">
-
-<h2>
-📊 Nutrition Progress
-</h2>
-
-<p style="color:#cbd5e1;margin-bottom:15px;">
-Healthy Eating Progress
-</p>
-
-<div style="height:12px;background:rgba(255,255,255,.12);border-radius:50px;overflow:hidden;">
-
-<div style="width:78%;height:100%;background:linear-gradient(90deg,#22c55e,#3b82f6);border-radius:50px;">
-
-</div>
-
-</div>
-
-<br>
-
-<p style="color:#cbd5e1;margin-bottom:15px;">
-Meal Planning
-</p>
-
-<div style="height:12px;background:rgba(255,255,255,.12);border-radius:50px;overflow:hidden;">
-
-<div style="width:52%;height:100%;background:linear-gradient(90deg,#8b5cf6,#ec4899);border-radius:50px;">
-
-</div>
-
-</div>
-
-<br>
-
-<p style="color:#cbd5e1;margin-bottom:15px;">
-Budget Tracking
-</p>
-
-<div style="height:12px;background:rgba(255,255,255,.12);border-radius:50px;overflow:hidden;">
-
-<div style="width:66%;height:100%;background:linear-gradient(90deg,#f59e0b,#ef4444);border-radius:50px;">
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-<!-- ===================== -->
-<!-- SECOND ROW -->
-<!-- ===================== -->
-
-<br>
-
-<div class="section">
-
-    <!-- Saved Meals -->
-    <div class="panel">
-
-        <h2>🍔 Saved Meals</h2>
-
-        <ul th:unless="${#lists.isEmpty(savedMeals)}">
-            <li th:each="meal, mealStat : ${savedMeals}"
-                th:if="${mealStat.index &lt; 5}"
-                th:text="${meal.mealNames}">
-                Saved Meal
-            </li>
-        </ul>
-
-        <p th:if="${#lists.isEmpty(savedMeals)}">No Saved Meals.</p>
-    </div>
-
-    <!-- Daily Goals -->
-    <div class="panel">
-
-        <h2>🎯 Today's Goals</h2>
-
-        <div style="display:flex;flex-direction:column;gap:18px;">
+        <div class="hero">
 
             <div>
-                ✅ Drink 8 glasses of water
+
+                <h1>
+
+                    Welcome,
+
+                    <span th:text="${name}">
+                        User
+                    </span>
+
+                    👋
+
+                </h1>
+
+                <p>
+                    Track your nutrition, discover meals, and stay healthy.
+                </p>
+
             </div>
 
-            <div>
-                🥗 Eat 5 servings of vegetables
-            </div>
 
-            <div>
-                🍗 Include lean protein
-            </div>
-
-            <div>
-                🚶 Walk 10,000 steps
-            </div>
-
-            <div>
-                😴 Get 8 hours of sleep
+            <div class="emoji">
+                🥗
             </div>
 
         </div>
+
+
+        <!-- ==========================
+             STAT CARDS
+        ========================== -->
+
+        <div class="grid">
+
+
+            <!-- Restrictions -->
+
+            <div class="card">
+
+                <h3>
+                    🚫 Restrictions
+                </h3>
+
+                <div
+                    class="value"
+                    th:text="${restrictionsCount}">
+
+                    0
+
+                </div>
+
+                <p style="color:#94a3b8;margin-top:12px;">
+                    Active dietary restrictions.
+                </p>
+
+            </div>
+
+
+            <!-- Weekly Cost -->
+
+            <div class="card">
+
+                <h3>
+                    💰 Weekly Cost
+                </h3>
+
+                <div
+                    class="value"
+                    th:text="${weeklyCost}">
+
+                    $0
+
+                </div>
+
+                <p style="color:#94a3b8;margin-top:12px;">
+                    Estimated spending this week.
+                </p>
+
+            </div>
+
+
+            <!-- Saved Meals -->
+
+            <div class="card">
+
+                <h3>
+                    ⭐ Saved Meals
+                </h3>
+
+                <div
+                    class="value"
+                    th:text="${savedMealsCount}">
+
+                    0
+
+                </div>
+
+                <p style="color:#94a3b8;margin-top:12px;">
+                    Meals saved to your favorites.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==========================
+             QUICK ACTIONS
+        ========================== -->
+
+        <div class="actions">
+
+
+            <form
+                action="/dashboard/meals/recommend"
+                method="post">
+
+                <button
+                    class="action"
+                    type="submit">
+
+                    🔍 Find Meals
+
+                </button>
+
+            </form>
+
+
+            <form
+                action="/dashboard/planner"
+                method="get">
+
+                <button
+                    class="action"
+                    type="submit">
+
+                    📅 Meal Planner
+
+                </button>
+
+            </form>
+
+
+            <form
+                action="/dashboard/grocery"
+                method="post">
+
+                <button
+                    class="action"
+                    type="submit">
+
+                    🛒 Grocery List
+
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- ==========================
+             FIRST ROW
+        ========================== -->
+
+        <div class="section">
+
+
+            <!-- Dietary Restrictions -->
+
+            <div class="panel">
+
+                <h2>
+                    🥗 Dietary Restrictions
+                </h2>
+
+
+                <p
+                    th:if="${#lists.isEmpty(restrictions)}"
+                    style="color:#9CA3AF;">
+
+                    No restrictions selected yet.
+
+                </p>
+
+
+                <ul
+                    th:unless="${#lists.isEmpty(restrictions)}">
+
+                    <li
+                        th:each="restriction : ${restrictions}"
+                        th:text="${restriction}">
+
+                        Restriction
+
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <!-- Nutrition Progress -->
+
+            <div class="panel">
+
+                <h2>
+                    📊 Nutrition Progress
+                </h2>
+
+
+                <p style="margin-bottom:15px;">
+                    Healthy Eating Progress
+                </p>
+
+
+                <div style="
+                    height:12px;
+                    background:#EEF1EE;
+                    border-radius:50px;
+                    overflow:hidden;
+                ">
+
+                    <div style="
+                        width:78%;
+                        height:100%;
+                        background:linear-gradient(
+                            90deg,
+                            #22c55e,
+                            #3b82f6
+                        );
+                        border-radius:50px;
+                    "></div>
+
+                </div>
+
+
+                <br>
+
+
+                <p style="margin-bottom:15px;">
+                    Meal Planning
+                </p>
+
+
+                <div style="
+                    height:12px;
+                    background:#EEF1EE;
+                    border-radius:50px;
+                    overflow:hidden;
+                ">
+
+                    <div style="
+                        width:52%;
+                        height:100%;
+                        background:linear-gradient(
+                            90deg,
+                            #8b5cf6,
+                            #ec4899
+                        );
+                        border-radius:50px;
+                    "></div>
+
+                </div>
+
+
+                <br>
+
+
+                <p style="margin-bottom:15px;">
+                    Budget Tracking
+                </p>
+
+
+                <div style="
+                    height:12px;
+                    background:#EEF1EE;
+                    border-radius:50px;
+                    overflow:hidden;
+                ">
+
+                    <div style="
+                        width:66%;
+                        height:100%;
+                        background:linear-gradient(
+                            90deg,
+                            #f59e0b,
+                            #ef4444
+                        );
+                        border-radius:50px;
+                    "></div>
+
+                </div>
+
+            </div>
+
+        </div>
+
 
         <br>
 
-        <h3 style="margin-bottom:10px;">
-            Healthy Habits
-        </h3>
 
-        <span class="tag">Protein</span>
-        <span class="tag">Low Sugar</span>
-        <span class="tag">Balanced Diet</span>
-        <span class="tag">Hydration</span>
-        <span class="tag">Exercise</span>
+        <!-- ==========================
+             SECOND ROW
+        ========================== -->
 
-    </div>
+        <div class="section">
 
-</div>
 
-<br>
+            <!-- Saved Meals -->
 
-<div class="section">
+            <div class="panel">
 
-    <!-- Weekly Overview -->
-    <div class="panel">
+                <h2>
+                    🍔 Saved Meals
+                </h2>
 
-        <h2>📅 Weekly Overview</h2>
 
-        <table style="width:100%;border-collapse:collapse;">
+                <ul
+                    th:unless="${#lists.isEmpty(savedMeals)}">
 
-            <tr>
-                <td style="padding:12px;">Monday</td>
-                <td style="text-align:right;">✅</td>
-            </tr>
+                    <li
+                        th:each="meal, mealStat : ${savedMeals}"
+                        th:if="${mealStat.index < 5}"
+                        th:text="${meal.mealNames}">
 
-            <tr>
-                <td style="padding:12px;">Tuesday</td>
-                <td style="text-align:right;">✅</td>
-            </tr>
+                        Saved Meal
 
-            <tr>
-                <td style="padding:12px;">Wednesday</td>
-                <td style="text-align:right;">🥗</td>
-            </tr>
+                    </li>
 
-            <tr>
-                <td style="padding:12px;">Thursday</td>
-                <td style="text-align:right;">🍔</td>
-            </tr>
+                </ul>
 
-            <tr>
-                <td style="padding:12px;">Friday</td>
-                <td style="text-align:right;">⭐</td>
-            </tr>
 
-        </table>
+                <p
+                    th:if="${#lists.isEmpty(savedMeals)}">
 
-    </div>
+                    No Saved Meals.
 
-    <!-- Motivation -->
-    <div class="panel">
+                </p>
 
-        <h2>💡 Daily Motivation</h2>
+            </div>
 
-        <div style="
-            font-size:18px;
-            color:#cbd5e1;
-            line-height:1.8;">
 
-            "Healthy eating isn't about perfection.
-            It's about making better choices one meal at a time."
+            <!-- Daily Goals -->
+
+            <div class="panel">
+
+                <h2>
+                    🎯 Today's Goals
+                </h2>
+
+
+                <div style="
+                    display:flex;
+                    flex-direction:column;
+                    gap:18px;
+                ">
+
+                    <div>
+                        ✅ Drink 8 glasses of water
+                    </div>
+
+                    <div>
+                        🥗 Eat 5 servings of vegetables
+                    </div>
+
+                    <div>
+                        🍗 Include lean protein
+                    </div>
+
+                    <div>
+                        🚶 Walk 10,000 steps
+                    </div>
+
+                    <div>
+                        😴 Get 8 hours of sleep
+                    </div>
+
+                </div>
+
+
+                <br>
+
+
+                <h3>
+                    Healthy Habits
+                </h3>
+
+
+                <span class="tag">
+                    Protein
+                </span>
+
+                <span class="tag">
+                    Low Sugar
+                </span>
+
+                <span class="tag">
+                    Balanced Diet
+                </span>
+
+                <span class="tag">
+                    Hydration
+                </span>
+
+                <span class="tag">
+                    Exercise
+                </span>
+
+            </div>
 
         </div>
+
 
         <br>
 
-        <div style="
-        background:rgba(59,130,246,.15);
-        padding:18px;
-        border-radius:15px;">
 
-            🔥 Keep building healthy habits.
-            Small improvements every day lead to big results.
+        <!-- ==========================
+             THIRD ROW
+        ========================== -->
+
+        <div class="section">
+
+
+            <!-- Weekly Overview -->
+
+            <div class="panel">
+
+                <h2>
+                    📅 Weekly Overview
+                </h2>
+
+
+                <table>
+
+                    <tr>
+
+                        <td>
+                            Monday
+                        </td>
+
+                        <td style="text-align:right;">
+                            ✅
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Tuesday
+                        </td>
+
+                        <td style="text-align:right;">
+                            ✅
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Wednesday
+                        </td>
+
+                        <td style="text-align:right;">
+                            🥗
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Thursday
+                        </td>
+
+                        <td style="text-align:right;">
+                            🍔
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Friday
+                        </td>
+
+                        <td style="text-align:right;">
+                            ⭐
+                        </td>
+
+                    </tr>
+
+                </table>
+
+            </div>
+
+
+            <!-- Motivation -->
+
+            <div class="panel">
+
+                <h2>
+                    💡 Daily Motivation
+                </h2>
+
+
+                <div style="
+                    font-size:18px;
+                    color:#6B7280;
+                    line-height:1.8;
+                ">
+
+                    "Healthy eating isn't about perfection.
+                    It's about making better choices one meal at a time."
+
+                </div>
+
+
+                <br>
+
+
+                <div style="
+                    background:#EEF6EE;
+                    padding:18px;
+                    border-radius:15px;
+                    color:#374151;
+                ">
+
+                    🔥 Keep building healthy habits.
+                    Small improvements every day lead to big results.
+
+                </div>
+
+            </div>
 
         </div>
 
     </div>
 
-</div>
-<script>
 
-const sidebar = document.querySelector(".sidebar");
-const main = document.querySelector(".main");
-const menu = document.querySelector(".menu");
+    <!-- ==========================
+         JAVASCRIPT
+    ========================== -->
 
-function toggleSidebar() {
+    <script>
 
-    sidebar.classList.toggle("active");
-    main.classList.toggle("active");
+        const sidebar = document.querySelector(".sidebar");
+        const main = document.querySelector(".main");
+        const menu = document.querySelector(".menu");
 
-}
 
-// Close sidebar when clicking outside
-document.addEventListener("click", function(e){
+        /* ==========================
+           SIDEBAR TOGGLE
+        ========================== */
 
-    if(
-        !sidebar.contains(e.target) &&
-        !menu.contains(e.target)
-    ){
+        function toggleSidebar() {
 
-        sidebar.classList.remove("active");
-        main.classList.remove("active");
+            sidebar.classList.toggle("active");
 
-    }
+            main.classList.toggle("active");
 
-});
+        }
 
-// Fade-in animation
-window.addEventListener("load", () => {
 
-    const cards = document.querySelectorAll(".card");
-    const panels = document.querySelectorAll(".panel");
-    const hero = document.querySelector(".hero");
+        /* ==========================
+           CLOSE SIDEBAR
+        ========================== */
 
-    hero.style.opacity = "0";
-    hero.style.transform = "translateY(30px)";
-    hero.style.transition = "all .8s ease";
+        document.addEventListener("click", function(e) {
 
-    setTimeout(() => {
-        hero.style.opacity = "1";
-        hero.style.transform = "translateY(0)";
-    }, 100);
+            if (
+                !sidebar.contains(e.target) &&
+                !menu.contains(e.target)
+            ) {
 
-    [...cards, ...panels].forEach((item, index) => {
+                sidebar.classList.remove("active");
 
-        item.style.opacity = "0";
-        item.style.transform = "translateY(30px)";
-        item.style.transition = "all .6s ease";
+                main.classList.remove("active");
 
-        setTimeout(() => {
-            item.style.opacity = "1";
-            item.style.transform = "translateY(0)";
-        }, 200 + (index * 120));
+            }
 
-    });
+        });
 
-});
 
-// Card tilt effect
-document.querySelectorAll(".card").forEach(card => {
+        /* ==========================
+           FADE-IN ANIMATION
+        ========================== */
 
-    card.addEventListener("mousemove", e => {
+        window.addEventListener("load", () => {
 
-        const rect = card.getBoundingClientRect();
+            const cards =
+                document.querySelectorAll(".card");
 
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+            const panels =
+                document.querySelectorAll(".panel");
 
-        const rotateX = -(y - rect.height / 2) / 20;
-        const rotateY = (x - rect.width / 2) / 20;
+            const hero =
+                document.querySelector(".hero");
 
-        card.style.transform =
-            `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
 
-    });
+            hero.style.opacity = "0";
 
-    card.addEventListener("mouseleave", () => {
+            hero.style.transform =
+                "translateY(30px)";
 
-        card.style.transform = "translateY(0)";
+            hero.style.transition =
+                "all .8s ease";
 
-    });
 
-});
+            setTimeout(() => {
 
-</script>
+                hero.style.opacity = "1";
+
+                hero.style.transform =
+                    "translateY(0)";
+
+            }, 100);
+
+
+            [...cards, ...panels].forEach(
+                (item, index) => {
+
+                    item.style.opacity = "0";
+
+                    item.style.transform =
+                        "translateY(30px)";
+
+                    item.style.transition =
+                        "all .6s ease";
+
+
+                    setTimeout(() => {
+
+                        item.style.opacity = "1";
+
+                        item.style.transform =
+                            "translateY(0)";
+
+                    }, 200 + (index * 120));
+
+                }
+            );
+
+        });
+
+
+        /* ==========================
+           CARD TILT EFFECT
+        ========================== */
+
+        document
+            .querySelectorAll(".card")
+            .forEach(card => {
+
+                card.addEventListener(
+                    "mousemove",
+                    e => {
+
+                        const rect =
+                            card.getBoundingClientRect();
+
+
+                        const x =
+                            e.clientX - rect.left;
+
+                        const y =
+                            e.clientY - rect.top;
+
+
+                        const rotateX =
+                            -(y - rect.height / 2) / 20;
+
+                        const rotateY =
+                            (x - rect.width / 2) / 20;
+
+
+                        card.style.transform =
+                            `perspective(1000px)
+                             rotateX(${rotateX}deg)
+                             rotateY(${rotateY}deg)
+                             translateY(-8px)`;
+
+                    }
+                );
+
+
+                card.addEventListener(
+                    "mouseleave",
+                    () => {
+
+                        card.style.transform =
+                            "translateY(0)";
+
+                    }
+                );
+
+            });
+
+    </script>
 
 </body>
+
 </html>
+```
