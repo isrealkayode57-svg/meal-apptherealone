@@ -176,11 +176,7 @@ public class MainController {
         return "redirect:/dashboard/dashboard";
     }
 
-    @PostMapping("/logout")
-    public String logout(HttpSession session) {
-        session.invalidate();
-        return "redirect:/login";
-    }
+ 
 
     private AppUser getLoggedInUser(HttpSession session) {
         Object userId = session.getAttribute("userId");
