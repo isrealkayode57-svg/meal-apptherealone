@@ -40,38 +40,7 @@ public class MainController {
 
 
 
-    @PostMapping("/register")
-    public String registerUser(
-            @RequestParam String name,
-            @RequestParam String email,
-            @RequestParam String password,
-            @RequestParam String confirm_password,
-            HttpSession session,
-            Model model) {
-        String normalizedEmail = normalizeEmail(email);
-
-        if (appUserRepository.findByEmail(normalizedEmail).isPresent()) {
-            model.addAttribute("registerError", "An account with that email already exists.");
-            return "register";
-        }
-
-        if (!password.equals(confirm_password)){
-            model.addAttribute("registerError", "Passwords do not match.");
-            return "register";
-        }
-
-        AppUser user = appUserRepository.save(new AppUser(
-                normalizedEmail,
-                passwordEncoder.encode(password), name));
-
-        dietaryProfileRepository.save(new DietaryProfile(user));
-        session.setAttribute("userId", user.getId());
-
-        if(email.equals("admin@gmail.com")){ return "redirect:admin/adminSelection"; }
-
-        return "redirect:/selection";
-    }
-
+   
     @GetMapping("/selection")
     public String selection(HttpSession session, Model model) {
         AppUser user = getLoggedInUser(session);
