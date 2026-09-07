@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,7 +23,14 @@ public class MainController {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final SQLeditor sqleditor;
 
-    public MainController(AppUserRepository appUserRepository, DietaryProfileRepository dietaryProfileRepository, MealRecommendationService mealRecommendationService, SQLeditor sqleditor, SavedMealsRepository savedMealsRepository, GroceryIngredientRepository groceryIngredientRepository) {
+    public MainController(
+            AppUserRepository appUserRepository,
+            DietaryProfileRepository dietaryProfileRepository,
+            MealRecommendationService mealRecommendationService,
+            SQLeditor sqleditor,
+            SavedMealsRepository savedMealsRepository,
+            GroceryIngredientRepository groceryIngredientRepository) {
+
         this.appUserRepository = appUserRepository;
         this.dietaryProfileRepository = dietaryProfileRepository;
         this.mealRecommendationService = mealRecommendationService;
@@ -36,73 +44,129 @@ public class MainController {
         return "index";
     }
 
- 
-
-
-
-   
     @GetMapping("/selection")
-    public String selection(HttpSession session, Model model) {
+    public String selection(
+            HttpSession session,
+            Model model) {
+
         AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/login";
         }
 
-        DietaryProfile profile = dietaryProfileRepository.findByUser(user)
-                .orElseGet(() -> dietaryProfileRepository.save(new DietaryProfile(user)));
+        DietaryProfile profile =
+                dietaryProfileRepository.findByUser(user)
+                        .orElseGet(
+                                () -> dietaryProfileRepository.save(
+                                        new DietaryProfile(user)));
 
         model.addAttribute("name", user.getName());
         model.addAttribute("profile", profile);
+
         return "selection";
     }
 
     @GetMapping("/admin/users")
-    public String users(HttpSession session, Model model) {
-        model.addAttribute("users", appUserRepository.findAll());
+    public String users(
+            HttpSession session,
+            Model model) {
+
+        model.addAttribute(
+                "users",
+                appUserRepository.findAll());
+
         AppUser user = getLoggedInUser(session);
 
-        if (user == null || !user.getEmail().equals("admin@gmail.com")){
+        if (user == null
+                || !user.getEmail().equals("admin@gmail.com")) {
+
             return "redirect:/";
         }
+
         return "admin/users";
     }
 
     @GetMapping("/admin/adminSelection")
-    public String adminSelection(HttpSession session, Model model){
+    public String adminSelection(
+            HttpSession session,
+            Model model) {
+
         AppUser user = getLoggedInUser(session);
-        model.addAttribute("name", user.getName());
+
+        if (user == null) {
+            return "redirect:/";
+        }
+
+        model.addAttribute(
+                "name",
+                user.getName());
+
         return "admin/adminSelection";
     }
 
     @PostMapping("/selection")
     public String saveDietaryProfile(
-            @RequestParam(defaultValue = "false") boolean vegetarian,
-            @RequestParam(defaultValue = "false") boolean vegan,
-            @RequestParam(defaultValue = "false") boolean dairy,
-            @RequestParam(defaultValue = "false") boolean egg,
-            @RequestParam(defaultValue = "false") boolean gluten,
-            @RequestParam(defaultValue = "false") boolean peanuts,
-            @RequestParam(defaultValue = "false") boolean shellfish,
-            @RequestParam(defaultValue = "false") boolean soy,
-            @RequestParam(defaultValue = "false") boolean nuts,
-            @RequestParam(defaultValue = "false") boolean fish,
-            @RequestParam(defaultValue = "false") boolean diabetes,
-            @RequestParam(defaultValue = "false") boolean HBP,
-            @RequestParam(defaultValue = "false") boolean kidney,
-            @RequestParam(defaultValue = "false") boolean IBS,
-            @RequestParam(defaultValue = "false") boolean celiac,
-            @RequestParam(defaultValue = "") String goal,
-//            @RequestParam(defaultValue = "") String notes,
+            @RequestParam(defaultValue = "false")
+            boolean vegetarian,
+
+            @RequestParam(defaultValue = "false")
+            boolean vegan,
+
+            @RequestParam(defaultValue = "false")
+            boolean dairy,
+
+            @RequestParam(defaultValue = "false")
+            boolean egg,
+
+            @RequestParam(defaultValue = "false")
+            boolean gluten,
+
+            @RequestParam(defaultValue = "false")
+            boolean peanuts,
+
+            @RequestParam(defaultValue = "false")
+            boolean shellfish,
+
+            @RequestParam(defaultValue = "false")
+            boolean soy,
+
+            @RequestParam(defaultValue = "false")
+            boolean nuts,
+
+            @RequestParam(defaultValue = "false")
+            boolean fish,
+
+            @RequestParam(defaultValue = "false")
+            boolean diabetes,
+
+            @RequestParam(defaultValue = "false")
+            boolean HBP,
+
+            @RequestParam(defaultValue = "false")
+            boolean kidney,
+
+            @RequestParam(defaultValue = "false")
+            boolean IBS,
+
+            @RequestParam(defaultValue = "false")
+            boolean celiac,
+
+            @RequestParam(defaultValue = "")
+            String goal,
+
             HttpSession session) {
+
         AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/login";
         }
 
-        DietaryProfile profile = dietaryProfileRepository.findByUser(user)
-                .orElseGet(() -> new DietaryProfile(user));
+        DietaryProfile profile =
+                dietaryProfileRepository.findByUser(user)
+                        .orElseGet(
+                                () -> new DietaryProfile(user));
 
         profile.setVegetarian(vegetarian);
         profile.setVegan(vegan);
@@ -120,22 +184,24 @@ public class MainController {
         profile.setIBS(IBS);
         profile.setCeliacDisease(celiac);
         profile.setGoal(goal);
-//        profile.setNotes(notes);
+
         dietaryProfileRepository.save(profile);
 
         return "redirect:/dashboard/dashboard";
     }
 
- 
-
     private AppUser getLoggedInUser(HttpSession session) {
-        Object userId = session.getAttribute("userId");
+
+        Object userId =
+                session.getAttribute("userId");
 
         if (!(userId instanceof Long id)) {
             return null;
         }
 
-        return appUserRepository.findById(id).orElse(null);
+        return appUserRepository
+                .findById(id)
+                .orElse(null);
     }
 
     private String normalizeEmail(String email) {
@@ -143,8 +209,11 @@ public class MainController {
     }
 
     @PostMapping("/admin/users/delete")
-    public String deleteUser(@RequestParam Long userId) {
+    public String deleteUser(
+            @RequestParam Long userId) {
+
         sqleditor.deleteUserById(userId);
+
         return "redirect:/admin/users";
     }
 
@@ -154,181 +223,413 @@ public class MainController {
     }
 
     @GetMapping("/dashboard/dashboard")
-    public String dashboard(HttpSession session, Model model){
-        AppUser user = getLoggedInUser(session);
+    public String dashboard(
+            HttpSession session,
+            Model model) {
 
-        if (user == null){
+        AppUser user =
+                getLoggedInUser(session);
+
+        if (user == null) {
             return "redirect:/";
         }
 
-        model.addAttribute("name", user.getName());
-        DietaryProfile profile = dietaryProfileRepository.findByUser(user)
-                .orElseGet(() -> dietaryProfileRepository.save(new DietaryProfile(user)));
-        List<String> restrictions = mealRecommendationService.describeRestrictions(profile);
+        model.addAttribute(
+                "name",
+                user.getName());
 
-        for(SavedMeals meal: savedMealsRepository.findByUser(user)){
-            if (meal.getMealNames() == null){
-                sqleditor.deleteNullMeals(meal.getId());
+        DietaryProfile profile =
+                dietaryProfileRepository.findByUser(user)
+                        .orElseGet(
+                                () -> dietaryProfileRepository.save(
+                                        new DietaryProfile(user)));
+
+        List<String> restrictions =
+                mealRecommendationService
+                        .describeRestrictions(profile);
+
+        for (SavedMeals meal :
+                savedMealsRepository.findByUser(user)) {
+
+            if (meal.getMealNames() == null) {
+                sqleditor.deleteNullMeals(
+                        meal.getId());
             }
         }
 
-        List<SavedMeals> savedMeals = savedMealsRepository.findByUser(user);
-        model.addAttribute("savedMeals", savedMeals);
+        List<SavedMeals> savedMeals =
+                savedMealsRepository.findByUser(user);
 
-        model.addAttribute("safeMeals", 0);
-        model.addAttribute("restrictionsCount", restrictions.size());
-        model.addAttribute("weeklyCost", "TBD");
-        model.addAttribute("savedMealsCount", savedMeals.size());
-        model.addAttribute("restrictions", restrictions);
+        model.addAttribute(
+                "savedMeals",
+                savedMeals);
+
+        model.addAttribute(
+                "safeMeals",
+                0);
+
+        model.addAttribute(
+                "restrictionsCount",
+                restrictions.size());
+
+        model.addAttribute(
+                "weeklyCost",
+                "TBD");
+
+        model.addAttribute(
+                "savedMealsCount",
+                savedMeals.size());
+
+        model.addAttribute(
+                "restrictions",
+                restrictions);
 
         return "dashboard/dashboard";
     }
 
-
     @GetMapping("/dashboard/meals")
-    public String meals(HttpSession session, Model model){
-        AppUser user = getLoggedInUser(session);
+    public String meals(
+            HttpSession session,
+            Model model) {
 
-        if (user == null){
+        AppUser user =
+                getLoggedInUser(session);
+
+        if (user == null) {
             return "redirect:/";
         }
 
-        List<SavedMeals> savedMeals = savedMealsRepository.findByUser(user);
-        model.addAttribute("savedMeals", savedMeals);
-        model.addAttribute("hasSavedMeals", !savedMeals.isEmpty());
-        model.addAttribute("showRecommendations", false);
+        List<SavedMeals> savedMeals =
+                savedMealsRepository.findByUser(user);
+
+        model.addAttribute(
+                "savedMeals",
+                savedMeals);
+
+        model.addAttribute(
+                "hasSavedMeals",
+                !savedMeals.isEmpty());
+
+        model.addAttribute(
+                "showRecommendations",
+                false);
 
         return "dashboard/meals";
     }
 
     @PostMapping("/dashboard/meals/recommend")
-    public String recommendMeals(HttpSession session, Model model){
-        AppUser user = getLoggedInUser(session);
+    public String recommendMeals(
+            HttpSession session,
+            Model model) {
 
-        if (user == null){
+        AppUser user =
+                getLoggedInUser(session);
+
+        if (user == null) {
             return "redirect:/";
         }
 
-        DietaryProfile profile = dietaryProfileRepository.findByUser(user)
-                .orElseGet(() -> dietaryProfileRepository.save(new DietaryProfile(user)));
-        MealRecommendationResult recommendationResult = mealRecommendationService.recommendMeals(profile);
-        List<MealRecommendation> recommendations = recommendationResult.meals();
-        List<SavedMeals> savedMeals = savedMealsRepository.findByUser(user);
+        DietaryProfile profile =
+                dietaryProfileRepository.findByUser(user)
+                        .orElseGet(
+                                () -> dietaryProfileRepository.save(
+                                        new DietaryProfile(user)));
 
-        model.addAttribute("savedMeals", savedMeals);
-        model.addAttribute("hasSavedMeals", !savedMeals.isEmpty());
-        model.addAttribute("recommendations", recommendations);
-        model.addAttribute("hasRecommendations", recommendationResult.hasMeals());
-        model.addAttribute("recommendationStatus", recommendationResult.statusMessage());
-        model.addAttribute("showRecommendations", true);
+        MealRecommendationResult recommendationResult =
+                mealRecommendationService
+                        .recommendMeals(profile);
+
+        List<MealRecommendation> recommendations =
+                recommendationResult.meals();
+
+        /*
+         * Store the full recommendations temporarily
+         * in the user's session.
+         *
+         * This allows saveMeals() to recover the
+         * ingredients and recipe when the user selects
+         * a meal.
+         */
+        session.setAttribute(
+                "mealRecommendations",
+                recommendations);
+
+        List<SavedMeals> savedMeals =
+                savedMealsRepository.findByUser(user);
+
+        model.addAttribute(
+                "savedMeals",
+                savedMeals);
+
+        model.addAttribute(
+                "hasSavedMeals",
+                !savedMeals.isEmpty());
+
+        model.addAttribute(
+                "recommendations",
+                recommendations);
+
+        model.addAttribute(
+                "hasRecommendations",
+                recommendationResult.hasMeals());
+
+        model.addAttribute(
+                "recommendationStatus",
+                recommendationResult.statusMessage());
+
+        model.addAttribute(
+                "showRecommendations",
+                true);
 
         return "dashboard/meals";
     }
 
     @PostMapping("/dashboard/meals")
-    public String saveMeals(HttpSession session, @RequestParam(name = "meal", required = false) List<String> meals){
-        AppUser user = getLoggedInUser(session);
+    public String saveMeals(
+            HttpSession session,
+            @RequestParam(
+                    name = "meal",
+                    required = false)
+            List<String> meals) {
 
-        if (user == null){
-            return"redirect:/login";
+        AppUser user =
+                getLoggedInUser(session);
+
+        if (user == null) {
+            return "redirect:/login";
         }
 
-        if (meals != null) {
-            for (String meal : meals) {
-                savedMealsRepository.save(new SavedMeals(user, meal));
+        /*
+         * Get the full recommendations that were
+         * generated before the user clicked Save.
+         */
+        Object recommendationObject =
+                session.getAttribute(
+                        "mealRecommendations");
+
+        if (meals != null
+                && recommendationObject
+                instanceof List<?> recommendationList) {
+
+            for (String mealName : meals) {
+
+                for (Object recommendationObjectItem :
+                        recommendationList) {
+
+                    if (!(recommendationObjectItem
+                            instanceof MealRecommendation meal)) {
+                        continue;
+                    }
+
+                    if (!meal.name().equals(mealName)) {
+                        continue;
+                    }
+
+                    String ingredients =
+                            String.join(
+                                    "\n",
+                                    meal.ingredients());
+
+                    String instructions =
+                            String.join(
+                                    "\n",
+                                    meal.instructions());
+
+                    SavedMeals savedMeal =
+                            new SavedMeals(
+                                    user,
+                                    meal.name(),
+                                    ingredients,
+                                    instructions);
+
+                    savedMealsRepository.save(
+                            savedMeal);
+
+                    break;
+                }
             }
         }
+
+        /*
+         * Clear the temporary recommendations after
+         * saving them.
+         */
+        session.removeAttribute(
+                "mealRecommendations");
 
         return "redirect:/dashboard/meals";
     }
 
     @PostMapping("/dashboard/dashboard")
-    public String sendToDashboard(HttpSession session){
-        AppUser user = getLoggedInUser(session);
-        if (user == null){
+    public String sendToDashboard(
+            HttpSession session) {
+
+        AppUser user =
+                getLoggedInUser(session);
+
+        if (user == null) {
             return "redirect:/";
         }
 
         return "dashboard/dashboard";
     }
+
     @GetMapping("/dashboard/planner")
-    public String planner(HttpSession session, Model model){
+    public String planner(
+            HttpSession session,
+            Model model) {
 
-        AppUser user = getLoggedInUser(session);
+        AppUser user =
+                getLoggedInUser(session);
 
-        if(user == null){
+        if (user == null) {
             return "redirect:/";
         }
-
 
         return "dashboard/planner";
     }
 
     @GetMapping("/dashboard/grocery")
-    public String grocery(HttpSession session, Model model){
-        AppUser user = getLoggedInUser(session);
+    public String grocery(
+            HttpSession session,
+            Model model) {
 
-        if(user == null){
+        AppUser user =
+                getLoggedInUser(session);
+
+        if (user == null) {
             return "redirect:/";
         }
 
-        addGroceryBaseModel(user, model);
-        addGroceryIngredientsModel(user, model);
-        model.addAttribute("groceryStatus", "Click update to add missing ingredients from your saved meals.");
+        addGroceryBaseModel(
+                user,
+                model);
+
+        addGroceryIngredientsModel(
+                user,
+                model);
+
+        model.addAttribute(
+                "groceryStatus",
+                "Click update to add missing ingredients from your saved meals.");
 
         return "dashboard/grocery";
     }
 
     @PostMapping("/dashboard/grocery/update")
-    public String updateGrocery(HttpSession session, Model model){
-        AppUser user = getLoggedInUser(session);
+    public String updateGrocery(
+            HttpSession session,
+            Model model) {
 
-        if(user == null){
+        AppUser user =
+                getLoggedInUser(session);
+
+        if (user == null) {
             return "redirect:/";
         }
 
-        List<String> savedMealNames = addGroceryBaseModel(user, model);
-        GroceryListResult groceryListResult = mealRecommendationService.recommendIngredients(savedMealNames);
-        int newIngredients = saveNewIngredients(user, groceryListResult.ingredients());
+        List<String> savedMealNames =
+                addGroceryBaseModel(
+                        user,
+                        model);
 
-        addGroceryIngredientsModel(user, model);
-        model.addAttribute("groceryStatus", groceryListResult.hasIngredients()
-                ? groceryUpdateStatus(newIngredients)
-                : groceryListResult.statusMessage());
+        GroceryListResult groceryListResult =
+                mealRecommendationService
+                        .recommendIngredients(
+                                savedMealNames);
+
+        int newIngredients =
+                saveNewIngredients(
+                        user,
+                        groceryListResult.ingredients());
+
+        addGroceryIngredientsModel(
+                user,
+                model);
+
+        model.addAttribute(
+                "groceryStatus",
+                groceryListResult.hasIngredients()
+                        ? groceryUpdateStatus(
+                                newIngredients)
+                        : groceryListResult.statusMessage());
 
         return "dashboard/grocery";
     }
 
-    private List<String> addGroceryBaseModel(AppUser user, Model model) {
-        List<SavedMeals> savedMeals = savedMealsRepository.findByUser(user);
-        List<String> savedMealNames = new ArrayList<>();
+    private List<String> addGroceryBaseModel(
+            AppUser user,
+            Model model) {
 
-        for (SavedMeals meal : savedMeals) {
-            if (meal.getMealNames() != null && !meal.getMealNames().isBlank()) {
-                savedMealNames.add(meal.getMealNames());
+        List<SavedMeals> savedMeals =
+                savedMealsRepository.findByUser(user);
+
+        List<String> savedMealNames =
+                new ArrayList<>();
+
+        for (SavedMeals meal :
+                savedMeals) {
+
+            if (meal.getMealNames() != null
+                    && !meal.getMealNames().isBlank()) {
+
+                savedMealNames.add(
+                        meal.getMealNames());
             }
         }
 
-        model.addAttribute("savedMeals", savedMeals);
-        model.addAttribute("hasSavedMeals", !savedMealNames.isEmpty());
+        model.addAttribute(
+                "savedMeals",
+                savedMeals);
+
+        model.addAttribute(
+                "hasSavedMeals",
+                !savedMealNames.isEmpty());
+
         return savedMealNames;
     }
 
-    private void addGroceryIngredientsModel(AppUser user, Model model) {
-        List<GroceryIngredient> groceryIngredients = groceryIngredientRepository.findByUser(user);
-        model.addAttribute("groceryIngredients", groceryIngredients);
-        model.addAttribute("hasGroceryIngredients", !groceryIngredients.isEmpty());
+    private void addGroceryIngredientsModel(
+            AppUser user,
+            Model model) {
+
+        List<GroceryIngredient> groceryIngredients =
+                groceryIngredientRepository.findByUser(user);
+
+        model.addAttribute(
+                "groceryIngredients",
+                groceryIngredients);
+
+        model.addAttribute(
+                "hasGroceryIngredients",
+                !groceryIngredients.isEmpty());
     }
 
-    private int saveNewIngredients(AppUser user, List<String> ingredients) {
+    private int saveNewIngredients(
+            AppUser user,
+            List<String> ingredients) {
+
         int newIngredients = 0;
 
-        for (String ingredient : ingredients) {
-            String normalizedIngredient = normalizeIngredient(ingredient);
+        for (String ingredient :
+                ingredients) {
+
+            String normalizedIngredient =
+                    normalizeIngredient(
+                            ingredient);
 
             if (!normalizedIngredient.isBlank()
-                    && !groceryIngredientRepository.existsByUserAndNormalizedName(user, normalizedIngredient)) {
-                groceryIngredientRepository.save(new GroceryIngredient(user, ingredient.trim(), normalizedIngredient));
+                    && !groceryIngredientRepository
+                            .existsByUserAndNormalizedName(
+                                    user,
+                                    normalizedIngredient)) {
+
+                groceryIngredientRepository.save(
+                        new GroceryIngredient(
+                                user,
+                                ingredient.trim(),
+                                normalizedIngredient));
+
                 newIngredients++;
             }
         }
@@ -336,20 +637,26 @@ public class MainController {
         return newIngredients;
     }
 
-    private String normalizeIngredient(String ingredient) {
+    private String normalizeIngredient(
+            String ingredient) {
+
         if (ingredient == null) {
             return "";
         }
 
-        return ingredient.trim().toLowerCase();
+        return ingredient
+                .trim()
+                .toLowerCase();
     }
 
-    private String groceryUpdateStatus(int newIngredients) {
+    private String groceryUpdateStatus(
+            int newIngredients) {
+
         if (newIngredients == 0) {
             return "No new ingredients were added.";
         }
 
-        return newIngredients + " new ingredient(s) added.";
+        return newIngredients
+                + " new ingredient(s) added.";
     }
-
 }
