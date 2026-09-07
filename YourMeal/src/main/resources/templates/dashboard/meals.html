@@ -12,12 +12,16 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <link rel="preconnect"
-          href="https://fonts.googleapis.com">
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
 
-    <link rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossorigin>
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
 
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
@@ -39,37 +43,23 @@
             min-height: 100vh;
         }
 
-
-        /* ======================
-           MENU BUTTON
-        ====================== */
-
         .menu {
             position: fixed;
             top: 20px;
             left: 20px;
-
             width: 54px;
             height: 54px;
-
             border-radius: 16px;
-
             background: white;
             color: #5F8D4E;
-
             display: flex;
             justify-content: center;
             align-items: center;
-
             font-size: 28px;
             cursor: pointer;
-
             border: 1px solid #E5E7EB;
-
             box-shadow: 0 10px 25px rgba(0,0,0,.06);
-
             z-index: 1001;
-
             transition: .3s;
         }
 
@@ -78,30 +68,17 @@
             color: white;
         }
 
-
-        /* ======================
-           SIDEBAR
-        ====================== */
-
         .sidebar {
             position: fixed;
-
             top: 0;
             left: -260px;
-
             width: 250px;
             height: 100vh;
-
             background: white;
-
             border-right: 1px solid #E5E7EB;
-
             padding: 30px;
-
             transition: .35s;
-
             box-shadow: 5px 0 25px rgba(0,0,0,.05);
-
             z-index: 1000;
         }
 
@@ -112,53 +89,36 @@
         .logo {
             margin-top: 70px;
             margin-bottom: 40px;
-
             font-size: 32px;
             font-weight: 700;
-
             color: #5F8D4E;
         }
 
         .sidebar a {
             display: block;
-
             text-decoration: none;
-
             color: #374151;
-
             padding: 15px;
-
             border-radius: 12px;
-
             margin-bottom: 8px;
-
             transition: .25s;
         }
 
         .sidebar a:hover {
             background: #EEF6EE;
             color: #5F8D4E;
-
             transform: translateX(5px);
         }
 
         .sidebar button {
             width: 100%;
-
             background: none;
-
             border: none;
-
             text-align: left;
-
             padding: 15px;
-
             border-radius: 12px;
-
             color: #374151;
-
             cursor: pointer;
-
             font-size: 15px;
         }
 
@@ -166,11 +126,6 @@
             background: #FEE2E2;
             color: #DC2626;
         }
-
-
-        /* ======================
-           MAIN
-        ====================== */
 
         .main {
             padding: 40px;
@@ -180,11 +135,6 @@
         .main.active {
             margin-left: 250px;
         }
-
-
-        /* ======================
-           HEADER
-        ====================== */
 
         .header {
             margin-top: 80px;
@@ -200,101 +150,58 @@
             margin-top: 8px;
         }
 
-
-        /* ======================
-           MEAL GRID
-        ====================== */
-
         .meal-grid {
             display: grid;
-
-            grid-template-columns:
-                repeat(auto-fit, minmax(340px, 1fr));
-
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
             gap: 28px;
-
             margin-top: 28px;
         }
 
-
-        /* ======================
-           MEAL CARD
-        ====================== */
-
         .meal-card {
             background: white;
-
             border: 1px solid #E5E7EB;
-
             border-radius: 24px;
-
             padding: 25px;
-
-            box-shadow:
-                0 12px 30px rgba(0,0,0,.05);
-
+            box-shadow: 0 12px 30px rgba(0,0,0,.05);
             transition: .3s;
-
             cursor: default;
         }
 
         .meal-card:hover {
             transform: translateY(-6px);
-
-            box-shadow:
-                0 20px 35px rgba(95,141,78,.15);
+            box-shadow: 0 20px 35px rgba(95,141,78,.15);
         }
-
-
-        /* ======================
-           MEAL TOP
-        ====================== */
 
         .meal-top {
             display: flex;
-
             justify-content: space-between;
-
             align-items: flex-start;
-
             margin-bottom: 15px;
         }
 
         .meal-title {
             display: flex;
-
             align-items: center;
-
             gap: 12px;
         }
 
         .meal-title input {
             width: 20px;
             height: 20px;
-
             accent-color: #5F8D4E;
-
             cursor: pointer;
         }
 
         .meal-card h3 {
             color: #1F2937;
-
             font-size: 22px;
         }
 
         .meal-card p {
             color: #6B7280;
-
             line-height: 1.7;
-
             margin-top: 12px;
         }
-
-
-        /* ======================
-           TAGS
-        ====================== */
 
         .tags {
             margin-top: 18px;
@@ -302,56 +209,37 @@
 
         .tag {
             display: inline-block;
-
             padding: 7px 12px;
-
             background: #EEF6EE;
-
             color: #5F8D4E;
-
             border-radius: 30px;
-
             font-size: 12px;
-
             font-weight: 600;
-
             margin: 4px 3px;
         }
 
-
-        /* ======================
-           RECIPE SECTION
-        ====================== */
-
         .recipe-section {
             margin-top: 24px;
-
             padding-top: 20px;
-
             border-top: 1px solid #E5E7EB;
         }
 
         .recipe-section h4 {
             font-size: 18px;
-
             color: #1F2937;
-
             margin-bottom: 14px;
         }
 
         .ingredient-list,
         .instruction-list {
             margin: 0;
-
             padding-left: 22px;
         }
 
         .ingredient-list li,
         .instruction-list li {
             color: #4B5563;
-
             line-height: 1.6;
-
             margin-bottom: 8px;
         }
 
@@ -364,96 +252,69 @@
             padding-left: 5px;
         }
 
+        .saved-label {
+            display: inline-block;
+            padding: 7px 12px;
+            background: #EEF6EE;
+            color: #5F8D4E;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
 
-        /* ======================
-           EMPTY STATE
-        ====================== */
+        .saved-recipe-text {
+            white-space: pre-line;
+        }
 
         .empty-card {
             background: white;
-
             border-radius: 24px;
-
             padding: 40px;
-
             text-align: center;
-
             border: 1px solid #E5E7EB;
-
             color: #6B7280;
-
             margin-top: 25px;
         }
 
-
-        /* ======================
-           SAVE BUTTON
-        ====================== */
-
         .save-area {
             margin-top: 35px;
-
             display: flex;
-
             justify-content: center;
         }
 
         .save-btn {
             background: #5F8D4E;
-
             color: white;
-
             border: none;
-
             padding: 15px 35px;
-
             border-radius: 14px;
-
             cursor: pointer;
-
             font-size: 16px;
-
             font-weight: 600;
-
             transition: .25s;
         }
 
         .save-btn:hover {
             background: #4F7641;
-
             transform: translateY(-3px);
         }
 
         .save-btn:disabled {
             opacity: .75;
-
             cursor: wait;
-
             transform: none;
         }
 
-
-        /* ======================
-           AI LOADING
-        ====================== */
-
         .ai-loading {
             display: none;
-
             max-width: 520px;
-
             margin: 18px auto 0;
-
             background: white;
-
             border: 1px solid #E5E7EB;
-
             border-radius: 14px;
-
             padding: 14px 16px;
-
-            box-shadow:
-                0 12px 30px rgba(0,0,0,.05);
+            box-shadow: 0 12px 30px rgba(0,0,0,.05);
         }
 
         .ai-loading.active {
@@ -462,35 +323,23 @@
 
         .ai-loading p {
             color: #6B7280;
-
             font-size: 14px;
-
             margin-bottom: 10px;
         }
 
         .loading-track {
             height: 10px;
-
             background: #EEF6EE;
-
             border-radius: 50px;
-
             overflow: hidden;
         }
 
         .loading-bar {
             height: 100%;
-
             width: 45%;
-
             border-radius: 50px;
-
             background: #5F8D4E;
-
-            animation:
-                loadingBar 1.2s
-                ease-in-out
-                infinite;
+            animation: loadingBar 1.2s ease-in-out infinite;
         }
 
         @keyframes loadingBar {
@@ -503,11 +352,6 @@
                 transform: translateX(240%);
             }
         }
-
-
-        /* ======================
-           RESPONSIVE
-        ====================== */
 
         @media(max-width: 700px) {
 
@@ -536,13 +380,7 @@
 
 </head>
 
-
 <body>
-
-
-    <!-- ======================
-         MENU
-    ====================== -->
 
     <div
         class="menu"
@@ -551,47 +389,35 @@
         ☰
     </div>
 
-
-    <!-- ======================
-         SIDEBAR
-    ====================== -->
-
     <div class="sidebar">
 
         <div class="logo">
             🍽 MealMate
         </div>
 
-
         <a href="/dashboard/dashboard">
             Dashboard
         </a>
-
 
         <a href="/dashboard/meals">
             Meals
         </a>
 
-
         <a href="/dashboard/planner">
             Planner
         </a>
-
 
         <a href="/dashboard/grocery">
             Grocery
         </a>
 
-
         <a href="/selection">
             Change Restrictions
         </a>
 
-
         <a href="/settings">
             Settings
         </a>
-
 
         <form
             action="/logout"
@@ -606,15 +432,7 @@
 
     </div>
 
-
-    <!-- ======================
-         MAIN
-    ====================== -->
-
     <div class="main">
-
-
-        <!-- HEADER -->
 
         <div class="header">
 
@@ -627,11 +445,6 @@
             </p>
 
         </div>
-
-
-        <!-- ======================
-             FIND MORE MEALS
-        ====================== -->
 
         <form
             action="/dashboard/meals/recommend"
@@ -650,7 +463,6 @@
 
             </div>
 
-
             <div class="ai-loading">
 
                 <p>
@@ -666,7 +478,6 @@
             </div>
 
         </form>
-
 
         <!-- ======================
              SAVED MEALS
@@ -692,24 +503,61 @@
 
                 </div>
 
+                <span class="saved-label">
+                    Saved
+                </span>
 
-                <p>
-                    Saved to your meal list.
-                </p>
+                <!-- INGREDIENTS -->
 
+                <div
+                    class="recipe-section"
+                    th:if="${meal.ingredients != null and !meal.ingredients.isBlank()}"
+                >
 
-                <div class="tags">
+                    <h4>
+                        🛒 Ingredients
+                    </h4>
 
-                    <span class="tag">
-                        Saved
-                    </span>
+                    <ul class="ingredient-list">
+
+                        <li
+                            th:each="ingredient : ${#strings.arraySplit(meal.ingredients, '\n')}"
+                            th:text="${ingredient}"
+                        >
+                            Ingredient
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <!-- RECIPE -->
+
+                <div
+                    class="recipe-section"
+                    th:if="${meal.instructions != null and !meal.instructions.isBlank()}"
+                >
+
+                    <h4>
+                        👨‍🍳 Recipe
+                    </h4>
+
+                    <ol class="instruction-list">
+
+                        <li
+                            th:each="instruction : ${#strings.arraySplit(meal.instructions, '\n')}"
+                            th:text="${instruction}"
+                        >
+                            Cooking instruction
+                        </li>
+
+                    </ol>
 
                 </div>
 
             </div>
 
         </div>
-
 
         <!-- ======================
              NO SAVED MEALS
@@ -727,7 +575,6 @@
 
         </div>
 
-
         <!-- ======================
              RECOMMENDATIONS
         ====================== -->
@@ -741,22 +588,13 @@
                 method="post"
             >
 
-
                 <div class="meal-grid">
-
-
-                    <!-- ======================
-                         RECOMMENDED MEAL
-                    ====================== -->
 
                     <div
                         class="meal-card"
                         th:if="${hasRecommendations}"
                         th:each="meal : ${recommendations}"
                     >
-
-
-                        <!-- MEAL TITLE -->
 
                         <div class="meal-top">
 
@@ -778,17 +616,11 @@
 
                         </div>
 
-
-                        <!-- REASON -->
-
                         <p
                             th:text="${meal.reason()}"
                         >
                             Meal reason goes here.
                         </p>
-
-
-                        <!-- TAGS -->
 
                         <div class="tags">
 
@@ -802,17 +634,13 @@
 
                         </div>
 
-
-                        <!-- ======================
-                             INGREDIENTS
-                        ====================== -->
+                        <!-- INGREDIENTS -->
 
                         <div class="recipe-section">
 
                             <h4>
                                 🛒 Ingredients
                             </h4>
-
 
                             <ul class="ingredient-list">
 
@@ -827,17 +655,13 @@
 
                         </div>
 
-
-                        <!-- ======================
-                             RECIPE
-                        ====================== -->
+                        <!-- RECIPE -->
 
                         <div class="recipe-section">
 
                             <h4>
                                 👨‍🍳 Recipe
                             </h4>
-
 
                             <ol class="instruction-list">
 
@@ -852,15 +676,9 @@
 
                         </div>
 
-
                     </div>
 
                 </div>
-
-
-                <!-- ======================
-                     NO RECOMMENDATIONS
-                ====================== -->
 
                 <div
                     class="empty-card"
@@ -875,34 +693,23 @@
 
                 </div>
 
-
-                <!-- ======================
-                     SAVE SELECTED
-                ====================== -->
-
                 <div class="save-area">
 
                     <button
                         class="save-btn"
                         type="submit"
+                        th:if="${hasRecommendations}"
                     >
                         Save Selected Meals
                     </button>
 
                 </div>
 
-
             </form>
 
         </div>
 
-
     </div>
-
-
-    <!-- ======================
-         JAVASCRIPT
-    ====================== -->
 
     <script>
 
@@ -915,11 +722,6 @@
         const menu =
             document.querySelector(".menu");
 
-
-        /*
-         * Toggle sidebar
-         */
-
         function toggleSidebar() {
 
             sidebar.classList.toggle("active");
@@ -927,11 +729,6 @@
             main.classList.toggle("active");
 
         }
-
-
-        /*
-         * AI loading animation
-         */
 
         document
             .querySelectorAll(".ai-form")
@@ -951,7 +748,6 @@
                                 ".ai-loading"
                             );
 
-
                         if (button) {
 
                             button.disabled = true;
@@ -959,7 +755,6 @@
                             button.textContent =
                                 "Generating...";
                         }
-
 
                         if (loading) {
 
@@ -972,11 +767,6 @@
                 );
 
             });
-
-
-        /*
-         * Close sidebar when clicking outside
-         */
 
         document.addEventListener(
             "click",
@@ -1001,11 +791,6 @@
             }
         );
 
-
-        /*
-         * Meal card animation
-         */
-
         window.addEventListener(
             "load",
             () => {
@@ -1015,7 +800,6 @@
                         ".meal-card"
                     );
 
-
                 cards.forEach(
                     (card, index) => {
 
@@ -1023,7 +807,6 @@
 
                         card.style.transform =
                             "translateY(20px)";
-
 
                         setTimeout(
                             () => {
@@ -1048,7 +831,6 @@
         );
 
     </script>
-
 
 </body>
 
