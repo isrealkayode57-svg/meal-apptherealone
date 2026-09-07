@@ -16,10 +16,10 @@ public class SavedMeals {
 
     private String mealNames;
 
-    @Column(length = 5000)
+    @Lob
     private String ingredients;
 
-    @Column(length = 10000)
+    @Lob
     private String instructions;
 
     protected SavedMeals() {
