@@ -61,10 +61,7 @@ public class MainController {
                 });
     }
 
-    @GetMapping("/register")
-    public String register() {
-        return "register";
-    }
+
 
     @PostMapping("/register")
     public String registerUser(
