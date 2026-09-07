@@ -5,8 +5,6 @@ import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,10 +21,6 @@ public class MainController {
     private final MealRecommendationService mealRecommendationService;
     private final SQLeditor sqleditor;
 
-    private final BCryptPasswordEncoder passwordEncoder =
-            new BCryptPasswordEncoder();
-
-    @Autowired
     public MainController(
             AppUserRepository appUserRepository,
             DietaryProfileRepository dietaryProfileRepository,
@@ -43,18 +37,18 @@ public class MainController {
         this.groceryIngredientRepository = groceryIngredientRepository;
     }
 
-    // =========================================================
+    // ============================================================
     // HOME
-    // =========================================================
+    // ============================================================
 
     @GetMapping("/")
     public String index() {
         return "index";
     }
 
-    // =========================================================
+    // ============================================================
     // DIETARY SELECTION
-    // =========================================================
+    // ============================================================
 
     @GetMapping("/selection")
     public String selection(
@@ -165,9 +159,9 @@ public class MainController {
         return "redirect:/dashboard/dashboard";
     }
 
-    // =========================================================
-    // ADMIN
-    // =========================================================
+    // ============================================================
+    // ADMIN USERS
+    // ============================================================
 
     @GetMapping("/admin/users")
     public String users(
@@ -189,6 +183,15 @@ public class MainController {
         return "admin/users";
     }
 
+    @PostMapping("/admin/users/delete")
+    public String deleteUser(
+            @RequestParam Long userId) {
+
+        sqleditor.deleteUserById(userId);
+
+        return "redirect:/admin/users";
+    }
+
     @GetMapping("/admin/adminSelection")
     public String adminSelection(
             HttpSession session,
@@ -207,18 +210,18 @@ public class MainController {
         return "admin/adminSelection";
     }
 
-    @PostMapping("/admin/users/delete")
-    public String deleteUser(
-            @RequestParam Long userId) {
+    // ============================================================
+    // ERROR
+    // ============================================================
 
-        sqleditor.deleteUserById(userId);
-
-        return "redirect:/admin/users";
+    @GetMapping("/error")
+    public String error() {
+        return "error";
     }
 
-    // =========================================================
+    // ============================================================
     // DASHBOARD
-    // =========================================================
+    // ============================================================
 
     @GetMapping("/dashboard/dashboard")
     public String dashboard(
@@ -246,10 +249,10 @@ public class MainController {
                 mealRecommendationService
                         .describeRestrictions(profile);
 
-        List<SavedMeals> allSavedMeals =
+        List<SavedMeals> existingMeals =
                 savedMealsRepository.findByUser(user);
 
-        for (SavedMeals meal : allSavedMeals) {
+        for (SavedMeals meal : existingMeals) {
 
             if (meal.getMealNames() == null) {
                 sqleditor.deleteNullMeals(
@@ -287,22 +290,9 @@ public class MainController {
         return "dashboard/dashboard";
     }
 
-    @PostMapping("/dashboard/dashboard")
-    public String sendToDashboard(
-            HttpSession session) {
-
-        AppUser user = getLoggedInUser(session);
-
-        if (user == null) {
-            return "redirect:/";
-        }
-
-        return "redirect:/dashboard/dashboard";
-    }
-
-    // =========================================================
+    // ============================================================
     // MEALS PAGE
-    // =========================================================
+    // ============================================================
 
     @GetMapping("/dashboard/meals")
     public String meals(
@@ -330,12 +320,24 @@ public class MainController {
                 "showRecommendations",
                 false);
 
+        model.addAttribute(
+                "hasRecommendations",
+                false);
+
+        model.addAttribute(
+                "recommendations",
+                List.of());
+
+        model.addAttribute(
+                "recommendationStatus",
+                "");
+
         return "dashboard/meals";
     }
 
-    // =========================================================
+    // ============================================================
     // GENERATE MEAL RECOMMENDATIONS
-    // =========================================================
+    // ============================================================
 
     @PostMapping("/dashboard/meals/recommend")
     public String recommendMeals(
@@ -392,13 +394,15 @@ public class MainController {
         return "dashboard/meals";
     }
 
-    // =========================================================
+    // ============================================================
     // SAVE SELECTED MEALS
     //
     // IMPORTANT:
-    // This intentionally uses /dashboard/meals/save
-    // instead of POST /dashboard/meals.
-    // =========================================================
+    // This is intentionally NOT POST /dashboard/meals.
+    //
+    // GET  /dashboard/meals       -> display page
+    // POST /dashboard/meals/save  -> save meals
+    // ============================================================
 
     @PostMapping("/dashboard/meals/save")
     public String saveMeals(
@@ -427,7 +431,7 @@ public class MainController {
         AppUser user = getLoggedInUser(session);
 
         if (user == null) {
-            return "redirect:/";
+            return "redirect:/login";
         }
 
         /*
@@ -449,6 +453,7 @@ public class MainController {
 
             if (index < 0
                     || index >= mealNames.size()) {
+
                 continue;
             }
 
@@ -457,6 +462,7 @@ public class MainController {
 
             if (mealName == null
                     || mealName.isBlank()) {
+
                 continue;
             }
 
@@ -493,14 +499,14 @@ public class MainController {
         }
 
         /*
-         * Always redirect back to the GET page.
+         * After saving, go back to the normal GET page.
          */
         return "redirect:/dashboard/meals";
     }
 
-    // =========================================================
-    // SPLIT RECIPE DATA
-    // =========================================================
+    // ============================================================
+    // SPLIT INGREDIENTS / INSTRUCTIONS
+    // ============================================================
 
     private List<String> splitMealData(
             String data) {
@@ -532,9 +538,26 @@ public class MainController {
         return result;
     }
 
-    // =========================================================
+    // ============================================================
+    // DASHBOARD POST
+    // ============================================================
+
+    @PostMapping("/dashboard/dashboard")
+    public String sendToDashboard(
+            HttpSession session) {
+
+        AppUser user = getLoggedInUser(session);
+
+        if (user == null) {
+            return "redirect:/";
+        }
+
+        return "redirect:/dashboard/dashboard";
+    }
+
+    // ============================================================
     // PLANNER
-    // =========================================================
+    // ============================================================
 
     @GetMapping("/dashboard/planner")
     public String planner(
@@ -550,9 +573,9 @@ public class MainController {
         return "dashboard/planner";
     }
 
-    // =========================================================
+    // ============================================================
     // GROCERY
-    // =========================================================
+    // ============================================================
 
     @GetMapping("/dashboard/grocery")
     public String grocery(
@@ -613,11 +636,16 @@ public class MainController {
         model.addAttribute(
                 "groceryStatus",
                 groceryListResult.hasIngredients()
-                        ? groceryUpdateStatus(newIngredients)
+                        ? groceryUpdateStatus(
+                                newIngredients)
                         : groceryListResult.statusMessage());
 
         return "dashboard/grocery";
     }
+
+    // ============================================================
+    // GROCERY HELPERS
+    // ============================================================
 
     private List<String> addGroceryBaseModel(
             AppUser user,
@@ -681,11 +709,6 @@ public class MainController {
 
         for (String ingredient : ingredients) {
 
-            if (ingredient == null
-                    || ingredient.isBlank()) {
-                continue;
-            }
-
             String normalizedIngredient =
                     normalizeIngredient(
                             ingredient);
@@ -732,18 +755,9 @@ public class MainController {
                 + " new ingredient(s) added.";
     }
 
-    // =========================================================
-    // ERROR
-    // =========================================================
-
-    @GetMapping("/error")
-    public String error() {
-        return "error";
-    }
-
-    // =========================================================
-    // SESSION
-    // =========================================================
+    // ============================================================
+    // AUTHENTICATED USER
+    // ============================================================
 
     private AppUser getLoggedInUser(
             HttpSession session) {
@@ -758,21 +772,5 @@ public class MainController {
         return appUserRepository
                 .findById(id)
                 .orElse(null);
-    }
-
-    // =========================================================
-    // EMAIL
-    // =========================================================
-
-    private String normalizeEmail(
-            String email) {
-
-        if (email == null) {
-            return "";
-        }
-
-        return email
-                .trim()
-                .toLowerCase();
     }
 }
