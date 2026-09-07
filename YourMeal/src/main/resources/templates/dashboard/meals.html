@@ -504,6 +504,50 @@
                     Saved to your meal list.
                 </p>
 
+                <div
+                    class="recipe-section"
+                    th:if="${meal.ingredients != null and !meal.ingredients.isEmpty()}"
+                >
+
+                    <h4>
+                        🛒 Ingredients
+                    </h4>
+
+                    <ul class="ingredient-list">
+
+                        <li
+                            th:each="ingredient : ${meal.ingredients}"
+                            th:text="${ingredient}"
+                        >
+                            Ingredient
+                        </li>
+
+                    </ul>
+
+                </div>
+
+                <div
+                    class="recipe-section"
+                    th:if="${meal.instructions != null and !meal.instructions.isEmpty()}"
+                >
+
+                    <h4>
+                        👨‍🍳 Recipe
+                    </h4>
+
+                    <ol class="instruction-list">
+
+                        <li
+                            th:each="instruction : ${meal.instructions}"
+                            th:text="${instruction}"
+                        >
+                            Cooking instruction
+                        </li>
+
+                    </ol>
+
+                </div>
+
                 <div class="tags">
 
                     <span class="tag">
@@ -532,17 +576,32 @@
 
         <!-- RECOMMENDATIONS -->
 
-        <div
-            th:if="${showRecommendations}"
-        >
+        <div th:if="${showRecommendations}">
 
-            <!-- SAVE FORM -->
+            <!--
+                The form deliberately uses /dashboard/meals.
+
+                MainController supports POST /dashboard/meals
+                AND POST /dashboard/meals/save.
+            -->
 
             <form
                 action="/dashboard/meals"
                 method="post"
                 id="saveMealsForm"
             >
+
+                <!--
+                    JavaScript creates this value from
+                    the selected checkboxes.
+                -->
+
+                <input
+                    type="hidden"
+                    name="selectedMeals"
+                    id="selectedMeals"
+                    value=""
+                >
 
                 <div class="meal-grid">
 
@@ -560,8 +619,8 @@
 
                                 <input
                                     type="checkbox"
-                                    name="mealIndex"
-                                    th:value="${stat.index}"
+                                    class="meal-checkbox"
+                                    th:data-index="${stat.index}"
                                 >
 
                                 <h3
@@ -642,14 +701,32 @@
                         </div>
 
                         <!--
-                            Only the meal name is submitted.
-                            Recipes are NOT saved.
+                            Every recommendation has uniquely named
+                            hidden fields.
+
+                            Example:
+
+                            mealName_0
+                            mealIngredients_0
+                            mealInstructions_0
                         -->
 
                         <input
                             type="hidden"
-                            name="mealName"
+                            th:name="'mealName_' + ${stat.index}"
                             th:value="${meal.name()}"
+                        >
+
+                        <input
+                            type="hidden"
+                            th:name="'mealIngredients_' + ${stat.index}"
+                            th:value="${#strings.listJoin(meal.ingredients(), '|||')}"
+                        >
+
+                        <input
+                            type="hidden"
+                            th:name="'mealInstructions_' + ${stat.index}"
+                            th:value="${#strings.listJoin(meal.instructions(), '|||')}"
                         >
 
                     </div>
@@ -713,7 +790,9 @@
 
         }
 
+        // ========================================================
         // AI GENERATION LOADING
+        // ========================================================
 
         document
             .querySelectorAll(".ai-form")
@@ -753,7 +832,9 @@
 
             });
 
+        // ========================================================
         // SAVE MEALS
+        // ========================================================
 
         const saveMealsForm =
             document.getElementById(
@@ -766,12 +847,28 @@
                 "submit",
                 function(event) {
 
-                    const selectedMeals =
+                    const checkboxes =
                         saveMealsForm.querySelectorAll(
-                            "input[name='mealIndex']:checked"
+                            ".meal-checkbox"
                         );
 
-                    if (selectedMeals.length === 0) {
+                    const selectedIndexes = [];
+
+                    checkboxes.forEach(
+                        function(checkbox) {
+
+                            if (checkbox.checked) {
+
+                                selectedIndexes.push(
+                                    checkbox.dataset.index
+                                );
+
+                            }
+
+                        }
+                    );
+
+                    if (selectedIndexes.length === 0) {
 
                         event.preventDefault();
 
@@ -780,7 +877,16 @@
                         );
 
                         return;
+
                     }
+
+                    const selectedMeals =
+                        document.getElementById(
+                            "selectedMeals"
+                        );
+
+                    selectedMeals.value =
+                        selectedIndexes.join(",");
 
                     const saveButton =
                         document.getElementById(
@@ -800,7 +906,9 @@
 
         }
 
-        // CLOSE SIDEBAR WHEN CLICKING OUTSIDE
+        // ========================================================
+        // CLOSE SIDEBAR
+        // ========================================================
 
         document.addEventListener(
             "click",
@@ -825,7 +933,9 @@
             }
         );
 
+        // ========================================================
         // CARD ANIMATION
+        // ========================================================
 
         window.addEventListener(
             "load",
