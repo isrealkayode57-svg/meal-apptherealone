@@ -38,25 +38,6 @@ public class MainController {
 
  
 
-    @PostMapping("/login")
-    public String loginUser(
-            @RequestParam String email,
-            @RequestParam String password,
-            HttpSession session,
-            Model model) {
-        return appUserRepository.findByEmail(normalizeEmail(email))
-                .filter(user -> passwordEncoder.matches(password, user.getPasswordHash()))
-                .map(user -> {
-                    session.setAttribute("userId", user.getId());
-                    if (email.equals("admin@gmail.com")){ return "redirect:admin/adminSelection"; }
-                    return "redirect:/dashboard/dashboard";
-                })
-                .orElseGet(() -> {
-                    model.addAttribute("loginError", "Email or password is incorrect.");
-                    return "login";
-                });
-    }
-
 
 
     @PostMapping("/register")
