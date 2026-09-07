@@ -12,16 +12,12 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
 
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
 
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
@@ -152,7 +148,8 @@
 
         .meal-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            grid-template-columns:
+                repeat(auto-fit, minmax(340px, 1fr));
             gap: 28px;
             margin-top: 28px;
         }
@@ -162,14 +159,15 @@
             border: 1px solid #E5E7EB;
             border-radius: 24px;
             padding: 25px;
-            box-shadow: 0 12px 30px rgba(0,0,0,.05);
+            box-shadow:
+                0 12px 30px rgba(0,0,0,.05);
             transition: .3s;
-            cursor: default;
         }
 
         .meal-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 20px 35px rgba(95,141,78,.15);
+            box-shadow:
+                0 20px 35px rgba(95,141,78,.15);
         }
 
         .meal-top {
@@ -190,6 +188,7 @@
             height: 20px;
             accent-color: #5F8D4E;
             cursor: pointer;
+            flex-shrink: 0;
         }
 
         .meal-card h3 {
@@ -239,7 +238,7 @@
         .ingredient-list li,
         .instruction-list li {
             color: #4B5563;
-            line-height: 1.6;
+            line-height: 1.7;
             margin-bottom: 8px;
         }
 
@@ -250,21 +249,6 @@
 
         .instruction-list li {
             padding-left: 5px;
-        }
-
-        .saved-label {
-            display: inline-block;
-            padding: 7px 12px;
-            background: #EEF6EE;
-            color: #5F8D4E;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 8px;
-        }
-
-        .saved-recipe-text {
-            white-space: pre-line;
         }
 
         .empty-card {
@@ -314,7 +298,8 @@
             border: 1px solid #E5E7EB;
             border-radius: 14px;
             padding: 14px 16px;
-            box-shadow: 0 12px 30px rgba(0,0,0,.05);
+            box-shadow:
+                0 12px 30px rgba(0,0,0,.05);
         }
 
         .ai-loading.active {
@@ -339,7 +324,10 @@
             width: 45%;
             border-radius: 50px;
             background: #5F8D4E;
-            animation: loadingBar 1.2s ease-in-out infinite;
+            animation:
+                loadingBar 1.2s
+                ease-in-out
+                infinite;
         }
 
         @keyframes loadingBar {
@@ -351,6 +339,7 @@
             100% {
                 transform: translateX(240%);
             }
+
         }
 
         @media(max-width: 700px) {
@@ -374,6 +363,7 @@
             .meal-card {
                 padding: 20px;
             }
+
         }
 
     </style>
@@ -479,9 +469,7 @@
 
         </form>
 
-        <!-- ======================
-             SAVED MEALS
-        ====================== -->
+        <!-- SAVED MEALS -->
 
         <div
             class="meal-grid"
@@ -503,15 +491,23 @@
 
                 </div>
 
-                <span class="saved-label">
-                    Saved
-                </span>
+                <p>
+                    Saved to your meal list.
+                </p>
 
-                <!-- INGREDIENTS -->
+                <div class="tags">
+
+                    <span class="tag">
+                        Saved
+                    </span>
+
+                </div>
+
+                <!-- SAVED INGREDIENTS -->
 
                 <div
                     class="recipe-section"
-                    th:if="${meal.ingredients != null and !meal.ingredients.isBlank()}"
+                    th:if="${meal.ingredients != null and !meal.ingredients.isEmpty()}"
                 >
 
                     <h4>
@@ -521,7 +517,7 @@
                     <ul class="ingredient-list">
 
                         <li
-                            th:each="ingredient : ${#strings.arraySplit(meal.ingredients, '\n')}"
+                            th:each="ingredient : ${meal.ingredients}"
                             th:text="${ingredient}"
                         >
                             Ingredient
@@ -531,11 +527,11 @@
 
                 </div>
 
-                <!-- RECIPE -->
+                <!-- SAVED RECIPE -->
 
                 <div
                     class="recipe-section"
-                    th:if="${meal.instructions != null and !meal.instructions.isBlank()}"
+                    th:if="${meal.instructions != null and !meal.instructions.isEmpty()}"
                 >
 
                     <h4>
@@ -545,7 +541,7 @@
                     <ol class="instruction-list">
 
                         <li
-                            th:each="instruction : ${#strings.arraySplit(meal.instructions, '\n')}"
+                            th:each="instruction : ${meal.instructions}"
                             th:text="${instruction}"
                         >
                             Cooking instruction
@@ -559,9 +555,7 @@
 
         </div>
 
-        <!-- ======================
-             NO SAVED MEALS
-        ====================== -->
+        <!-- NO SAVED MEALS -->
 
         <div
             class="empty-card"
@@ -575,9 +569,7 @@
 
         </div>
 
-        <!-- ======================
-             RECOMMENDATIONS
-        ====================== -->
+        <!-- RECOMMENDATIONS -->
 
         <div
             th:if="${showRecommendations}"
@@ -586,6 +578,7 @@
             <form
                 action="/dashboard/meals"
                 method="post"
+                id="saveMealsForm"
             >
 
                 <div class="meal-grid">
@@ -593,8 +586,10 @@
                     <div
                         class="meal-card"
                         th:if="${hasRecommendations}"
-                        th:each="meal : ${recommendations}"
+                        th:each="meal, stat : ${recommendations}"
                     >
+
+                        <!-- CHECKBOX + TITLE -->
 
                         <div class="meal-top">
 
@@ -602,8 +597,8 @@
 
                                 <input
                                     type="checkbox"
-                                    name="meal"
-                                    th:value="${meal.name()}"
+                                    name="mealIndex"
+                                    th:value="${stat.index}"
                                 >
 
                                 <h3
@@ -616,11 +611,15 @@
 
                         </div>
 
+                        <!-- REASON -->
+
                         <p
                             th:text="${meal.reason()}"
                         >
                             Meal reason goes here.
                         </p>
+
+                        <!-- TAGS -->
 
                         <div class="tags">
 
@@ -676,9 +675,34 @@
 
                         </div>
 
+                        <!--
+                            These hidden fields preserve the complete
+                            recommendation when the user clicks Save.
+                        -->
+
+                        <input
+                            type="hidden"
+                            name="mealName"
+                            th:value="${meal.name()}"
+                        >
+
+                        <input
+                            type="hidden"
+                            name="mealIngredients"
+                            th:value="${#strings.listJoin(meal.ingredients(), '|||')}"
+                        >
+
+                        <input
+                            type="hidden"
+                            name="mealInstructions"
+                            th:value="${#strings.listJoin(meal.instructions(), '|||')}"
+                        >
+
                     </div>
 
                 </div>
+
+                <!-- NO RECOMMENDATIONS -->
 
                 <div
                     class="empty-card"
@@ -693,12 +717,13 @@
 
                 </div>
 
+                <!-- SAVE -->
+
                 <div class="save-area">
 
                     <button
                         class="save-btn"
                         type="submit"
-                        th:if="${hasRecommendations}"
                     >
                         Save Selected Meals
                     </button>
