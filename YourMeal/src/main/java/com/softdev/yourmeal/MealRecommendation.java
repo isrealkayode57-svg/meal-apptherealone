@@ -7,6 +7,6 @@ public record MealRecommendation(
         String reason,
         String tags,
         List<String> ingredients,
-        List<String> instructions
+        String recipe
 ) {
 }
