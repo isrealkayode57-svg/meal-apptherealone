@@ -1,4 +1,4 @@
-```java
+
 package com.softdev.yourmeal;
 
 import jakarta.servlet.http.HttpSession;
@@ -120,4 +120,4 @@ public class AuthController {
         return "redirect:/login";
     }
 }
-```
+
