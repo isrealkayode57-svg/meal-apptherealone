@@ -436,6 +436,8 @@
 
         </div>
 
+        <!-- AI RECOMMENDATION BUTTON -->
+
         <form
             action="/dashboard/meals/recommend"
             method="post"
@@ -575,8 +577,13 @@
             th:if="${showRecommendations}"
         >
 
+            <!-- IMPORTANT:
+                 This now POSTs to /dashboard/meals/save
+                 instead of /dashboard/meals
+            -->
+
             <form
-                action="/dashboard/meals"
+                action="/dashboard/meals/save"
                 method="post"
                 id="saveMealsForm"
             >
@@ -675,10 +682,7 @@
 
                         </div>
 
-                        <!--
-                            These hidden fields preserve the complete
-                            recommendation when the user clicks Save.
-                        -->
+                        <!-- HIDDEN MEAL DATA -->
 
                         <input
                             type="hidden"
