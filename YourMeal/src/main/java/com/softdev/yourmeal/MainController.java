@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,10 +21,12 @@ public class MainController {
     private final SavedMealsRepository savedMealsRepository;
     private final GroceryIngredientRepository groceryIngredientRepository;
     private final MealRecommendationService mealRecommendationService;
-    private final BCryptPasswordEncoder passwordEncoder =
-            new BCryptPasswordEncoder();
     private final SQLeditor sqleditor;
 
+    private final BCryptPasswordEncoder passwordEncoder =
+            new BCryptPasswordEncoder();
+
+    @Autowired
     public MainController(
             AppUserRepository appUserRepository,
             DietaryProfileRepository dietaryProfileRepository,
@@ -50,7 +53,7 @@ public class MainController {
     }
 
     // =========================================================
-    // SELECTION
+    // DIETARY SELECTION
     // =========================================================
 
     @GetMapping("/selection")
@@ -65,8 +68,7 @@ public class MainController {
         }
 
         DietaryProfile profile =
-                dietaryProfileRepository
-                        .findByUser(user)
+                dietaryProfileRepository.findByUser(user)
                         .orElseGet(() ->
                                 dietaryProfileRepository.save(
                                         new DietaryProfile(user)));
@@ -164,7 +166,7 @@ public class MainController {
     }
 
     // =========================================================
-    // ADMIN USERS
+    // ADMIN
     // =========================================================
 
     @GetMapping("/admin/users")
@@ -175,8 +177,7 @@ public class MainController {
         AppUser user = getLoggedInUser(session);
 
         if (user == null
-                || !user.getEmail()
-                        .equals("admin@gmail.com")) {
+                || !"admin@gmail.com".equals(user.getEmail())) {
 
             return "redirect:/";
         }
@@ -186,15 +187,6 @@ public class MainController {
                 appUserRepository.findAll());
 
         return "admin/users";
-    }
-
-    @PostMapping("/admin/users/delete")
-    public String deleteUser(
-            @RequestParam Long userId) {
-
-        sqleditor.deleteUserById(userId);
-
-        return "redirect:/admin/users";
     }
 
     @GetMapping("/admin/adminSelection")
@@ -213,6 +205,15 @@ public class MainController {
                 user.getName());
 
         return "admin/adminSelection";
+    }
+
+    @PostMapping("/admin/users/delete")
+    public String deleteUser(
+            @RequestParam Long userId) {
+
+        sqleditor.deleteUserById(userId);
+
+        return "redirect:/admin/users";
     }
 
     // =========================================================
@@ -245,9 +246,10 @@ public class MainController {
                 mealRecommendationService
                         .describeRestrictions(profile);
 
-        // Remove invalid saved meals
-        for (SavedMeals meal :
-                savedMealsRepository.findByUser(user)) {
+        List<SavedMeals> allSavedMeals =
+                savedMealsRepository.findByUser(user);
+
+        for (SavedMeals meal : allSavedMeals) {
 
             if (meal.getMealNames() == null) {
                 sqleditor.deleteNullMeals(
@@ -394,12 +396,8 @@ public class MainController {
     // SAVE SELECTED MEALS
     //
     // IMPORTANT:
-    // This is intentionally NOT POST /dashboard/meals.
-    //
-    // GET  /dashboard/meals
-    // POST /dashboard/meals/recommend
-    // POST /dashboard/meals/save
-    //
+    // This intentionally uses /dashboard/meals/save
+    // instead of POST /dashboard/meals.
     // =========================================================
 
     @PostMapping("/dashboard/meals/save")
@@ -429,10 +427,12 @@ public class MainController {
         AppUser user = getLoggedInUser(session);
 
         if (user == null) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
-        // Nothing selected
+        /*
+         * Nothing selected.
+         */
         if (mealIndexes == null
                 || mealIndexes.isEmpty()
                 || mealNames == null
@@ -460,27 +460,16 @@ public class MainController {
                 continue;
             }
 
-            // ---------------------------------------------
-            // Ingredients
-            // ---------------------------------------------
-
             List<String> ingredients =
                     new ArrayList<>();
 
             if (mealIngredients != null
                     && index < mealIngredients.size()) {
 
-                String ingredientData =
-                        mealIngredients.get(index);
-
                 ingredients =
                         splitMealData(
-                                ingredientData);
+                                mealIngredients.get(index));
             }
-
-            // ---------------------------------------------
-            // Instructions
-            // ---------------------------------------------
 
             List<String> instructions =
                     new ArrayList<>();
@@ -488,35 +477,29 @@ public class MainController {
             if (mealInstructions != null
                     && index < mealInstructions.size()) {
 
-                String instructionData =
-                        mealInstructions.get(index);
-
                 instructions =
                         splitMealData(
-                                instructionData);
+                                mealInstructions.get(index));
             }
-
-            // ---------------------------------------------
-            // Save
-            // ---------------------------------------------
 
             SavedMeals savedMeal =
                     new SavedMeals(
                             user,
-                            mealName,
+                            mealName.trim(),
                             ingredients,
                             instructions);
 
-            savedMealsRepository.save(
-                    savedMeal);
+            savedMealsRepository.save(savedMeal);
         }
 
-        // Go back to the actual meals page
+        /*
+         * Always redirect back to the GET page.
+         */
         return "redirect:/dashboard/meals";
     }
 
     // =========================================================
-    // SPLIT MEAL DATA
+    // SPLIT RECIPE DATA
     // =========================================================
 
     private List<String> splitMealData(
@@ -597,10 +580,6 @@ public class MainController {
         return "dashboard/grocery";
     }
 
-    // =========================================================
-    // UPDATE GROCERY LIST
-    // =========================================================
-
     @PostMapping("/dashboard/grocery/update")
     public String updateGrocery(
             HttpSession session,
@@ -634,16 +613,11 @@ public class MainController {
         model.addAttribute(
                 "groceryStatus",
                 groceryListResult.hasIngredients()
-                        ? groceryUpdateStatus(
-                                newIngredients)
+                        ? groceryUpdateStatus(newIngredients)
                         : groceryListResult.statusMessage());
 
         return "dashboard/grocery";
     }
-
-    // =========================================================
-    // GROCERY BASE MODEL
-    // =========================================================
 
     private List<String> addGroceryBaseModel(
             AppUser user,
@@ -656,8 +630,7 @@ public class MainController {
         List<String> savedMealNames =
                 new ArrayList<>();
 
-        for (SavedMeals meal :
-                savedMeals) {
+        for (SavedMeals meal : savedMeals) {
 
             if (meal.getMealNames() != null
                     && !meal.getMealNames()
@@ -679,10 +652,6 @@ public class MainController {
         return savedMealNames;
     }
 
-    // =========================================================
-    // GROCERY INGREDIENTS MODEL
-    // =========================================================
-
     private void addGroceryIngredientsModel(
             AppUser user,
             Model model) {
@@ -700,10 +669,6 @@ public class MainController {
                 !groceryIngredients.isEmpty());
     }
 
-    // =========================================================
-    // SAVE NEW GROCERY INGREDIENTS
-    // =========================================================
-
     private int saveNewIngredients(
             AppUser user,
             List<String> ingredients) {
@@ -714,8 +679,7 @@ public class MainController {
             return 0;
         }
 
-        for (String ingredient :
-                ingredients) {
+        for (String ingredient : ingredients) {
 
             if (ingredient == null
                     || ingredient.isBlank()) {
@@ -745,10 +709,6 @@ public class MainController {
         return newIngredients;
     }
 
-    // =========================================================
-    // NORMALIZE INGREDIENT
-    // =========================================================
-
     private String normalizeIngredient(
             String ingredient) {
 
@@ -760,10 +720,6 @@ public class MainController {
                 .trim()
                 .toLowerCase();
     }
-
-    // =========================================================
-    // GROCERY STATUS
-    // =========================================================
 
     private String groceryUpdateStatus(
             int newIngredients) {
@@ -786,7 +742,7 @@ public class MainController {
     }
 
     // =========================================================
-    // LOGGED-IN USER
+    // SESSION
     // =========================================================
 
     private AppUser getLoggedInUser(
@@ -805,11 +761,15 @@ public class MainController {
     }
 
     // =========================================================
-    // EMAIL NORMALIZATION
+    // EMAIL
     // =========================================================
 
     private String normalizeEmail(
             String email) {
+
+        if (email == null) {
+            return "";
+        }
 
         return email
                 .trim()
