@@ -16,12 +16,25 @@ public class SavedMeals {
 
     private String mealNames;
 
-    protected SavedMeals(){
+    @Column(length = 5000)
+    private String ingredients;
+
+    @Column(length = 10000)
+    private String instructions;
+
+    protected SavedMeals() {
     }
 
-    public SavedMeals(AppUser user, String mealNames){
+    public SavedMeals(
+            AppUser user,
+            String mealNames,
+            String ingredients,
+            String instructions) {
+
         this.user = user;
         this.mealNames = mealNames;
+        this.ingredients = ingredients;
+        this.instructions = instructions;
     }
 
     public Long getId() {
@@ -34,5 +47,13 @@ public class SavedMeals {
 
     public String getMealNames() {
         return mealNames;
+    }
+
+    public String getIngredients() {
+        return ingredients;
+    }
+
+    public String getInstructions() {
+        return instructions;
     }
 }
