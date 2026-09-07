@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,8 @@ public class MainController {
     private final SavedMealsRepository savedMealsRepository;
     private final GroceryIngredientRepository groceryIngredientRepository;
     private final MealRecommendationService mealRecommendationService;
+    private final BCryptPasswordEncoder passwordEncoder =
+            new BCryptPasswordEncoder();
     private final SQLeditor sqleditor;
 
     public MainController(
@@ -47,7 +50,7 @@ public class MainController {
     }
 
     // =========================================================
-    // DIETARY SELECTION
+    // SELECTION
     // =========================================================
 
     @GetMapping("/selection")
@@ -62,7 +65,8 @@ public class MainController {
         }
 
         DietaryProfile profile =
-                dietaryProfileRepository.findByUser(user)
+                dietaryProfileRepository
+                        .findByUser(user)
                         .orElseGet(() ->
                                 dietaryProfileRepository.save(
                                         new DietaryProfile(user)));
@@ -75,22 +79,54 @@ public class MainController {
 
     @PostMapping("/selection")
     public String saveDietaryProfile(
-            @RequestParam(defaultValue = "false") boolean vegetarian,
-            @RequestParam(defaultValue = "false") boolean vegan,
-            @RequestParam(defaultValue = "false") boolean dairy,
-            @RequestParam(defaultValue = "false") boolean egg,
-            @RequestParam(defaultValue = "false") boolean gluten,
-            @RequestParam(defaultValue = "false") boolean peanuts,
-            @RequestParam(defaultValue = "false") boolean shellfish,
-            @RequestParam(defaultValue = "false") boolean soy,
-            @RequestParam(defaultValue = "false") boolean nuts,
-            @RequestParam(defaultValue = "false") boolean fish,
-            @RequestParam(defaultValue = "false") boolean diabetes,
-            @RequestParam(defaultValue = "false") boolean HBP,
-            @RequestParam(defaultValue = "false") boolean kidney,
-            @RequestParam(defaultValue = "false") boolean IBS,
-            @RequestParam(defaultValue = "false") boolean celiac,
-            @RequestParam(defaultValue = "") String goal,
+            @RequestParam(defaultValue = "false")
+            boolean vegetarian,
+
+            @RequestParam(defaultValue = "false")
+            boolean vegan,
+
+            @RequestParam(defaultValue = "false")
+            boolean dairy,
+
+            @RequestParam(defaultValue = "false")
+            boolean egg,
+
+            @RequestParam(defaultValue = "false")
+            boolean gluten,
+
+            @RequestParam(defaultValue = "false")
+            boolean peanuts,
+
+            @RequestParam(defaultValue = "false")
+            boolean shellfish,
+
+            @RequestParam(defaultValue = "false")
+            boolean soy,
+
+            @RequestParam(defaultValue = "false")
+            boolean nuts,
+
+            @RequestParam(defaultValue = "false")
+            boolean fish,
+
+            @RequestParam(defaultValue = "false")
+            boolean diabetes,
+
+            @RequestParam(defaultValue = "false")
+            boolean HBP,
+
+            @RequestParam(defaultValue = "false")
+            boolean kidney,
+
+            @RequestParam(defaultValue = "false")
+            boolean IBS,
+
+            @RequestParam(defaultValue = "false")
+            boolean celiac,
+
+            @RequestParam(defaultValue = "")
+            String goal,
+
             HttpSession session) {
 
         AppUser user = getLoggedInUser(session);
@@ -128,7 +164,7 @@ public class MainController {
     }
 
     // =========================================================
-    // ADMIN
+    // ADMIN USERS
     // =========================================================
 
     @GetMapping("/admin/users")
@@ -139,7 +175,8 @@ public class MainController {
         AppUser user = getLoggedInUser(session);
 
         if (user == null
-                || !"admin@gmail.com".equals(user.getEmail())) {
+                || !user.getEmail()
+                        .equals("admin@gmail.com")) {
 
             return "redirect:/";
         }
@@ -149,6 +186,15 @@ public class MainController {
                 appUserRepository.findAll());
 
         return "admin/users";
+    }
+
+    @PostMapping("/admin/users/delete")
+    public String deleteUser(
+            @RequestParam Long userId) {
+
+        sqleditor.deleteUserById(userId);
+
+        return "redirect:/admin/users";
     }
 
     @GetMapping("/admin/adminSelection")
@@ -162,31 +208,15 @@ public class MainController {
             return "redirect:/";
         }
 
-        model.addAttribute("name", user.getName());
+        model.addAttribute(
+                "name",
+                user.getName());
 
         return "admin/adminSelection";
     }
 
-    @PostMapping("/admin/users/delete")
-    public String deleteUser(
-            @RequestParam Long userId) {
-
-        sqleditor.deleteUserById(userId);
-
-        return "redirect:/admin/users";
-    }
-
     // =========================================================
-    // ERROR
-    // =========================================================
-
-    @GetMapping("/error")
-    public String error() {
-        return "error";
-    }
-
-    // =========================================================
-    // MAIN DASHBOARD
+    // DASHBOARD
     // =========================================================
 
     @GetMapping("/dashboard/dashboard")
@@ -197,7 +227,7 @@ public class MainController {
         AppUser user = getLoggedInUser(session);
 
         if (user == null) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
         model.addAttribute(
@@ -215,10 +245,9 @@ public class MainController {
                 mealRecommendationService
                         .describeRestrictions(profile);
 
-        List<SavedMeals> existingMeals =
-                savedMealsRepository.findByUser(user);
-
-        for (SavedMeals meal : existingMeals) {
+        // Remove invalid saved meals
+        for (SavedMeals meal :
+                savedMealsRepository.findByUser(user)) {
 
             if (meal.getMealNames() == null) {
                 sqleditor.deleteNullMeals(
@@ -256,8 +285,21 @@ public class MainController {
         return "dashboard/dashboard";
     }
 
+    @PostMapping("/dashboard/dashboard")
+    public String sendToDashboard(
+            HttpSession session) {
+
+        AppUser user = getLoggedInUser(session);
+
+        if (user == null) {
+            return "redirect:/";
+        }
+
+        return "redirect:/dashboard/dashboard";
+    }
+
     // =========================================================
-    // SAVED MEALS PAGE
+    // MEALS PAGE
     // =========================================================
 
     @GetMapping("/dashboard/meals")
@@ -268,7 +310,7 @@ public class MainController {
         AppUser user = getLoggedInUser(session);
 
         if (user == null) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
         List<SavedMeals> savedMeals =
@@ -286,18 +328,6 @@ public class MainController {
                 "showRecommendations",
                 false);
 
-        model.addAttribute(
-                "hasRecommendations",
-                false);
-
-        model.addAttribute(
-                "recommendations",
-                List.of());
-
-        model.addAttribute(
-                "recommendationStatus",
-                "");
-
         return "dashboard/meals";
     }
 
@@ -313,7 +343,7 @@ public class MainController {
         AppUser user = getLoggedInUser(session);
 
         if (user == null) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
         DietaryProfile profile =
@@ -362,9 +392,17 @@ public class MainController {
 
     // =========================================================
     // SAVE SELECTED MEALS
+    //
+    // IMPORTANT:
+    // This is intentionally NOT POST /dashboard/meals.
+    //
+    // GET  /dashboard/meals
+    // POST /dashboard/meals/recommend
+    // POST /dashboard/meals/save
+    //
     // =========================================================
 
-    @PostMapping("/dashboard/meals")
+    @PostMapping("/dashboard/meals/save")
     public String saveMeals(
             HttpSession session,
 
@@ -394,269 +432,91 @@ public class MainController {
             return "redirect:/login";
         }
 
-        if (mealIndexes != null
-                && mealNames != null) {
+        // Nothing selected
+        if (mealIndexes == null
+                || mealIndexes.isEmpty()
+                || mealNames == null
+                || mealNames.isEmpty()) {
 
-            for (Integer index : mealIndexes) {
-
-                if (index == null
-                        || index < 0
-                        || index >= mealNames.size()) {
-
-                    continue;
-                }
-
-                String mealName =
-                        mealNames.get(index);
-
-                if (mealName == null
-                        || mealName.isBlank()) {
-
-                    continue;
-                }
-
-                List<String> ingredients =
-                        new ArrayList<>();
-
-                if (mealIngredients != null
-                        && index < mealIngredients.size()) {
-
-                    ingredients =
-                            splitMealData(
-                                    mealIngredients.get(index));
-                }
-
-                List<String> instructions =
-                        new ArrayList<>();
-
-                if (mealInstructions != null
-                        && index < mealInstructions.size()) {
-
-                    instructions =
-                            splitMealData(
-                                    mealInstructions.get(index));
-                }
-
-                SavedMeals savedMeal =
-                        new SavedMeals(
-                                user,
-                                mealName,
-                                ingredients,
-                                instructions);
-
-                savedMealsRepository.save(savedMeal);
-            }
+            return "redirect:/dashboard/meals";
         }
 
+        for (Integer index : mealIndexes) {
+
+            if (index == null) {
+                continue;
+            }
+
+            if (index < 0
+                    || index >= mealNames.size()) {
+                continue;
+            }
+
+            String mealName =
+                    mealNames.get(index);
+
+            if (mealName == null
+                    || mealName.isBlank()) {
+                continue;
+            }
+
+            // ---------------------------------------------
+            // Ingredients
+            // ---------------------------------------------
+
+            List<String> ingredients =
+                    new ArrayList<>();
+
+            if (mealIngredients != null
+                    && index < mealIngredients.size()) {
+
+                String ingredientData =
+                        mealIngredients.get(index);
+
+                ingredients =
+                        splitMealData(
+                                ingredientData);
+            }
+
+            // ---------------------------------------------
+            // Instructions
+            // ---------------------------------------------
+
+            List<String> instructions =
+                    new ArrayList<>();
+
+            if (mealInstructions != null
+                    && index < mealInstructions.size()) {
+
+                String instructionData =
+                        mealInstructions.get(index);
+
+                instructions =
+                        splitMealData(
+                                instructionData);
+            }
+
+            // ---------------------------------------------
+            // Save
+            // ---------------------------------------------
+
+            SavedMeals savedMeal =
+                    new SavedMeals(
+                            user,
+                            mealName,
+                            ingredients,
+                            instructions);
+
+            savedMealsRepository.save(
+                    savedMeal);
+        }
+
+        // Go back to the actual meals page
         return "redirect:/dashboard/meals";
     }
 
     // =========================================================
-    // PLANNER
-    // =========================================================
-
-    @GetMapping("/dashboard/planner")
-    public String planner(
-            HttpSession session,
-            Model model) {
-
-        AppUser user = getLoggedInUser(session);
-
-        if (user == null) {
-            return "redirect:/login";
-        }
-
-        return "dashboard/planner";
-    }
-
-    // =========================================================
-    // GROCERY PAGE
-    // =========================================================
-
-    @GetMapping("/dashboard/grocery")
-    public String grocery(
-            HttpSession session,
-            Model model) {
-
-        AppUser user = getLoggedInUser(session);
-
-        if (user == null) {
-            return "redirect:/login";
-        }
-
-        addGroceryBaseModel(
-                user,
-                model);
-
-        addGroceryIngredientsModel(
-                user,
-                model);
-
-        model.addAttribute(
-                "groceryStatus",
-                "Click update to add missing ingredients from your saved meals.");
-
-        return "dashboard/grocery";
-    }
-
-    // =========================================================
-    // UPDATE GROCERY LIST
-    // =========================================================
-
-    @PostMapping("/dashboard/grocery/update")
-    public String updateGrocery(
-            HttpSession session,
-            Model model) {
-
-        AppUser user = getLoggedInUser(session);
-
-        if (user == null) {
-            return "redirect:/login";
-        }
-
-        List<String> savedMealNames =
-                addGroceryBaseModel(
-                        user,
-                        model);
-
-        GroceryListResult groceryListResult =
-                mealRecommendationService
-                        .recommendIngredients(
-                                savedMealNames);
-
-        int newIngredients =
-                saveNewIngredients(
-                        user,
-                        groceryListResult.ingredients());
-
-        addGroceryIngredientsModel(
-                user,
-                model);
-
-        model.addAttribute(
-                "groceryStatus",
-                groceryListResult.hasIngredients()
-                        ? groceryUpdateStatus(
-                                newIngredients)
-                        : groceryListResult.statusMessage());
-
-        return "dashboard/grocery";
-    }
-
-    // =========================================================
-    // GROCERY HELPERS
-    // =========================================================
-
-    private List<String> addGroceryBaseModel(
-            AppUser user,
-            Model model) {
-
-        List<SavedMeals> savedMeals =
-                savedMealsRepository
-                        .findByUser(user);
-
-        List<String> savedMealNames =
-                new ArrayList<>();
-
-        for (SavedMeals meal : savedMeals) {
-
-            if (meal.getMealNames() != null
-                    && !meal.getMealNames()
-                            .isBlank()) {
-
-                savedMealNames.add(
-                        meal.getMealNames());
-            }
-        }
-
-        model.addAttribute(
-                "savedMeals",
-                savedMeals);
-
-        model.addAttribute(
-                "hasSavedMeals",
-                !savedMealNames.isEmpty());
-
-        return savedMealNames;
-    }
-
-    private void addGroceryIngredientsModel(
-            AppUser user,
-            Model model) {
-
-        List<GroceryIngredient> groceryIngredients =
-                groceryIngredientRepository
-                        .findByUser(user);
-
-        model.addAttribute(
-                "groceryIngredients",
-                groceryIngredients);
-
-        model.addAttribute(
-                "hasGroceryIngredients",
-                !groceryIngredients.isEmpty());
-    }
-
-    private int saveNewIngredients(
-            AppUser user,
-            List<String> ingredients) {
-
-        int newIngredients = 0;
-
-        if (ingredients == null) {
-            return 0;
-        }
-
-        for (String ingredient : ingredients) {
-
-            String normalizedIngredient =
-                    normalizeIngredient(
-                            ingredient);
-
-            if (!normalizedIngredient.isBlank()
-                    && !groceryIngredientRepository
-                            .existsByUserAndNormalizedName(
-                                    user,
-                                    normalizedIngredient)) {
-
-                groceryIngredientRepository.save(
-                        new GroceryIngredient(
-                                user,
-                                ingredient.trim(),
-                                normalizedIngredient));
-
-                newIngredients++;
-            }
-        }
-
-        return newIngredients;
-    }
-
-    private String normalizeIngredient(
-            String ingredient) {
-
-        if (ingredient == null) {
-            return "";
-        }
-
-        return ingredient
-                .trim()
-                .toLowerCase();
-    }
-
-    private String groceryUpdateStatus(
-            int newIngredients) {
-
-        if (newIngredients == 0) {
-            return "No new ingredients were added.";
-        }
-
-        return newIngredients
-                + " new ingredient(s) added.";
-    }
-
-    // =========================================================
-    // MEAL DATA HELPER
+    // SPLIT MEAL DATA
     // =========================================================
 
     private List<String> splitMealData(
@@ -690,7 +550,243 @@ public class MainController {
     }
 
     // =========================================================
-    // LOGIN USER HELPER
+    // PLANNER
+    // =========================================================
+
+    @GetMapping("/dashboard/planner")
+    public String planner(
+            HttpSession session,
+            Model model) {
+
+        AppUser user = getLoggedInUser(session);
+
+        if (user == null) {
+            return "redirect:/";
+        }
+
+        return "dashboard/planner";
+    }
+
+    // =========================================================
+    // GROCERY
+    // =========================================================
+
+    @GetMapping("/dashboard/grocery")
+    public String grocery(
+            HttpSession session,
+            Model model) {
+
+        AppUser user = getLoggedInUser(session);
+
+        if (user == null) {
+            return "redirect:/";
+        }
+
+        addGroceryBaseModel(
+                user,
+                model);
+
+        addGroceryIngredientsModel(
+                user,
+                model);
+
+        model.addAttribute(
+                "groceryStatus",
+                "Click update to add missing ingredients from your saved meals.");
+
+        return "dashboard/grocery";
+    }
+
+    // =========================================================
+    // UPDATE GROCERY LIST
+    // =========================================================
+
+    @PostMapping("/dashboard/grocery/update")
+    public String updateGrocery(
+            HttpSession session,
+            Model model) {
+
+        AppUser user = getLoggedInUser(session);
+
+        if (user == null) {
+            return "redirect:/";
+        }
+
+        List<String> savedMealNames =
+                addGroceryBaseModel(
+                        user,
+                        model);
+
+        GroceryListResult groceryListResult =
+                mealRecommendationService
+                        .recommendIngredients(
+                                savedMealNames);
+
+        int newIngredients =
+                saveNewIngredients(
+                        user,
+                        groceryListResult.ingredients());
+
+        addGroceryIngredientsModel(
+                user,
+                model);
+
+        model.addAttribute(
+                "groceryStatus",
+                groceryListResult.hasIngredients()
+                        ? groceryUpdateStatus(
+                                newIngredients)
+                        : groceryListResult.statusMessage());
+
+        return "dashboard/grocery";
+    }
+
+    // =========================================================
+    // GROCERY BASE MODEL
+    // =========================================================
+
+    private List<String> addGroceryBaseModel(
+            AppUser user,
+            Model model) {
+
+        List<SavedMeals> savedMeals =
+                savedMealsRepository
+                        .findByUser(user);
+
+        List<String> savedMealNames =
+                new ArrayList<>();
+
+        for (SavedMeals meal :
+                savedMeals) {
+
+            if (meal.getMealNames() != null
+                    && !meal.getMealNames()
+                            .isBlank()) {
+
+                savedMealNames.add(
+                        meal.getMealNames());
+            }
+        }
+
+        model.addAttribute(
+                "savedMeals",
+                savedMeals);
+
+        model.addAttribute(
+                "hasSavedMeals",
+                !savedMealNames.isEmpty());
+
+        return savedMealNames;
+    }
+
+    // =========================================================
+    // GROCERY INGREDIENTS MODEL
+    // =========================================================
+
+    private void addGroceryIngredientsModel(
+            AppUser user,
+            Model model) {
+
+        List<GroceryIngredient> groceryIngredients =
+                groceryIngredientRepository
+                        .findByUser(user);
+
+        model.addAttribute(
+                "groceryIngredients",
+                groceryIngredients);
+
+        model.addAttribute(
+                "hasGroceryIngredients",
+                !groceryIngredients.isEmpty());
+    }
+
+    // =========================================================
+    // SAVE NEW GROCERY INGREDIENTS
+    // =========================================================
+
+    private int saveNewIngredients(
+            AppUser user,
+            List<String> ingredients) {
+
+        int newIngredients = 0;
+
+        if (ingredients == null) {
+            return 0;
+        }
+
+        for (String ingredient :
+                ingredients) {
+
+            if (ingredient == null
+                    || ingredient.isBlank()) {
+                continue;
+            }
+
+            String normalizedIngredient =
+                    normalizeIngredient(
+                            ingredient);
+
+            if (!normalizedIngredient.isBlank()
+                    && !groceryIngredientRepository
+                            .existsByUserAndNormalizedName(
+                                    user,
+                                    normalizedIngredient)) {
+
+                groceryIngredientRepository.save(
+                        new GroceryIngredient(
+                                user,
+                                ingredient.trim(),
+                                normalizedIngredient));
+
+                newIngredients++;
+            }
+        }
+
+        return newIngredients;
+    }
+
+    // =========================================================
+    // NORMALIZE INGREDIENT
+    // =========================================================
+
+    private String normalizeIngredient(
+            String ingredient) {
+
+        if (ingredient == null) {
+            return "";
+        }
+
+        return ingredient
+                .trim()
+                .toLowerCase();
+    }
+
+    // =========================================================
+    // GROCERY STATUS
+    // =========================================================
+
+    private String groceryUpdateStatus(
+            int newIngredients) {
+
+        if (newIngredients == 0) {
+            return "No new ingredients were added.";
+        }
+
+        return newIngredients
+                + " new ingredient(s) added.";
+    }
+
+    // =========================================================
+    // ERROR
+    // =========================================================
+
+    @GetMapping("/error")
+    public String error() {
+        return "error";
+    }
+
+    // =========================================================
+    // LOGGED-IN USER
     // =========================================================
 
     private AppUser getLoggedInUser(
@@ -706,5 +802,17 @@ public class MainController {
         return appUserRepository
                 .findById(id)
                 .orElse(null);
+    }
+
+    // =========================================================
+    // EMAIL NORMALIZATION
+    // =========================================================
+
+    private String normalizeEmail(
+            String email) {
+
+        return email
+                .trim()
+                .toLowerCase();
     }
 }
