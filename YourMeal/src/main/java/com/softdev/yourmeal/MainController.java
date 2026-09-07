@@ -47,7 +47,7 @@ public class MainController {
     }
 
     // ============================================================
-    // SELECTION
+    // DIETARY SELECTION
     // ============================================================
 
     @GetMapping("/selection")
@@ -160,7 +160,7 @@ public class MainController {
     }
 
     // ============================================================
-    // ADMIN
+    // ADMIN USERS
     // ============================================================
 
     @GetMapping("/admin/users")
@@ -291,7 +291,7 @@ public class MainController {
     }
 
     // ============================================================
-    // MEALS - GET
+    // MEALS PAGE
     // ============================================================
 
     @GetMapping("/dashboard/meals")
@@ -336,7 +336,7 @@ public class MainController {
     }
 
     // ============================================================
-    // MEAL RECOMMENDATIONS
+    // GENERATE MEAL RECOMMENDATIONS
     // ============================================================
 
     @PostMapping("/dashboard/meals/recommend")
@@ -357,12 +357,12 @@ public class MainController {
                                 dietaryProfileRepository.save(
                                         new DietaryProfile(user)));
 
-        MealRecommendationResult result =
+        MealRecommendationResult recommendationResult =
                 mealRecommendationService
                         .recommendMeals(profile);
 
         List<MealRecommendation> recommendations =
-                result.meals();
+                recommendationResult.meals();
 
         List<SavedMeals> savedMeals =
                 savedMealsRepository.findByUser(user);
@@ -381,11 +381,11 @@ public class MainController {
 
         model.addAttribute(
                 "hasRecommendations",
-                result.hasMeals());
+                recommendationResult.hasMeals());
 
         model.addAttribute(
                 "recommendationStatus",
-                result.statusMessage());
+                recommendationResult.statusMessage());
 
         model.addAttribute(
                 "showRecommendations",
@@ -395,12 +395,14 @@ public class MainController {
     }
 
     // ============================================================
-    // SAVE MEALS
+    // SAVE SELECTED MEALS
     //
-    // POST /dashboard/meals/save
+    // OLD / SIMPLE VERSION
+    //
+    // Only saves the meal name.
     // ============================================================
 
-    @PostMapping("/dashboard/meals/save")
+    @PostMapping("/dashboard/meals")
     public String saveMeals(
             HttpSession session,
 
@@ -412,17 +414,7 @@ public class MainController {
             @RequestParam(
                     name = "mealName",
                     required = false)
-            List<String> mealNames,
-
-            @RequestParam(
-                    name = "mealIngredients",
-                    required = false)
-            List<String> mealIngredients,
-
-            @RequestParam(
-                    name = "mealInstructions",
-                    required = false)
-            List<String> mealInstructions) {
+            List<String> mealNames) {
 
         AppUser user = getLoggedInUser(session);
 
@@ -430,11 +422,10 @@ public class MainController {
             return "redirect:/login";
         }
 
-        if (mealIndexes == null || mealIndexes.isEmpty()) {
-            return "redirect:/dashboard/meals";
-        }
+        if (mealIndexes == null
+                || mealIndexes.isEmpty()
+                || mealNames == null) {
 
-        if (mealNames == null || mealNames.isEmpty()) {
             return "redirect:/dashboard/meals";
         }
 
@@ -444,81 +435,30 @@ public class MainController {
                 continue;
             }
 
-            if (index < 0 || index >= mealNames.size()) {
+            if (index < 0
+                    || index >= mealNames.size()) {
+
                 continue;
             }
 
-            String mealName = mealNames.get(index);
+            String mealName =
+                    mealNames.get(index);
 
-            if (mealName == null || mealName.isBlank()) {
+            if (mealName == null
+                    || mealName.isBlank()) {
+
                 continue;
-            }
-
-            List<String> ingredients =
-                    new ArrayList<>();
-
-            if (mealIngredients != null
-                    && index < mealIngredients.size()) {
-
-                ingredients =
-                        splitMealData(
-                                mealIngredients.get(index));
-            }
-
-            List<String> instructions =
-                    new ArrayList<>();
-
-            if (mealInstructions != null
-                    && index < mealInstructions.size()) {
-
-                instructions =
-                        splitMealData(
-                                mealInstructions.get(index));
             }
 
             SavedMeals savedMeal =
                     new SavedMeals(
                             user,
-                            mealName.trim(),
-                            ingredients,
-                            instructions);
+                            mealName.trim());
 
             savedMealsRepository.save(savedMeal);
         }
 
         return "redirect:/dashboard/meals";
-    }
-
-    // ============================================================
-    // SPLIT MEAL DATA
-    // ============================================================
-
-    private List<String> splitMealData(
-            String data) {
-
-        List<String> result =
-                new ArrayList<>();
-
-        if (data == null || data.isBlank()) {
-            return result;
-        }
-
-        String[] pieces =
-                data.split(
-                        "\\|\\|\\|",
-                        -1);
-
-        for (String piece : pieces) {
-
-            if (piece != null
-                    && !piece.trim().isBlank()) {
-
-                result.add(
-                        piece.trim());
-            }
-        }
-
-        return result;
     }
 
     // ============================================================
@@ -602,7 +542,7 @@ public class MainController {
                         user,
                         model);
 
-        GroceryListResult result =
+        GroceryListResult groceryListResult =
                 mealRecommendationService
                         .recommendIngredients(
                                 savedMealNames);
@@ -610,7 +550,7 @@ public class MainController {
         int newIngredients =
                 saveNewIngredients(
                         user,
-                        result.ingredients());
+                        groceryListResult.ingredients());
 
         addGroceryIngredientsModel(
                 user,
@@ -618,10 +558,10 @@ public class MainController {
 
         model.addAttribute(
                 "groceryStatus",
-                result.hasIngredients()
+                groceryListResult.hasIngredients()
                         ? groceryUpdateStatus(
                                 newIngredients)
-                        : result.statusMessage());
+                        : groceryListResult.statusMessage());
 
         return "dashboard/grocery";
     }
@@ -684,29 +624,29 @@ public class MainController {
             AppUser user,
             List<String> ingredients) {
 
+        int newIngredients = 0;
+
         if (ingredients == null) {
             return 0;
         }
 
-        int newIngredients = 0;
-
         for (String ingredient : ingredients) {
 
-            String normalized =
+            String normalizedIngredient =
                     normalizeIngredient(
                             ingredient);
 
-            if (!normalized.isBlank()
+            if (!normalizedIngredient.isBlank()
                     && !groceryIngredientRepository
                             .existsByUserAndNormalizedName(
                                     user,
-                                    normalized)) {
+                                    normalizedIngredient)) {
 
                 groceryIngredientRepository.save(
                         new GroceryIngredient(
                                 user,
                                 ingredient.trim(),
-                                normalized));
+                                normalizedIngredient));
 
                 newIngredients++;
             }
@@ -739,7 +679,7 @@ public class MainController {
     }
 
     // ============================================================
-    // CURRENT USER
+    // AUTHENTICATED USER
     // ============================================================
 
     private AppUser getLoggedInUser(
