@@ -20,7 +20,8 @@ public class MainController {
     private final SavedMealsRepository savedMealsRepository;
     private final GroceryIngredientRepository groceryIngredientRepository;
     private final MealRecommendationService mealRecommendationService;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final BCryptPasswordEncoder passwordEncoder =
+            new BCryptPasswordEncoder();
     private final SQLeditor sqleditor;
 
     public MainController(
@@ -57,8 +58,8 @@ public class MainController {
 
         DietaryProfile profile =
                 dietaryProfileRepository.findByUser(user)
-                        .orElseGet(
-                                () -> dietaryProfileRepository.save(
+                        .orElseGet(() ->
+                                dietaryProfileRepository.save(
                                         new DietaryProfile(user)));
 
         model.addAttribute("name", user.getName());
@@ -76,10 +77,12 @@ public class MainController {
                 "users",
                 appUserRepository.findAll());
 
-        AppUser user = getLoggedInUser(session);
+        AppUser user =
+                getLoggedInUser(session);
 
         if (user == null
-                || !user.getEmail().equals("admin@gmail.com")) {
+                || !user.getEmail()
+                        .equals("admin@gmail.com")) {
 
             return "redirect:/";
         }
@@ -92,7 +95,8 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user = getLoggedInUser(session);
+        AppUser user =
+                getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/";
@@ -157,16 +161,18 @@ public class MainController {
 
             HttpSession session) {
 
-        AppUser user = getLoggedInUser(session);
+        AppUser user =
+                getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/login";
         }
 
         DietaryProfile profile =
-                dietaryProfileRepository.findByUser(user)
-                        .orElseGet(
-                                () -> new DietaryProfile(user));
+                dietaryProfileRepository
+                        .findByUser(user)
+                        .orElseGet(() ->
+                                new DietaryProfile(user));
 
         profile.setVegetarian(vegetarian);
         profile.setVegan(vegan);
@@ -190,7 +196,8 @@ public class MainController {
         return "redirect:/dashboard/dashboard";
     }
 
-    private AppUser getLoggedInUser(HttpSession session) {
+    private AppUser getLoggedInUser(
+            HttpSession session) {
 
         Object userId =
                 session.getAttribute("userId");
@@ -204,7 +211,9 @@ public class MainController {
                 .orElse(null);
     }
 
-    private String normalizeEmail(String email) {
+    private String normalizeEmail(
+            String email) {
+
         return email.trim().toLowerCase();
     }
 
@@ -239,9 +248,10 @@ public class MainController {
                 user.getName());
 
         DietaryProfile profile =
-                dietaryProfileRepository.findByUser(user)
-                        .orElseGet(
-                                () -> dietaryProfileRepository.save(
+                dietaryProfileRepository
+                        .findByUser(user)
+                        .orElseGet(() ->
+                                dietaryProfileRepository.save(
                                         new DietaryProfile(user)));
 
         List<String> restrictions =
@@ -330,9 +340,10 @@ public class MainController {
         }
 
         DietaryProfile profile =
-                dietaryProfileRepository.findByUser(user)
-                        .orElseGet(
-                                () -> dietaryProfileRepository.save(
+                dietaryProfileRepository
+                        .findByUser(user)
+                        .orElseGet(() ->
+                                dietaryProfileRepository.save(
                                         new DietaryProfile(user)));
 
         MealRecommendationResult recommendationResult =
@@ -341,18 +352,6 @@ public class MainController {
 
         List<MealRecommendation> recommendations =
                 recommendationResult.meals();
-
-        /*
-         * Store the full recommendations temporarily
-         * in the user's session.
-         *
-         * This allows saveMeals() to recover the
-         * ingredients and recipe when the user selects
-         * a meal.
-         */
-        session.setAttribute(
-                "mealRecommendations",
-                recommendations);
 
         List<SavedMeals> savedMeals =
                 savedMealsRepository.findByUser(user);
@@ -384,13 +383,38 @@ public class MainController {
         return "dashboard/meals";
     }
 
+    /*
+     * SAVE SELECTED MEALS
+     *
+     * Each recommendation gets an index.
+     * The checkbox sends only the indexes the user selected.
+     *
+     * The hidden fields contain the complete information
+     * for every recommendation.
+     */
     @PostMapping("/dashboard/meals")
     public String saveMeals(
             HttpSession session,
+
             @RequestParam(
-                    name = "meal",
+                    name = "mealIndex",
                     required = false)
-            List<String> meals) {
+            List<Integer> mealIndexes,
+
+            @RequestParam(
+                    name = "mealName",
+                    required = false)
+            List<String> mealNames,
+
+            @RequestParam(
+                    name = "mealIngredients",
+                    required = false)
+            List<String> mealIngredients,
+
+            @RequestParam(
+                    name = "mealInstructions",
+                    required = false)
+            List<String> mealInstructions) {
 
         AppUser user =
                 getLoggedInUser(session);
@@ -399,65 +423,93 @@ public class MainController {
             return "redirect:/login";
         }
 
-        /*
-         * Get the full recommendations that were
-         * generated before the user clicked Save.
-         */
-        Object recommendationObject =
-                session.getAttribute(
-                        "mealRecommendations");
+        if (mealIndexes != null
+                && mealNames != null) {
 
-        if (meals != null
-                && recommendationObject
-                instanceof List<?> recommendationList) {
+            for (Integer index :
+                    mealIndexes) {
 
-            for (String mealName : meals) {
+                if (index == null
+                        || index < 0
+                        || index >= mealNames.size()) {
 
-                for (Object recommendationObjectItem :
-                        recommendationList) {
-
-                    if (!(recommendationObjectItem
-                            instanceof MealRecommendation meal)) {
-                        continue;
-                    }
-
-                    if (!meal.name().equals(mealName)) {
-                        continue;
-                    }
-
-                    String ingredients =
-                            String.join(
-                                    "\n",
-                                    meal.ingredients());
-
-                    String instructions =
-                            String.join(
-                                    "\n",
-                                    meal.instructions());
-
-                    SavedMeals savedMeal =
-                            new SavedMeals(
-                                    user,
-                                    meal.name(),
-                                    ingredients,
-                                    instructions);
-
-                    savedMealsRepository.save(
-                            savedMeal);
-
-                    break;
+                    continue;
                 }
+
+                String mealName =
+                        mealNames.get(index);
+
+                if (mealName == null
+                        || mealName.isBlank()) {
+
+                    continue;
+                }
+
+                List<String> ingredients =
+                        new ArrayList<>();
+
+                if (mealIngredients != null
+                        && index < mealIngredients.size()) {
+
+                    ingredients =
+                            splitMealData(
+                                    mealIngredients.get(index));
+                }
+
+                List<String> instructions =
+                        new ArrayList<>();
+
+                if (mealInstructions != null
+                        && index < mealInstructions.size()) {
+
+                    instructions =
+                            splitMealData(
+                                    mealInstructions.get(index));
+                }
+
+                SavedMeals savedMeal =
+                        new SavedMeals(
+                                user,
+                                mealName,
+                                ingredients,
+                                instructions);
+
+                savedMealsRepository.save(
+                        savedMeal);
             }
         }
 
-        /*
-         * Clear the temporary recommendations after
-         * saving them.
-         */
-        session.removeAttribute(
-                "mealRecommendations");
-
         return "redirect:/dashboard/meals";
+    }
+
+    private List<String> splitMealData(
+            String data) {
+
+        List<String> result =
+                new ArrayList<>();
+
+        if (data == null
+                || data.isBlank()) {
+
+            return result;
+        }
+
+        String[] pieces =
+                data.split(
+                        "\\|\\|\\|",
+                        -1);
+
+        for (String piece : pieces) {
+
+            if (piece != null
+                    && !piece.trim().isBlank()) {
+
+                result.add(
+                        piece.trim());
+            }
+        }
+
+        return result;
     }
 
     @PostMapping("/dashboard/dashboard")
@@ -562,7 +614,8 @@ public class MainController {
             Model model) {
 
         List<SavedMeals> savedMeals =
-                savedMealsRepository.findByUser(user);
+                savedMealsRepository
+                        .findByUser(user);
 
         List<String> savedMealNames =
                 new ArrayList<>();
@@ -571,7 +624,8 @@ public class MainController {
                 savedMeals) {
 
             if (meal.getMealNames() != null
-                    && !meal.getMealNames().isBlank()) {
+                    && !meal.getMealNames()
+                            .isBlank()) {
 
                 savedMealNames.add(
                         meal.getMealNames());
@@ -594,7 +648,8 @@ public class MainController {
             Model model) {
 
         List<GroceryIngredient> groceryIngredients =
-                groceryIngredientRepository.findByUser(user);
+                groceryIngredientRepository
+                        .findByUser(user);
 
         model.addAttribute(
                 "groceryIngredients",
