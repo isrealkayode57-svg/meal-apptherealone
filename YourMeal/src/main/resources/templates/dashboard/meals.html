@@ -8,8 +8,10 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <link rel="preconnect"
           href="https://fonts.googleapis.com">
@@ -18,8 +20,10 @@
           href="https://fonts.gstatic.com"
           crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
 
     <style>
 
@@ -156,13 +160,15 @@
             border: 1px solid #E5E7EB;
             border-radius: 24px;
             padding: 25px;
-            box-shadow: 0 12px 30px rgba(0,0,0,.05);
+            box-shadow:
+                0 12px 30px rgba(0,0,0,.05);
             transition: .3s;
         }
 
         .meal-card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 20px 35px rgba(95,141,78,.15);
+            box-shadow:
+                0 20px 35px rgba(95,141,78,.15);
         }
 
         .meal-top {
@@ -293,7 +299,8 @@
             border: 1px solid #E5E7EB;
             border-radius: 14px;
             padding: 14px 16px;
-            box-shadow: 0 12px 30px rgba(0,0,0,.05);
+            box-shadow:
+                0 12px 30px rgba(0,0,0,.05);
         }
 
         .ai-loading.active {
@@ -318,7 +325,10 @@
             width: 45%;
             border-radius: 50px;
             background: #5F8D4E;
-            animation: loadingBar 1.2s ease-in-out infinite;
+            animation:
+                loadingBar 1.2s
+                ease-in-out
+                infinite;
         }
 
         @keyframes loadingBar {
@@ -365,8 +375,10 @@
 
     <!-- MENU -->
 
-    <div class="menu"
-         onclick="toggleSidebar()">
+    <div
+        class="menu"
+        onclick="toggleSidebar()"
+    >
         ☰
     </div>
 
@@ -402,8 +414,10 @@
             Settings
         </a>
 
-        <form action="/logout"
-              method="post">
+        <form
+            action="/logout"
+            method="post"
+        >
 
             <button type="submit">
                 Logout
@@ -429,19 +443,21 @@
 
         </div>
 
-        <!-- GENERATE -->
+        <!-- GENERATE RECOMMENDATIONS -->
 
-        <form th:action="@{/dashboard/meals/recommend}"
-              method="post"
-              class="ai-form">
+        <form
+            action="/dashboard/meals/recommend"
+            method="post"
+            class="ai-form"
+        >
 
             <div class="save-area">
 
-                <button class="save-btn"
-                        type="submit">
-
+                <button
+                    class="save-btn"
+                    type="submit"
+                >
                     Find More Meal Suggestions
-
                 </button>
 
             </div>
@@ -464,15 +480,21 @@
 
         <!-- SAVED MEALS -->
 
-        <div class="meal-grid"
-             th:if="${hasSavedMeals and !showRecommendations}">
+        <div
+            class="meal-grid"
+            th:if="${hasSavedMeals and !showRecommendations}"
+        >
 
-            <div class="meal-card"
-                 th:each="meal : ${savedMeals}">
+            <div
+                class="meal-card"
+                th:each="meal : ${savedMeals}"
+            >
 
                 <div class="meal-top">
 
-                    <h3 th:text="${meal.mealNames}">
+                    <h3
+                        th:text="${meal.mealNames}"
+                    >
                         Saved Meal
                     </h3>
 
@@ -490,50 +512,16 @@
 
                 </div>
 
-                <div class="recipe-section"
-                     th:if="${meal.ingredients != null and !meal.ingredients.isEmpty()}">
-
-                    <h4>
-                        🛒 Ingredients
-                    </h4>
-
-                    <ul class="ingredient-list">
-
-                        <li th:each="ingredient : ${meal.ingredients}"
-                            th:text="${ingredient}">
-                            Ingredient
-                        </li>
-
-                    </ul>
-
-                </div>
-
-                <div class="recipe-section"
-                     th:if="${meal.instructions != null and !meal.instructions.isEmpty()}">
-
-                    <h4>
-                        👨‍🍳 Recipe
-                    </h4>
-
-                    <ol class="instruction-list">
-
-                        <li th:each="instruction : ${meal.instructions}"
-                            th:text="${instruction}">
-                            Cooking instruction
-                        </li>
-
-                    </ol>
-
-                </div>
-
             </div>
 
         </div>
 
         <!-- NO SAVED MEALS -->
 
-        <div class="empty-card"
-             th:unless="${hasSavedMeals or showRecommendations}">
+        <div
+            class="empty-card"
+            th:unless="${hasSavedMeals or showRecommendations}"
+        >
 
             <p>
                 No saved meals yet.
@@ -544,34 +532,41 @@
 
         <!-- RECOMMENDATIONS -->
 
-        <div th:if="${showRecommendations}">
+        <div
+            th:if="${showRecommendations}"
+        >
 
-            <!--
-                SAVE FORM
+            <!-- SAVE FORM -->
 
-                IMPORTANT:
-                This submits to /dashboard/meals/save.
-            -->
-
-            <form th:action="@{/dashboard/meals/save}"
-                  method="post"
-                  id="saveMealsForm">
+            <form
+                action="/dashboard/meals"
+                method="post"
+                id="saveMealsForm"
+            >
 
                 <div class="meal-grid">
 
-                    <div class="meal-card"
-                         th:if="${hasRecommendations}"
-                         th:each="meal, stat : ${recommendations}">
+                    <div
+                        class="meal-card"
+                        th:if="${hasRecommendations}"
+                        th:each="meal, stat : ${recommendations}"
+                    >
+
+                        <!-- CHECKBOX + TITLE -->
 
                         <div class="meal-top">
 
                             <div class="meal-title">
 
-                                <input type="checkbox"
-                                       name="mealIndex"
-                                       th:value="${stat.index}">
+                                <input
+                                    type="checkbox"
+                                    name="mealIndex"
+                                    th:value="${stat.index}"
+                                >
 
-                                <h3 th:text="${meal.name()}">
+                                <h3
+                                    th:text="${meal.name()}"
+                                >
                                     Meal Name
                                 </h3>
 
@@ -579,16 +574,26 @@
 
                         </div>
 
-                        <p th:text="${meal.reason()}">
+                        <!-- REASON -->
+
+                        <p
+                            th:text="${meal.reason()}"
+                        >
                             Meal reason goes here.
                         </p>
 
-                        <div class="tags"
-                             th:if="${meal.tags() != null and !meal.tags().isBlank()}">
+                        <!-- TAGS -->
 
-                            <span class="tag"
-                                  th:each="tag : ${#strings.arraySplit(meal.tags(), ',')}"
-                                  th:text="${tag.trim()}">
+                        <div
+                            class="tags"
+                            th:if="${meal.tags() != null and !meal.tags().isBlank()}"
+                        >
+
+                            <span
+                                class="tag"
+                                th:each="tag : ${#strings.arraySplit(meal.tags(), ',')}"
+                                th:text="${tag.trim()}"
+                            >
                                 Healthy
                             </span>
 
@@ -604,8 +609,10 @@
 
                             <ul class="ingredient-list">
 
-                                <li th:each="ingredient : ${meal.ingredients()}"
-                                    th:text="${ingredient}">
+                                <li
+                                    th:each="ingredient : ${meal.ingredients()}"
+                                    th:text="${ingredient}"
+                                >
                                     Ingredient
                                 </li>
 
@@ -623,8 +630,10 @@
 
                             <ol class="instruction-list">
 
-                                <li th:each="instruction : ${meal.instructions()}"
-                                    th:text="${instruction}">
+                                <li
+                                    th:each="instruction : ${meal.instructions()}"
+                                    th:text="${instruction}"
+                                >
                                     Cooking instruction
                                 </li>
 
@@ -632,19 +641,16 @@
 
                         </div>
 
-                        <!-- MEAL DATA -->
+                        <!--
+                            Only the meal name is submitted.
+                            Recipes are NOT saved.
+                        -->
 
-                        <input type="hidden"
-                               name="mealName"
-                               th:value="${meal.name()}">
-
-                        <input type="hidden"
-                               name="mealIngredients"
-                               th:value="${#strings.listJoin(meal.ingredients(), '|||')}">
-
-                        <input type="hidden"
-                               name="mealInstructions"
-                               th:value="${#strings.listJoin(meal.instructions(), '|||')}">
+                        <input
+                            type="hidden"
+                            name="mealName"
+                            th:value="${meal.name()}"
+                        >
 
                     </div>
 
@@ -652,10 +658,14 @@
 
                 <!-- NO RECOMMENDATIONS -->
 
-                <div class="empty-card"
-                     th:unless="${hasRecommendations}">
+                <div
+                    class="empty-card"
+                    th:unless="${hasRecommendations}"
+                >
 
-                    <p th:text="${recommendationStatus}">
+                    <p
+                        th:text="${recommendationStatus}"
+                    >
                         No meals available.
                     </p>
 
@@ -663,15 +673,17 @@
 
                 <!-- SAVE BUTTON -->
 
-                <div class="save-area"
-                     th:if="${hasRecommendations}">
+                <div
+                    class="save-area"
+                    th:if="${hasRecommendations}"
+                >
 
-                    <button class="save-btn"
-                            type="submit"
-                            id="saveButton">
-
+                    <button
+                        class="save-btn"
+                        type="submit"
+                        id="saveButton"
+                    >
                         Save Selected Meals
-
                     </button>
 
                 </div>
@@ -693,7 +705,6 @@
         const menu =
             document.querySelector(".menu");
 
-
         function toggleSidebar() {
 
             sidebar.classList.toggle("active");
@@ -702,10 +713,7 @@
 
         }
 
-
-        // ========================================================
-        // AI LOADING
-        // ========================================================
+        // AI GENERATION LOADING
 
         document
             .querySelectorAll(".ai-form")
@@ -731,7 +739,6 @@
 
                             button.textContent =
                                 "Generating...";
-
                         }
 
                         if (loading) {
@@ -739,7 +746,6 @@
                             loading.classList.add(
                                 "active"
                             );
-
                         }
 
                     }
@@ -747,10 +753,7 @@
 
             });
 
-
-        // ========================================================
         // SAVE MEALS
-        // ========================================================
 
         const saveMealsForm =
             document.getElementById(
@@ -777,7 +780,6 @@
                         );
 
                         return;
-
                     }
 
                     const saveButton =
@@ -791,7 +793,6 @@
 
                         saveButton.textContent =
                             "Saving...";
-
                     }
 
                 }
@@ -799,10 +800,7 @@
 
         }
 
-
-        // ========================================================
-        // CLOSE SIDEBAR
-        // ========================================================
+        // CLOSE SIDEBAR WHEN CLICKING OUTSIDE
 
         document.addEventListener(
             "click",
@@ -827,10 +825,7 @@
             }
         );
 
-
-        // ========================================================
         // CARD ANIMATION
-        // ========================================================
 
         window.addEventListener(
             "load",
