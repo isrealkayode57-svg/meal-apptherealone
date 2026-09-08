@@ -7,5 +7,8 @@ public interface SavedMealsRepository extends JpaRepository<SavedMeals, Long> {
 
     List<SavedMeals> findByUser(AppUser user);
 
-    boolean existsByUserAndMealNames(AppUser user, String mealNames);
+    boolean existsByUserAndMealNames(
+            AppUser user,
+            String mealNames
+    );
 }
