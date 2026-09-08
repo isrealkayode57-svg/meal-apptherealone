@@ -20,7 +20,8 @@ import tools.jackson.databind.ObjectMapper;
 @Component
 public class HackClubMealRecommendationClient {
 
-    private static final String CHAT_COMPLETIONS_PATH = "/proxy/v1/chat/completions";
+    private static final String CHAT_COMPLETIONS_PATH =
+            "/proxy/v1/chat/completions";
 
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
@@ -41,149 +42,204 @@ public class HackClubMealRecommendationClient {
         this.model = model;
     }
 
+    // ============================================================
+    // MEAL RECOMMENDATIONS
+    // ============================================================
+
     public MealRecommendationResult recommendMeals(
             DietaryProfile profile,
             List<String> restrictions) {
 
         if (apiKey == null || apiKey.isBlank()) {
+
             return new MealRecommendationResult(
                     List.of(),
                     "HACKCLUB_API_KEY is missing. Set it before starting the app.");
         }
 
         try {
-            String responseJson = restClient.post()
-                    .uri(CHAT_COMPLETIONS_PATH)
-                    .header(
-                            HttpHeaders.AUTHORIZATION,
-                            "Bearer " + apiKey)
-                    .header(
-                            HttpHeaders.ACCEPT,
-                            MediaType.APPLICATION_JSON_VALUE)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(objectMapper.writeValueAsString(
+
+            String systemPrompt = """
+                    You are a meal recommendation assistant for a nutrition app.
+
+                    Recommend meals that respect EVERY allergy, dietary restriction,
+                    and health consideration supplied by the user.
+
+                    Create fresh meal ideas based on the user's profile.
+
+                    For every meal provide:
+
+                    - name
+                    - reason
+                    - tags
+                    - ingredients
+                    - recipe
+
+                    Ingredients MUST be an array of individual ingredients.
+
+                    Recipe MUST be an array of simple step-by-step cooking instructions.
+
+                    Do not provide medical advice.
+
+                    Do not claim that food can treat, cure, or prevent disease.
+
+                    Keep reasons short, practical, and user-friendly.
+
+                    NEVER include an ingredient that violates one of the user's
+                    listed restrictions.
+
+                    Respond with ONLY valid JSON.
+
+                    Do NOT use markdown.
+                    Do NOT use code fences.
+                    Do NOT include any text before or after the JSON.
+
+                    Use exactly this structure:
+
+                    {
+                      "recommendations": [
+                        {
+                          "name": "Meal name",
+                          "reason": "Short reason",
+                          "tags": "tag1,tag2",
+                          "ingredients": [
+                            "ingredient 1",
+                            "ingredient 2"
+                          ],
+                          "recipe": [
+                            "Step 1",
+                            "Step 2"
+                          ]
+                        }
+                      ]
+                    }
+                    """;
+
+            String userPrompt =
+                    buildProfilePrompt(
+                            profile,
+                            restrictions);
+
+            String requestBody =
+                    objectMapper.writeValueAsString(
                             buildChatRequest(
-                                    """
-                                    You are a meal recommendation assistant for a nutrition app.
+                                    systemPrompt,
+                                    userPrompt));
 
-                                    Recommend meals that respect every allergy, dietary restriction,
-                                    and health condition supplied.
+            String responseJson =
+                    restClient.post()
+                            .uri(CHAT_COMPLETIONS_PATH)
+                            .header(
+                                    HttpHeaders.AUTHORIZATION,
+                                    "Bearer " + apiKey)
+                            .header(
+                                    HttpHeaders.ACCEPT,
+                                    MediaType.APPLICATION_JSON_VALUE)
+                            .contentType(
+                                    MediaType.APPLICATION_JSON)
+                            .body(requestBody)
+                            .retrieve()
+                            .body(String.class);
 
-                                    Create fresh meal ideas from the user's profile.
+            if (responseJson == null
+                    || responseJson.isBlank()) {
 
-                                    For every meal provide:
-                                    - name
-                                    - reason
-                                    - tags
-                                    - ingredients
-                                    - recipe
+                return new MealRecommendationResult(
+                        List.of(),
+                        "Hack Club AI returned an empty response.");
+            }
 
-                                    Ingredients must be a list of individual ingredients.
+            JsonNode response =
+                    objectMapper.readTree(responseJson);
 
-                                    Recipe must be a list of simple cooking steps.
+            String jsonText =
+                    extractMessageContent(response);
 
-                                    Do not provide medical advice or claim to treat disease.
+            if (jsonText == null
+                    || jsonText.isBlank()) {
 
-                                    Keep reasons short, practical, and user-friendly.
-
-                                    Return only meals that are safe for the listed restrictions.
-
-                                    Respond with ONLY a JSON object.
-                                    Do not use markdown.
-                                    Do not use code fences.
-
-                                    Use exactly this structure:
-
-                                    {
-                                      "recommendations": [
-                                        {
-                                          "name": "Meal name",
-                                          "reason": "Short reason",
-                                          "tags": "tag1,tag2",
-                                          "ingredients": [
-                                            "ingredient 1",
-                                            "ingredient 2"
-                                          ],
-                                          "recipe": [
-                                            "Step 1",
-                                            "Step 2"
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                    """,
-                                    buildProfilePrompt(
-                                            profile,
-                                            restrictions))))
-                    .retrieve()
-                    .body(String.class);
-
-            String jsonText = extractMessageContent(
-                    objectMapper.readTree(responseJson));
-
-            if (jsonText.isBlank()) {
                 return new MealRecommendationResult(
                         List.of(),
                         "Hack Club AI returned no meal text.");
             }
 
-            JsonNode recommendations =
-                    parseJsonPayload(jsonText).path("recommendations");
+            JsonNode payload =
+                    parseJsonPayload(jsonText);
 
-            List<MealRecommendation> meals = new ArrayList<>();
+            JsonNode recommendationsNode =
+                    payload.path("recommendations");
 
-            for (JsonNode meal : recommendations) {
+            if (!recommendationsNode.isArray()) {
 
-                String name = meal.path("name").asText("");
-                String reason = meal.path("reason").asText("");
-                String tags = meal.path("tags").asText("");
+                return new MealRecommendationResult(
+                        List.of(),
+                        "Hack Club AI returned an invalid meal recommendation format.");
+            }
 
-                List<String> ingredients = new ArrayList<>();
+            List<MealRecommendation> meals =
+                    new ArrayList<>();
 
-                JsonNode ingredientsNode = meal.path("ingredients");
+            for (JsonNode mealNode : recommendationsNode) {
 
-                if (ingredientsNode.isArray()) {
-                    for (JsonNode ingredient : ingredientsNode) {
-                        String ingredientText = ingredient.asText("");
+                String name =
+                        mealNode
+                                .path("name")
+                                .asText("")
+                                .trim();
 
-                        if (!ingredientText.isBlank()) {
-                            ingredients.add(ingredientText);
-                        }
-                    }
-                }
+                String reason =
+                        mealNode
+                                .path("reason")
+                                .asText("")
+                                .trim();
 
-                List<String> recipe = new ArrayList<>();
+                String tags =
+                        mealNode
+                                .path("tags")
+                                .asText("")
+                                .trim();
 
-                JsonNode recipeNode = meal.path("recipe");
+                List<String> ingredients =
+                        readStringList(
+                                mealNode.path("ingredients"));
 
-                if (recipeNode.isArray()) {
-                    for (JsonNode step : recipeNode) {
-                        String stepText = step.asText("");
+                List<String> instructions =
+                        readStringList(
+                                mealNode.path("recipe"));
 
-                        if (!stepText.isBlank()) {
-                            recipe.add(stepText);
-                        }
-                    }
+                /*
+                 * Some models may accidentally return "instructions"
+                 * instead of "recipe". Support both.
+                 */
+                if (instructions.isEmpty()) {
+
+                    instructions =
+                            readStringList(
+                                    mealNode.path("instructions"));
                 }
 
                 if (!name.isBlank()) {
+
                     meals.add(
                             new MealRecommendation(
                                     name,
                                     reason,
                                     tags,
                                     ingredients,
-                                    recipe));
+                                    instructions));
                 }
             }
 
             if (meals.isEmpty()) {
+
                 return new MealRecommendationResult(
                         List.of(),
-                        "Hack Club AI returned a response, but it did not include meal recommendations.");
+                        "Hack Club AI returned a response, but it did not contain any meals.");
             }
 
-            return new MealRecommendationResult(meals, "");
+            return new MealRecommendationResult(
+                    meals,
+                    "");
 
         } catch (RestClientResponseException ex) {
 
@@ -193,32 +249,33 @@ public class HackClubMealRecommendationClient {
                             + extractApiErrorMessage(
                                     ex.getResponseBodyAsString()));
 
-        } catch (RuntimeException ex) {
-
-            return new MealRecommendationResult(
-                    List.of(),
-                    "Hack Club AI request failed: "
-                            + ex.getMessage());
-
         } catch (Exception ex) {
 
             return new MealRecommendationResult(
                     List.of(),
                     "Hack Club AI response could not be parsed: "
-                            + ex.getMessage());
+                            + safeMessage(ex));
         }
     }
+
+    // ============================================================
+    // GROCERY LIST
+    // ============================================================
 
     public GroceryListResult recommendIngredients(
             List<String> savedMealNames) {
 
-        if (savedMealNames == null || savedMealNames.isEmpty()) {
+        if (savedMealNames == null
+                || savedMealNames.isEmpty()) {
+
             return new GroceryListResult(
                     List.of(),
                     "Save meals before updating your grocery list.");
         }
 
-        if (apiKey == null || apiKey.isBlank()) {
+        if (apiKey == null
+                || apiKey.isBlank()) {
+
             return new GroceryListResult(
                     List.of(),
                     "HACKCLUB_API_KEY is missing. Set it before starting the app.");
@@ -226,73 +283,91 @@ public class HackClubMealRecommendationClient {
 
         try {
 
-            String responseJson = restClient.post()
-                    .uri(CHAT_COMPLETIONS_PATH)
-                    .header(
-                            HttpHeaders.AUTHORIZATION,
-                            "Bearer " + apiKey)
-                    .header(
-                            HttpHeaders.ACCEPT,
-                            MediaType.APPLICATION_JSON_VALUE)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(objectMapper.writeValueAsString(
-                            buildChatRequest(
-                                    """
-                                    You create grocery lists for a meal planning app.
+            String systemPrompt = """
+                    You create grocery lists for a meal planning app.
 
-                                    Infer practical ingredients needed for the saved meals.
+                    Infer the practical ingredients needed for the saved meals.
 
-                                    Combine duplicate ingredients.
+                    Combine duplicate ingredients.
 
-                                    Keep each item short.
+                    Keep each grocery item short and practical.
 
-                                    Return ingredients only,
-                                    not cooking instructions.
+                    Return ingredients ONLY.
 
-                                    Respond with ONLY a JSON object.
+                    Do not return cooking instructions.
 
-                                    Use exactly this structure:
+                    Respond with ONLY valid JSON.
 
-                                    {
-                                      "ingredients": [
-                                        "item 1",
-                                        "item 2"
-                                      ]
-                                    }
-                                    """,
-                                    buildIngredientsPrompt(
-                                            savedMealNames))))
-                    .retrieve()
-                    .body(String.class);
+                    Do NOT use markdown.
+                    Do NOT use code fences.
 
-            String jsonText = extractMessageContent(
-                    objectMapper.readTree(responseJson));
+                    Use exactly this structure:
 
-            if (jsonText.isBlank()) {
+                    {
+                      "ingredients": [
+                        "item 1",
+                        "item 2"
+                      ]
+                    }
+                    """;
+
+            String userPrompt =
+                    buildIngredientsPrompt(
+                            savedMealNames);
+
+            String responseJson =
+                    restClient.post()
+                            .uri(CHAT_COMPLETIONS_PATH)
+                            .header(
+                                    HttpHeaders.AUTHORIZATION,
+                                    "Bearer " + apiKey)
+                            .header(
+                                    HttpHeaders.ACCEPT,
+                                    MediaType.APPLICATION_JSON_VALUE)
+                            .contentType(
+                                    MediaType.APPLICATION_JSON)
+                            .body(
+                                    objectMapper.writeValueAsString(
+                                            buildChatRequest(
+                                                    systemPrompt,
+                                                    userPrompt)))
+                            .retrieve()
+                            .body(String.class);
+
+            if (responseJson == null
+                    || responseJson.isBlank()) {
+
+                return new GroceryListResult(
+                        List.of(),
+                        "Hack Club AI returned an empty grocery response.");
+            }
+
+            JsonNode response =
+                    objectMapper.readTree(responseJson);
+
+            String jsonText =
+                    extractMessageContent(response);
+
+            if (jsonText == null
+                    || jsonText.isBlank()) {
+
                 return new GroceryListResult(
                         List.of(),
                         "Hack Club AI returned no grocery list text.");
             }
 
-            JsonNode ingredientsNode =
-                    parseJsonPayload(jsonText).path("ingredients");
+            JsonNode payload =
+                    parseJsonPayload(jsonText);
 
-            List<String> ingredients = new ArrayList<>();
-
-            for (JsonNode ingredient : ingredientsNode) {
-
-                String ingredientText =
-                        ingredient.asText("");
-
-                if (!ingredientText.isBlank()) {
-                    ingredients.add(ingredientText);
-                }
-            }
+            List<String> ingredients =
+                    readStringList(
+                            payload.path("ingredients"));
 
             if (ingredients.isEmpty()) {
+
                 return new GroceryListResult(
                         List.of(),
-                        "Hack Club AI returned a response, but it did not include ingredients.");
+                        "Hack Club AI returned a response, but it did not contain ingredients.");
             }
 
             return new GroceryListResult(
@@ -307,21 +382,18 @@ public class HackClubMealRecommendationClient {
                             + extractApiErrorMessage(
                                     ex.getResponseBodyAsString()));
 
-        } catch (RuntimeException ex) {
-
-            return new GroceryListResult(
-                    List.of(),
-                    "Hack Club AI request failed: "
-                            + ex.getMessage());
-
         } catch (Exception ex) {
 
             return new GroceryListResult(
                     List.of(),
                     "Hack Club AI response could not be parsed: "
-                            + ex.getMessage());
+                            + safeMessage(ex));
         }
     }
+
+    // ============================================================
+    // REQUEST BUILDER
+    // ============================================================
 
     private Map<String, Object> buildChatRequest(
             String systemPrompt,
@@ -349,6 +421,10 @@ public class HackClubMealRecommendationClient {
                 0.7);
     }
 
+    // ============================================================
+    // PROFILE PROMPT
+    // ============================================================
+
     private String buildProfilePrompt(
             DietaryProfile profile,
             List<String> restrictions) {
@@ -356,7 +432,7 @@ public class HackClubMealRecommendationClient {
         String goal =
                 profile.getGoal() == null
                         || profile.getGoal().isBlank()
-                                ? "balancedNutrition"
+                                ? "balanced nutrition"
                                 : profile.getGoal();
 
         String restrictionText =
@@ -368,29 +444,40 @@ public class HackClubMealRecommendationClient {
                                         restrictions);
 
         return """
-                Suggest meals for this user profile.
+                Suggest 4 varied meals for this user.
 
-                Goal: %s
+                Goal:
+                %s
 
-                Restrictions and health considerations: %s
+                Restrictions and health considerations:
+                %s
 
-                Output 3 or 4 varied meals.
+                Every meal MUST include:
 
-                Every meal must include:
                 - name
                 - reason
                 - tags
                 - ingredients
                 - recipe
 
-                Ingredients should be individual items.
+                Ingredients must be individual items.
 
-                Recipe should contain simple step-by-step cooking instructions.
+                Recipe must contain simple step-by-step cooking instructions.
+
+                Make the meals practical for a normal home kitchen.
+
+                Do not repeat the same meal four times.
+
+                Return ONLY the JSON object requested by the system prompt.
                 """
                 .formatted(
                         goal,
                         restrictionText);
     }
+
+    // ============================================================
+    // GROCERY PROMPT
+    // ============================================================
 
     private String buildIngredientsPrompt(
             List<String> savedMealNames) {
@@ -403,6 +490,8 @@ public class HackClubMealRecommendationClient {
                 Return 8 to 15 common ingredient items.
 
                 Combine duplicate ingredients.
+
+                Return ONLY the JSON object requested by the system prompt.
                 """
                 .formatted(
                         String.join(
@@ -410,24 +499,86 @@ public class HackClubMealRecommendationClient {
                                 savedMealNames));
     }
 
-    /**
-     * Pulls the assistant's reply out of an OpenAI-style
-     * chat completion response.
-     */
+    // ============================================================
+    // RESPONSE PARSING
+    // ============================================================
+
     private String extractMessageContent(
             JsonNode response) {
 
-        return response
-                .path("choices")
-                .path(0)
-                .path("message")
-                .path("content")
-                .asText("");
+        JsonNode choices =
+                response.path("choices");
+
+        if (!choices.isArray()
+                || choices.isEmpty()) {
+
+            return "";
+        }
+
+        JsonNode content =
+                choices
+                        .path(0)
+                        .path("message")
+                        .path("content");
+
+        if (content.isTextual()) {
+            return content.asText();
+        }
+
+        /*
+         * Some API/model combinations can return content
+         * as an array of content parts.
+         */
+        if (content.isArray()) {
+
+            StringBuilder builder =
+                    new StringBuilder();
+
+            for (JsonNode part : content) {
+
+                if (part.has("text")) {
+
+                    builder.append(
+                            part.path("text")
+                                    .asText(""));
+                }
+            }
+
+            return builder.toString();
+        }
+
+        return "";
+    }
+
+    private List<String> readStringList(
+            JsonNode node) {
+
+        List<String> values =
+                new ArrayList<>();
+
+        if (node == null
+                || !node.isArray()) {
+
+            return values;
+        }
+
+        for (JsonNode item : node) {
+
+            String value =
+                    item.asText("")
+                            .trim();
+
+            if (!value.isBlank()) {
+                values.add(value);
+            }
+        }
+
+        return values;
     }
 
     /**
-     * Removes markdown code fences if the AI accidentally
-     * returns JSON inside them.
+     * Removes markdown code fences and extracts the JSON object
+     * if the AI accidentally adds surrounding text.
      */
     private JsonNode parseJsonPayload(
             String text) throws Exception {
@@ -440,11 +591,12 @@ public class HackClubMealRecommendationClient {
             int firstNewline =
                     trimmed.indexOf('\n');
 
-            trimmed =
-                    firstNewline >= 0
-                            ? trimmed.substring(
-                                    firstNewline + 1)
-                            : "";
+            if (firstNewline >= 0) {
+
+                trimmed =
+                        trimmed.substring(
+                                firstNewline + 1);
+            }
 
             if (trimmed.endsWith("```")) {
 
@@ -458,9 +610,46 @@ public class HackClubMealRecommendationClient {
                     trimmed.trim();
         }
 
-        return objectMapper.readTree(
-                trimmed);
+        /*
+         * First try the response exactly as returned.
+         */
+        try {
+
+            return objectMapper.readTree(
+                    trimmed);
+
+        } catch (Exception ignored) {
+        }
+
+        /*
+         * If the model added text around the JSON,
+         * locate the first { and final }.
+         */
+        int start =
+                trimmed.indexOf('{');
+
+        int end =
+                trimmed.lastIndexOf('}');
+
+        if (start >= 0
+                && end > start) {
+
+            String possibleJson =
+                    trimmed.substring(
+                            start,
+                            end + 1);
+
+            return objectMapper.readTree(
+                    possibleJson);
+        }
+
+        throw new IllegalArgumentException(
+                "No valid JSON object was found in the AI response.");
     }
+
+    // ============================================================
+    // API ERROR
+    // ============================================================
 
     private String extractApiErrorMessage(
             String responseBody) {
@@ -473,21 +662,39 @@ public class HackClubMealRecommendationClient {
 
         try {
 
-            JsonNode message =
-                    objectMapper
-                            .readTree(responseBody)
-                            .path("error")
-                            .path("message");
+            JsonNode root =
+                    objectMapper.readTree(
+                            responseBody);
 
-            if (!message.isMissingNode()
-                    && !message.asText().isBlank()) {
+            String message =
+                    root.path("error")
+                            .path("message")
+                            .asText("");
 
-                return message.asText();
+            if (!message.isBlank()) {
+                return message;
             }
 
         } catch (Exception ignored) {
         }
 
         return responseBody;
+    }
+
+    // ============================================================
+    // SAFE ERROR MESSAGE
+    // ============================================================
+
+    private String safeMessage(
+            Exception ex) {
+
+        if (ex.getMessage() == null
+                || ex.getMessage().isBlank()) {
+
+            return ex.getClass()
+                    .getSimpleName();
+        }
+
+        return ex.getMessage();
     }
 }
