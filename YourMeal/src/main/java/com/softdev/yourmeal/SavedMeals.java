@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 
@@ -22,8 +23,11 @@ public class SavedMeals {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @jakarta.persistence.ManyToOne(optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(
+            name = "user_id",
+            nullable = false
+    )
     private AppUser user;
 
     @Column(nullable = false)
@@ -32,36 +36,51 @@ public class SavedMeals {
     @ElementCollection
     @CollectionTable(
             name = "saved_meal_ingredients",
-            joinColumns = @JoinColumn(name = "saved_meal_id")
+            joinColumns = @JoinColumn(
+                    name = "saved_meal_id"
+            )
     )
     @OrderColumn(name = "ingredient_order")
     @Column(name = "ingredient")
-    private List<String> ingredients = new ArrayList<>();
+    private List<String> ingredients =
+            new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(
             name = "saved_meal_instructions",
-            joinColumns = @JoinColumn(name = "saved_meal_id")
+            joinColumns = @JoinColumn(
+                    name = "saved_meal_id"
+            )
     )
     @OrderColumn(name = "instruction_order")
     @Column(name = "instruction")
-    private List<String> instructions = new ArrayList<>();
+    private List<String> instructions =
+            new ArrayList<>();
 
     protected SavedMeals() {
     }
 
     /*
-     * Constructor for old code that only has a meal name.
+     * Constructor for older code that only
+     * provides a meal name.
      */
-    public SavedMeals(AppUser user, String mealNames) {
+    public SavedMeals(
+            AppUser user,
+            String mealNames) {
+
         this.user = user;
         this.mealNames = mealNames;
-        this.ingredients = new ArrayList<>();
-        this.instructions = new ArrayList<>();
+
+        this.ingredients =
+                new ArrayList<>();
+
+        this.instructions =
+                new ArrayList<>();
     }
 
     /*
-     * Constructor used when saving a complete AI recommendation.
+     * Constructor used when saving a complete
+     * AI recommendation.
      */
     public SavedMeals(
             AppUser user,
@@ -72,13 +91,15 @@ public class SavedMeals {
         this.user = user;
         this.mealNames = mealNames;
 
-        this.ingredients = ingredients == null
-                ? new ArrayList<>()
-                : new ArrayList<>(ingredients);
+        this.ingredients =
+                ingredients == null
+                        ? new ArrayList<>()
+                        : new ArrayList<>(ingredients);
 
-        this.instructions = instructions == null
-                ? new ArrayList<>()
-                : new ArrayList<>(instructions);
+        this.instructions =
+                instructions == null
+                        ? new ArrayList<>()
+                        : new ArrayList<>(instructions);
     }
 
     public Long getId() {
