@@ -30,12 +30,23 @@ public class MainController {
             SavedMealsRepository savedMealsRepository,
             GroceryIngredientRepository groceryIngredientRepository) {
 
-        this.appUserRepository = appUserRepository;
-        this.dietaryProfileRepository = dietaryProfileRepository;
-        this.mealRecommendationService = mealRecommendationService;
-        this.sqleditor = sqleditor;
-        this.savedMealsRepository = savedMealsRepository;
-        this.groceryIngredientRepository = groceryIngredientRepository;
+        this.appUserRepository =
+                appUserRepository;
+
+        this.dietaryProfileRepository =
+                dietaryProfileRepository;
+
+        this.mealRecommendationService =
+                mealRecommendationService;
+
+        this.sqleditor =
+                sqleditor;
+
+        this.savedMealsRepository =
+                savedMealsRepository;
+
+        this.groceryIngredientRepository =
+                groceryIngredientRepository;
     }
 
     // ============================================================
@@ -56,7 +67,8 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user = getLoggedInUser(session);
+        AppUser user =
+                getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/login";
@@ -69,8 +81,13 @@ public class MainController {
                                 dietaryProfileRepository.save(
                                         new DietaryProfile(user)));
 
-        model.addAttribute("name", user.getName());
-        model.addAttribute("profile", profile);
+        model.addAttribute(
+                "name",
+                user.getName());
+
+        model.addAttribute(
+                "profile",
+                profile);
 
         return "selection";
     }
@@ -127,7 +144,8 @@ public class MainController {
 
             HttpSession session) {
 
-        AppUser user = getLoggedInUser(session);
+        AppUser user =
+                getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/login";
@@ -139,24 +157,56 @@ public class MainController {
                         .orElseGet(() ->
                                 new DietaryProfile(user));
 
-        profile.setVegetarian(vegetarian);
-        profile.setVegan(vegan);
-        profile.setGlutenFree(gluten);
-        profile.setDairyFree(dairy);
-        profile.setNutFree(nuts);
-        profile.setEggFree(egg);
-        profile.setPeanutFree(peanuts);
-        profile.setShellfishFree(shellfish);
-        profile.setSoyFree(soy);
-        profile.setFishFree(fish);
-        profile.setDiabetes(diabetes);
-        profile.setHBP(HBP);
-        profile.setKidneyDisease(kidney);
-        profile.setIBS(IBS);
-        profile.setCeliacDisease(celiac);
-        profile.setGoal(goal);
+        profile.setVegetarian(
+                vegetarian);
 
-        dietaryProfileRepository.save(profile);
+        profile.setVegan(
+                vegan);
+
+        profile.setGlutenFree(
+                gluten);
+
+        profile.setDairyFree(
+                dairy);
+
+        profile.setNutFree(
+                nuts);
+
+        profile.setEggFree(
+                egg);
+
+        profile.setPeanutFree(
+                peanuts);
+
+        profile.setShellfishFree(
+                shellfish);
+
+        profile.setSoyFree(
+                soy);
+
+        profile.setFishFree(
+                fish);
+
+        profile.setDiabetes(
+                diabetes);
+
+        profile.setHBP(
+                HBP);
+
+        profile.setKidneyDisease(
+                kidney);
+
+        profile.setIBS(
+                IBS);
+
+        profile.setCeliacDisease(
+                celiac);
+
+        profile.setGoal(
+                goal);
+
+        dietaryProfileRepository.save(
+                profile);
 
         return "redirect:/dashboard/dashboard";
     }
@@ -170,10 +220,12 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user = getLoggedInUser(session);
+        AppUser user =
+                getLoggedInUser(session);
 
         if (user == null
-                || !"admin@gmail.com".equals(user.getEmail())) {
+                || !"admin@gmail.com"
+                        .equals(user.getEmail())) {
 
             return "redirect:/";
         }
@@ -189,7 +241,8 @@ public class MainController {
     public String deleteUser(
             @RequestParam Long userId) {
 
-        sqleditor.deleteUserById(userId);
+        sqleditor.deleteUserById(
+                userId);
 
         return "redirect:/admin/users";
     }
@@ -199,7 +252,8 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user = getLoggedInUser(session);
+        AppUser user =
+                getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/";
@@ -230,7 +284,8 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user = getLoggedInUser(session);
+        AppUser user =
+                getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/";
@@ -249,21 +304,12 @@ public class MainController {
 
         List<String> restrictions =
                 mealRecommendationService
-                        .describeRestrictions(profile);
-
-        List<SavedMeals> existingMeals =
-                savedMealsRepository.findByUser(user);
-
-        for (SavedMeals meal : existingMeals) {
-
-            if (meal.getMealNames() == null) {
-                sqleditor.deleteNullMeals(
-                        meal.getId());
-            }
-        }
+                        .describeRestrictions(
+                                profile);
 
         List<SavedMeals> savedMeals =
-                savedMealsRepository.findByUser(user);
+                savedMealsRepository
+                        .findByUser(user);
 
         model.addAttribute(
                 "savedMeals",
@@ -301,7 +347,8 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user = getLoggedInUser(session);
+        AppUser user =
+                getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/";
@@ -327,7 +374,8 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user = getLoggedInUser(session);
+        AppUser user =
+                getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/";
@@ -344,52 +392,23 @@ public class MainController {
                 mealRecommendationService
                         .recommendMeals(profile);
 
-        List<MealRecommendation> recommendations =
-                result.meals();
-
-        List<SavedMeals> savedMeals =
-                savedMealsRepository.findByUser(user);
-
-        model.addAttribute(
-                "savedMeals",
-                savedMeals);
-
-        model.addAttribute(
-                "hasSavedMeals",
-                !savedMeals.isEmpty());
-
-        model.addAttribute(
-                "showRecommendations",
-                true);
-
-        model.addAttribute(
-                "recommendations",
-                recommendations);
-
-        model.addAttribute(
-                "hasRecommendations",
+        loadMealsPage(
+                user,
+                model,
+                true,
+                result.meals(),
+                result.statusMessage(),
                 result.hasMeals());
-
-        model.addAttribute(
-                "recommendationStatus",
-                result.statusMessage());
 
         return "dashboard/meals";
     }
 
     // ============================================================
     // SAVE SELECTED MEALS
-    //
-    // BOTH URLs ARE SUPPORTED:
-    //
-    // POST /dashboard/meals
-    // POST /dashboard/meals/save
-    //
-    // This prevents the old/new HTML versions from breaking.
     // ============================================================
 
     @PostMapping("/dashboard/meals")
-    public String saveMealsFromMainUrl(
+    public String saveMeals(
             HttpSession session,
             @RequestParam Map<String, String> params) {
 
@@ -398,8 +417,11 @@ public class MainController {
                 params);
     }
 
+    /*
+     * Keep this route too so older HTML cannot break.
+     */
     @PostMapping("/dashboard/meals/save")
-    public String saveMealsFromSaveUrl(
+    public String saveMealsAlternate(
             HttpSession session,
             @RequestParam Map<String, String> params) {
 
@@ -409,50 +431,36 @@ public class MainController {
     }
 
     // ============================================================
-    // ACTUAL SAVE LOGIC
+    // SAVE LOGIC
     // ============================================================
 
     private String saveMealsInternal(
             HttpSession session,
             Map<String, String> params) {
 
-        AppUser user = getLoggedInUser(session);
+        AppUser user =
+                getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/login";
         }
 
-        /*
-         * The HTML sends:
-         *
-         * selectedMeal=0
-         * selectedMeal=2
-         *
-         * and:
-         *
-         * mealName_0=Chicken Rice Bowl
-         * mealName_1=...
-         * mealName_2=...
-         *
-         * This avoids relying on Spring's List indexing.
-         */
-
-        String selectedMealsString =
+        String selectedMeals =
                 params.get("selectedMeals");
 
-        if (selectedMealsString == null
-                || selectedMealsString.isBlank()) {
+        if (selectedMeals == null
+                || selectedMeals.isBlank()) {
 
             return "redirect:/dashboard/meals";
         }
 
-        String[] selectedIndexes =
-                selectedMealsString.split(",");
+        String[] indexes =
+                selectedMeals.split(",");
 
-        for (String indexString : selectedIndexes) {
+        for (String indexText : indexes) {
 
-            if (indexString == null
-                    || indexString.isBlank()) {
+            if (indexText == null
+                    || indexText.isBlank()) {
 
                 continue;
             }
@@ -460,23 +468,19 @@ public class MainController {
             int index;
 
             try {
-                index = Integer.parseInt(
-                        indexString.trim());
-            } catch (NumberFormatException e) {
+
+                index =
+                        Integer.parseInt(
+                                indexText.trim());
+
+            } catch (NumberFormatException ex) {
+
                 continue;
             }
 
-            String nameKey =
-                    "mealName_" + index;
-
-            String ingredientsKey =
-                    "mealIngredients_" + index;
-
-            String instructionsKey =
-                    "mealInstructions_" + index;
-
             String mealName =
-                    params.get(nameKey);
+                    params.get(
+                            "mealName_" + index);
 
             if (mealName == null
                     || mealName.isBlank()) {
@@ -484,13 +488,35 @@ public class MainController {
                 continue;
             }
 
+            String ingredientsData =
+                    params.get(
+                            "mealIngredients_" + index);
+
+            String instructionsData =
+                    params.get(
+                            "mealInstructions_" + index);
+
             List<String> ingredients =
                     splitMealData(
-                            params.get(ingredientsKey));
+                            ingredientsData);
 
             List<String> instructions =
                     splitMealData(
-                            params.get(instructionsKey));
+                            instructionsData);
+
+            /*
+             * Prevent accidentally saving an identical meal
+             * multiple times.
+             */
+            boolean alreadySaved =
+                    savedMealsRepository
+                            .existsByUserAndMealNames(
+                                    user,
+                                    mealName.trim());
+
+            if (alreadySaved) {
+                continue;
+            }
 
             SavedMeals savedMeal =
                     new SavedMeals(
@@ -503,11 +529,17 @@ public class MainController {
                     savedMeal);
         }
 
+        /*
+         * Redirect to the real GET page.
+         *
+         * This is important because refreshing the page
+         * will not resubmit the save POST.
+         */
         return "redirect:/dashboard/meals";
     }
 
     // ============================================================
-    // SPLIT INGREDIENTS / INSTRUCTIONS
+    // SPLIT MEAL DATA
     // ============================================================
 
     private List<String> splitMealData(
@@ -650,7 +682,7 @@ public class MainController {
     }
 
     // ============================================================
-    // MEALS MODEL HELPER
+    // MEALS MODEL
     // ============================================================
 
     private void loadMealsPage(
@@ -662,7 +694,8 @@ public class MainController {
             boolean hasRecommendations) {
 
         List<SavedMeals> savedMeals =
-                savedMealsRepository.findByUser(user);
+                savedMealsRepository
+                        .findByUser(user);
 
         model.addAttribute(
                 "savedMeals",
@@ -809,7 +842,8 @@ public class MainController {
             HttpSession session) {
 
         Object userId =
-                session.getAttribute("userId");
+                session.getAttribute(
+                        "userId");
 
         if (!(userId instanceof Long)) {
             return null;
