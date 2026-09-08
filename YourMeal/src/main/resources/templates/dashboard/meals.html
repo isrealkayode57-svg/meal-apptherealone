@@ -14,12 +14,16 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <link rel="preconnect"
-          href="https://fonts.googleapis.com">
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
 
-    <link rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossorigin>
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
 
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
@@ -579,6 +583,8 @@
 
         <div th:if="${showRecommendations}">
 
+            <!-- SAVE RECOMMENDED MEALS -->
+
             <form
                 th:action="@{/dashboard/meals}"
                 method="post"
@@ -600,6 +606,8 @@
                         th:each="meal, stat : ${recommendations}"
                     >
 
+                        <!-- CHECKBOX + TITLE -->
+
                         <div class="meal-top">
 
                             <div class="meal-title">
@@ -620,11 +628,15 @@
 
                         </div>
 
+                        <!-- REASON -->
+
                         <p
                             th:text="${meal.reason()}"
                         >
                             Meal reason goes here.
                         </p>
+
+                        <!-- TAGS -->
 
                         <div
                             class="tags"
@@ -640,6 +652,8 @@
                             </span>
 
                         </div>
+
+                        <!-- INGREDIENTS -->
 
                         <div class="recipe-section">
 
@@ -660,6 +674,8 @@
 
                         </div>
 
+                        <!-- RECIPE -->
+
                         <div class="recipe-section">
 
                             <h4>
@@ -678,6 +694,8 @@
                             </ol>
 
                         </div>
+
+                        <!-- HIDDEN DATA FOR SAVING -->
 
                         <input
                             type="hidden"
@@ -752,10 +770,13 @@
 
         function toggleSidebar() {
 
-            sidebar.classList.toggle("active");
+            sidebar.classList.toggle(
+                "active"
+            );
 
-            main.classList.toggle("active");
-
+            main.classList.toggle(
+                "active"
+            );
         }
 
         // ========================================================
@@ -836,7 +857,9 @@
                         }
                     );
 
-                    if (selectedIndexes.length === 0) {
+                    if (
+                        selectedIndexes.length === 0
+                    ) {
 
                         event.preventDefault();
 
@@ -845,7 +868,6 @@
                         );
 
                         return;
-
                     }
 
                     const selectedMeals =
@@ -867,7 +889,6 @@
 
                         saveButton.textContent =
                             "Saving...";
-
                     }
 
                 }
@@ -884,9 +905,13 @@
             function(event) {
 
                 if (
-                    !sidebar.contains(event.target)
+                    !sidebar.contains(
+                        event.target
+                    )
                     &&
-                    !menu.contains(event.target)
+                    !menu.contains(
+                        event.target
+                    )
                 ) {
 
                     sidebar.classList.remove(
