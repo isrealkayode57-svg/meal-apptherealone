@@ -30,23 +30,12 @@ public class MainController {
             SavedMealsRepository savedMealsRepository,
             GroceryIngredientRepository groceryIngredientRepository) {
 
-        this.appUserRepository =
-                appUserRepository;
-
-        this.dietaryProfileRepository =
-                dietaryProfileRepository;
-
-        this.mealRecommendationService =
-                mealRecommendationService;
-
-        this.sqleditor =
-                sqleditor;
-
-        this.savedMealsRepository =
-                savedMealsRepository;
-
-        this.groceryIngredientRepository =
-                groceryIngredientRepository;
+        this.appUserRepository = appUserRepository;
+        this.dietaryProfileRepository = dietaryProfileRepository;
+        this.mealRecommendationService = mealRecommendationService;
+        this.sqleditor = sqleditor;
+        this.savedMealsRepository = savedMealsRepository;
+        this.groceryIngredientRepository = groceryIngredientRepository;
     }
 
     // ============================================================
@@ -67,8 +56,7 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/login";
@@ -81,13 +69,8 @@ public class MainController {
                                 dietaryProfileRepository.save(
                                         new DietaryProfile(user)));
 
-        model.addAttribute(
-                "name",
-                user.getName());
-
-        model.addAttribute(
-                "profile",
-                profile);
+        model.addAttribute("name", user.getName());
+        model.addAttribute("profile", profile);
 
         return "selection";
     }
@@ -144,8 +127,7 @@ public class MainController {
 
             HttpSession session) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/login";
@@ -157,56 +139,24 @@ public class MainController {
                         .orElseGet(() ->
                                 new DietaryProfile(user));
 
-        profile.setVegetarian(
-                vegetarian);
+        profile.setVegetarian(vegetarian);
+        profile.setVegan(vegan);
+        profile.setGlutenFree(gluten);
+        profile.setDairyFree(dairy);
+        profile.setNutFree(nuts);
+        profile.setEggFree(egg);
+        profile.setPeanutFree(peanuts);
+        profile.setShellfishFree(shellfish);
+        profile.setSoyFree(soy);
+        profile.setFishFree(fish);
+        profile.setDiabetes(diabetes);
+        profile.setHBP(HBP);
+        profile.setKidneyDisease(kidney);
+        profile.setIBS(IBS);
+        profile.setCeliacDisease(celiac);
+        profile.setGoal(goal);
 
-        profile.setVegan(
-                vegan);
-
-        profile.setGlutenFree(
-                gluten);
-
-        profile.setDairyFree(
-                dairy);
-
-        profile.setNutFree(
-                nuts);
-
-        profile.setEggFree(
-                egg);
-
-        profile.setPeanutFree(
-                peanuts);
-
-        profile.setShellfishFree(
-                shellfish);
-
-        profile.setSoyFree(
-                soy);
-
-        profile.setFishFree(
-                fish);
-
-        profile.setDiabetes(
-                diabetes);
-
-        profile.setHBP(
-                HBP);
-
-        profile.setKidneyDisease(
-                kidney);
-
-        profile.setIBS(
-                IBS);
-
-        profile.setCeliacDisease(
-                celiac);
-
-        profile.setGoal(
-                goal);
-
-        dietaryProfileRepository.save(
-                profile);
+        dietaryProfileRepository.save(profile);
 
         return "redirect:/dashboard/dashboard";
     }
@@ -220,12 +170,10 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null
-                || !"admin@gmail.com"
-                        .equals(user.getEmail())) {
+                || !"admin@gmail.com".equals(user.getEmail())) {
 
             return "redirect:/";
         }
@@ -241,8 +189,7 @@ public class MainController {
     public String deleteUser(
             @RequestParam Long userId) {
 
-        sqleditor.deleteUserById(
-                userId);
+        sqleditor.deleteUserById(userId);
 
         return "redirect:/admin/users";
     }
@@ -252,8 +199,7 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/";
@@ -284,8 +230,7 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/";
@@ -304,12 +249,21 @@ public class MainController {
 
         List<String> restrictions =
                 mealRecommendationService
-                        .describeRestrictions(
-                                profile);
+                        .describeRestrictions(profile);
+
+        List<SavedMeals> existingMeals =
+                savedMealsRepository.findByUser(user);
+
+        for (SavedMeals meal : existingMeals) {
+
+            if (meal.getMealNames() == null) {
+                sqleditor.deleteNullMeals(
+                        meal.getId());
+            }
+        }
 
         List<SavedMeals> savedMeals =
-                savedMealsRepository
-                        .findByUser(user);
+                savedMealsRepository.findByUser(user);
 
         model.addAttribute(
                 "savedMeals",
@@ -347,8 +301,7 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/";
@@ -374,8 +327,7 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/";
@@ -392,23 +344,47 @@ public class MainController {
                 mealRecommendationService
                         .recommendMeals(profile);
 
-        loadMealsPage(
-                user,
-                model,
-                true,
-                result.meals(),
-                result.statusMessage(),
+        List<MealRecommendation> recommendations =
+                result.meals();
+
+        List<SavedMeals> savedMeals =
+                savedMealsRepository.findByUser(user);
+
+        model.addAttribute(
+                "savedMeals",
+                savedMeals);
+
+        model.addAttribute(
+                "hasSavedMeals",
+                !savedMeals.isEmpty());
+
+        model.addAttribute(
+                "showRecommendations",
+                true);
+
+        model.addAttribute(
+                "recommendations",
+                recommendations);
+
+        model.addAttribute(
+                "hasRecommendations",
                 result.hasMeals());
+
+        model.addAttribute(
+                "recommendationStatus",
+                result.statusMessage());
 
         return "dashboard/meals";
     }
 
     // ============================================================
     // SAVE SELECTED MEALS
+    //
+    // BOTH URLS ARE SUPPORTED
     // ============================================================
 
     @PostMapping("/dashboard/meals")
-    public String saveMeals(
+    public String saveMealsFromMainUrl(
             HttpSession session,
             @RequestParam Map<String, String> params) {
 
@@ -417,11 +393,8 @@ public class MainController {
                 params);
     }
 
-    /*
-     * Keep this route too so older HTML cannot break.
-     */
     @PostMapping("/dashboard/meals/save")
-    public String saveMealsAlternate(
+    public String saveMealsFromSaveUrl(
             HttpSession session,
             @RequestParam Map<String, String> params) {
 
@@ -431,36 +404,35 @@ public class MainController {
     }
 
     // ============================================================
-    // SAVE LOGIC
+    // ACTUAL SAVE LOGIC
     // ============================================================
 
     private String saveMealsInternal(
             HttpSession session,
             Map<String, String> params) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/login";
         }
 
-        String selectedMeals =
+        String selectedMealsString =
                 params.get("selectedMeals");
 
-        if (selectedMeals == null
-                || selectedMeals.isBlank()) {
+        if (selectedMealsString == null
+                || selectedMealsString.isBlank()) {
 
             return "redirect:/dashboard/meals";
         }
 
-        String[] indexes =
-                selectedMeals.split(",");
+        String[] selectedIndexes =
+                selectedMealsString.split(",");
 
-        for (String indexText : indexes) {
+        for (String indexString : selectedIndexes) {
 
-            if (indexText == null
-                    || indexText.isBlank()) {
+            if (indexString == null
+                    || indexString.isBlank()) {
 
                 continue;
             }
@@ -468,19 +440,23 @@ public class MainController {
             int index;
 
             try {
-
-                index =
-                        Integer.parseInt(
-                                indexText.trim());
-
-            } catch (NumberFormatException ex) {
-
+                index = Integer.parseInt(
+                        indexString.trim());
+            } catch (NumberFormatException e) {
                 continue;
             }
 
+            String nameKey =
+                    "mealName_" + index;
+
+            String ingredientsKey =
+                    "mealIngredients_" + index;
+
+            String instructionsKey =
+                    "mealInstructions_" + index;
+
             String mealName =
-                    params.get(
-                            "mealName_" + index);
+                    params.get(nameKey);
 
             if (mealName == null
                     || mealName.isBlank()) {
@@ -488,40 +464,31 @@ public class MainController {
                 continue;
             }
 
-            String ingredientsData =
-                    params.get(
-                            "mealIngredients_" + index);
+            mealName = mealName.trim();
 
-            String instructionsData =
-                    params.get(
-                            "mealInstructions_" + index);
+            /*
+             * Prevent duplicate saved meals for the same user.
+             */
+            if (savedMealsRepository
+                    .existsByUserAndMealNames(
+                            user,
+                            mealName)) {
+
+                continue;
+            }
 
             List<String> ingredients =
                     splitMealData(
-                            ingredientsData);
+                            params.get(ingredientsKey));
 
             List<String> instructions =
                     splitMealData(
-                            instructionsData);
-
-            /*
-             * Prevent accidentally saving an identical meal
-             * multiple times.
-             */
-            boolean alreadySaved =
-                    savedMealsRepository
-                            .existsByUserAndMealNames(
-                                    user,
-                                    mealName.trim());
-
-            if (alreadySaved) {
-                continue;
-            }
+                            params.get(instructionsKey));
 
             SavedMeals savedMeal =
                     new SavedMeals(
                             user,
-                            mealName.trim(),
+                            mealName,
                             ingredients,
                             instructions);
 
@@ -529,17 +496,11 @@ public class MainController {
                     savedMeal);
         }
 
-        /*
-         * Redirect to the real GET page.
-         *
-         * This is important because refreshing the page
-         * will not resubmit the save POST.
-         */
         return "redirect:/dashboard/meals";
     }
 
     // ============================================================
-    // SPLIT MEAL DATA
+    // SPLIT INGREDIENTS / INSTRUCTIONS
     // ============================================================
 
     private List<String> splitMealData(
@@ -682,7 +643,7 @@ public class MainController {
     }
 
     // ============================================================
-    // MEALS MODEL
+    // MEALS MODEL HELPER
     // ============================================================
 
     private void loadMealsPage(
@@ -694,8 +655,7 @@ public class MainController {
             boolean hasRecommendations) {
 
         List<SavedMeals> savedMeals =
-                savedMealsRepository
-                        .findByUser(user);
+                savedMealsRepository.findByUser(user);
 
         model.addAttribute(
                 "savedMeals",
@@ -842,8 +802,7 @@ public class MainController {
             HttpSession session) {
 
         Object userId =
-                session.getAttribute(
-                        "userId");
+                session.getAttribute("userId");
 
         if (!(userId instanceof Long)) {
             return null;
