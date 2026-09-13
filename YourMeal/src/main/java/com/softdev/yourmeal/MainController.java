@@ -391,22 +391,33 @@ public class MainController {
                 "showRecommendations",
                 true);
 
+        // Stash the generated recommendations in the session so
+        // that saveMeals() below can look up the FULL recipe
+        // (ingredients + instructions) by index, instead of only
+        // ever receiving a bare meal name from the form.
+        session.setAttribute(
+                "lastRecommendations",
+                recommendations);
+
         return "dashboard/meals";
     }
 
     // ============================================================
     // SAVE SELECTED MEALS
     //
-    // OLD / SIMPLE VERSION
-    //
-    // Only saves the meal name.
+    // Saves the full recipe (name, ingredients, instructions) for
+    // each checked recommendation. The form submits the INDEX of
+    // each checked meal (matching its position in the last
+    // generated recommendation list, stored in the session above)
+    // rather than just its name, so we can recover the full
+    // MealRecommendation object instead of only a plain string.
     // ============================================================
 
     @PostMapping("/dashboard/meals")
     public String saveMeals(
             HttpSession session,
-            @RequestParam(name = "mealName", required = false)
-            List<String> mealNames) {
+            @RequestParam(name = "mealIndex", required = false)
+            List<Integer> mealIndexes) {
 
         AppUser user = getLoggedInUser(session);
 
@@ -414,22 +425,46 @@ public class MainController {
             return "redirect:/login";
         }
 
-        if (mealNames == null || mealNames.isEmpty()) {
+        if (mealIndexes == null || mealIndexes.isEmpty()) {
             return "redirect:/dashboard/meals";
         }
 
-        for (String mealName : mealNames) {
+        @SuppressWarnings("unchecked")
+        List<MealRecommendation> lastRecommendations =
+                (List<MealRecommendation>)
+                        session.getAttribute("lastRecommendations");
 
-            if (mealName == null || mealName.isBlank()) {
+        if (lastRecommendations == null
+                || lastRecommendations.isEmpty()) {
+
+            // Session expired, or the user navigated here without
+            // generating recommendations first. Nothing to save.
+            return "redirect:/dashboard/meals";
+        }
+
+        for (Integer index : mealIndexes) {
+
+            if (index == null
+                    || index < 0
+                    || index >= lastRecommendations.size()) {
                 continue;
             }
 
-            String trimmedMealName = mealName.trim();
+            MealRecommendation meal =
+                    lastRecommendations.get(index);
+
+            if (meal == null
+                    || meal.name() == null
+                    || meal.name().isBlank()) {
+                continue;
+            }
 
             SavedMeals savedMeal =
                     new SavedMeals(
                             user,
-                            trimmedMealName);
+                            meal.name().trim(),
+                            meal.ingredients(),
+                            meal.instructions());
 
             savedMealsRepository.save(savedMeal);
         }
