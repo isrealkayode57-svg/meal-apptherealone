@@ -213,7 +213,7 @@
             </p>
 
             <form
-                    action="/dashboard/meals/recommend"
+                    th:action="@{/dashboard/meals/recommend}"
                     method="post"
                     class="ai-form">
 
@@ -243,7 +243,43 @@
                         Meal Name
                     </div>
 
-                    <p>
+                    <!-- INGREDIENTS, IF ANY WERE SAVED -->
+                    <div
+                            class="ingredients"
+                            th:if="${savedMeal.ingredients != null and !savedMeal.ingredients.isEmpty()}">
+
+                        <strong>Ingredients:</strong>
+
+                        <ul>
+                            <li
+                                    th:each="ingredient : ${savedMeal.ingredients}"
+                                    th:text="${ingredient}">
+                                Ingredient
+                            </li>
+                        </ul>
+
+                    </div>
+
+                    <!-- INSTRUCTIONS, IF ANY WERE SAVED -->
+                    <div
+                            class="instructions"
+                            th:if="${savedMeal.instructions != null and !savedMeal.instructions.isEmpty()}">
+
+                        <strong>Instructions:</strong>
+
+                        <ol>
+                            <li
+                                    th:each="instruction : ${savedMeal.instructions}"
+                                    th:text="${instruction}">
+                                Instruction
+                            </li>
+                        </ol>
+
+                    </div>
+
+                    <p
+                            th:if="${savedMeal.ingredients == null or savedMeal.ingredients.isEmpty()}"
+                            class="empty">
                         Saved to your meal list.
                     </p>
 
@@ -269,7 +305,7 @@
                     th:if="${hasRecommendations}">
 
                 <form
-                        action="/dashboard/meals"
+                        th:action="@{/dashboard/meals}"
                         method="post"
                         id="saveMealsForm">
 
@@ -279,11 +315,21 @@
 
                         <div class="recommendation-header">
 
-                            <!-- THE MEAL NAME IS WHAT GETS SUBMITTED -->
+                            <!--
+                                We submit the INDEX of this meal
+                                (its position in the recommendation
+                                list) rather than its name. The
+                                server stored the full list of
+                                MealRecommendation objects in the
+                                session when it generated them, so
+                                it can look up the complete recipe
+                                -- ingredients and instructions
+                                included -- from just this index.
+                            -->
                             <input
                                     type="checkbox"
-                                    name="mealName"
-                                    th:value="${meal.name()}"
+                                    name="mealIndex"
+                                    th:value="${stat.index}"
                             >
 
                             <span
@@ -311,7 +357,7 @@
                         </div>
 
 
-                        <!-- INGREDIENTS ARE ONLY DISPLAYED -->
+                        <!-- INGREDIENTS ARE ONLY DISPLAYED HERE -->
                         <div
                                 class="ingredients"
                                 th:if="${meal.ingredients() != null and !meal.ingredients().isEmpty()}">
@@ -329,7 +375,7 @@
                         </div>
 
 
-                        <!-- INSTRUCTIONS ARE ONLY DISPLAYED -->
+                        <!-- INSTRUCTIONS ARE ONLY DISPLAYED HERE -->
                         <div
                                 class="instructions"
                                 th:if="${meal.instructions() != null and !meal.instructions().isEmpty()}">
@@ -390,7 +436,7 @@
 
             const selectedMeals =
                 saveForm.querySelectorAll(
-                    "input[name='mealName']:checked"
+                    "input[name='mealIndex']:checked"
                 );
 
             if (selectedMeals.length === 0) {
