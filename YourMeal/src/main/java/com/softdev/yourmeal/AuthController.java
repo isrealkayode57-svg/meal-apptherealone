@@ -1,4 +1,3 @@
-
 package com.softdev.yourmeal;
 
 import jakarta.servlet.http.HttpSession;
@@ -107,8 +106,8 @@ appUserRepository.save(user);
 // Automatically log the user in
 session.setAttribute("userId", user.getId());
 
-// Go straight to the restrictions page
-return "redirect:/dashboard/restrictions";
+// Go straight to the dietary selection page
+return "redirect:/selection";
     }
 
     // -------------------------
@@ -123,4 +122,3 @@ return "redirect:/dashboard/restrictions";
         return "redirect:/login";
     }
 }
-
