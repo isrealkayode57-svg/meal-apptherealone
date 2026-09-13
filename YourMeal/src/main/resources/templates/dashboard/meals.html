@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YourMeal - Meals</title>
+    <title>YourMeal - Meal Recommendations</title>
 
     <style>
         * {
@@ -141,18 +141,6 @@
             margin-top: 8px;
         }
 
-        .saved-meal {
-            padding: 15px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-
-        .saved-meal-name {
-            font-weight: bold;
-            font-size: 18px;
-        }
-
         .empty {
             color: #6b7280;
         }
@@ -187,7 +175,8 @@
 
         <nav class="nav">
             <a href="/dashboard/dashboard">Dashboard</a>
-            <a href="/dashboard/meals" class="active">Meals</a>
+            <a href="/dashboard/meals" class="active">Meal Recommendations</a>
+            <a href="/dashboard/actualmeals">Meals</a>
             <a href="/dashboard/planner">Planner</a>
             <a href="/dashboard/grocery">Grocery</a>
             <a href="/selection">Dietary Selection</a>
@@ -200,7 +189,7 @@
     <!-- MAIN CONTENT -->
     <main class="main">
 
-        <h1>Meals</h1>
+        <h1>Meal Recommendations</h1>
 
 
         <!-- GENERATE RECOMMENDATIONS -->
@@ -226,74 +215,6 @@
         </div>
 
 
-        <!-- SAVED MEALS -->
-        <div class="card">
-
-            <h2>Saved Meals</h2>
-
-            <div th:if="${hasSavedMeals}">
-
-                <div
-                        class="saved-meal"
-                        th:each="savedMeal : ${savedMeals}">
-
-                    <div
-                            class="saved-meal-name"
-                            th:text="${savedMeal.mealNames}">
-                        Meal Name
-                    </div>
-
-                    <!-- INGREDIENTS, IF ANY WERE SAVED -->
-                    <div
-                            class="ingredients"
-                            th:if="${savedMeal.ingredients != null and !savedMeal.ingredients.isEmpty()}">
-
-                        <strong>Ingredients:</strong>
-
-                        <ul>
-                            <li
-                                    th:each="ingredient : ${savedMeal.ingredients}"
-                                    th:text="${ingredient}">
-                                Ingredient
-                            </li>
-                        </ul>
-
-                    </div>
-
-                    <!-- INSTRUCTIONS, IF ANY WERE SAVED -->
-                    <div
-                            class="instructions"
-                            th:if="${savedMeal.instructions != null and !savedMeal.instructions.isEmpty()}">
-
-                        <strong>Instructions:</strong>
-
-                        <ol>
-                            <li
-                                    th:each="instruction : ${savedMeal.instructions}"
-                                    th:text="${instruction}">
-                                Instruction
-                            </li>
-                        </ol>
-
-                    </div>
-
-                    <p
-                            th:if="${savedMeal.ingredients == null or savedMeal.ingredients.isEmpty()}"
-                            class="empty">
-                        Saved to your meal list.
-                    </p>
-
-                </div>
-
-            </div>
-
-            <div th:unless="${hasSavedMeals}" class="empty">
-                You haven't saved any meals yet.
-            </div>
-
-        </div>
-
-
         <!-- RECOMMENDATIONS -->
         <div
                 class="card"
@@ -305,7 +226,7 @@
                     th:if="${hasRecommendations}">
 
                 <form
-                        th:action="@{/dashboard/meals}"
+                        th:action="@{/dashboard/actualmeals/save}"
                         method="post"
                         id="saveMealsForm">
 
