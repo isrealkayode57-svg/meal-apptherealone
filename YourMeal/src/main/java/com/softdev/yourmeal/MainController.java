@@ -62,8 +62,7 @@ public class MainController {
         }
 
         DietaryProfile profile =
-                dietaryProfileRepository
-                        .findByUser(user)
+                dietaryProfileRepository.findByUser(user)
                         .orElseGet(() ->
                                 dietaryProfileRepository.save(
                                         new DietaryProfile(user)));
@@ -303,7 +302,7 @@ public class MainController {
         AppUser user = getLoggedInUser(session);
 
         if (user == null) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
         List<SavedMeals> savedMeals =
@@ -348,7 +347,7 @@ public class MainController {
         AppUser user = getLoggedInUser(session);
 
         if (user == null) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
         DietaryProfile profile =
@@ -398,35 +397,16 @@ public class MainController {
     // ============================================================
     // SAVE SELECTED MEALS
     //
-    // Saves the complete selected meal:
-    // name + ingredients + instructions
+    // OLD / SIMPLE VERSION
     //
-    // Then redirects back to /dashboard/meals.
+    // Only saves the meal name.
     // ============================================================
 
     @PostMapping("/dashboard/meals")
     public String saveMeals(
             HttpSession session,
-
-            @RequestParam(
-                    name = "mealIndex",
-                    required = false)
-            List<Integer> mealIndexes,
-
-            @RequestParam(
-                    name = "mealName",
-                    required = false)
-            List<String> mealNames,
-
-            @RequestParam(
-                    name = "mealIngredients",
-                    required = false)
-            List<String> mealIngredients,
-
-            @RequestParam(
-                    name = "mealInstructions",
-                    required = false)
-            List<String> mealInstructions) {
+            @RequestParam(name = "mealName", required = false)
+            List<String> mealNames) {
 
         AppUser user = getLoggedInUser(session);
 
@@ -434,105 +414,26 @@ public class MainController {
             return "redirect:/login";
         }
 
-        if (mealIndexes == null
-                || mealIndexes.isEmpty()
-                || mealNames == null) {
-
+        if (mealNames == null || mealNames.isEmpty()) {
             return "redirect:/dashboard/meals";
         }
 
-        for (Integer index : mealIndexes) {
+        for (String mealName : mealNames) {
 
-            if (index == null) {
+            if (mealName == null || mealName.isBlank()) {
                 continue;
             }
 
-            if (index < 0
-                    || index >= mealNames.size()) {
-
-                continue;
-            }
-
-            String mealName =
-                    mealNames.get(index);
-
-            if (mealName == null
-                    || mealName.isBlank()) {
-
-                continue;
-            }
-
-            List<String> ingredients =
-                    new ArrayList<>();
-
-            List<String> instructions =
-                    new ArrayList<>();
-
-            // Get ingredients for this meal
-            if (mealIngredients != null
-                    && index < mealIngredients.size()) {
-
-                String ingredientString =
-                        mealIngredients.get(index);
-
-                if (ingredientString != null
-                        && !ingredientString.isBlank()) {
-
-                    String[] ingredientArray =
-                            ingredientString.split(
-                                    "\\|\\|\\|");
-
-                    for (String ingredient :
-                            ingredientArray) {
-
-                        if (ingredient != null
-                                && !ingredient.isBlank()) {
-
-                            ingredients.add(
-                                    ingredient.trim());
-                        }
-                    }
-                }
-            }
-
-            // Get instructions for this meal
-            if (mealInstructions != null
-                    && index < mealInstructions.size()) {
-
-                String instructionString =
-                        mealInstructions.get(index);
-
-                if (instructionString != null
-                        && !instructionString.isBlank()) {
-
-                    String[] instructionArray =
-                            instructionString.split(
-                                    "\\|\\|\\|");
-
-                    for (String instruction :
-                            instructionArray) {
-
-                        if (instruction != null
-                                && !instruction.isBlank()) {
-
-                            instructions.add(
-                                    instruction.trim());
-                        }
-                    }
-                }
-            }
+            String trimmedMealName = mealName.trim();
 
             SavedMeals savedMeal =
                     new SavedMeals(
                             user,
-                            mealName.trim(),
-                            ingredients,
-                            instructions);
+                            trimmedMealName);
 
             savedMealsRepository.save(savedMeal);
         }
 
-        // Go straight back to meals.html
         return "redirect:/dashboard/meals";
     }
 
@@ -565,7 +466,7 @@ public class MainController {
         AppUser user = getLoggedInUser(session);
 
         if (user == null) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
         return "dashboard/planner";
@@ -583,7 +484,7 @@ public class MainController {
         AppUser user = getLoggedInUser(session);
 
         if (user == null) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
         addGroceryBaseModel(
@@ -609,7 +510,7 @@ public class MainController {
         AppUser user = getLoggedInUser(session);
 
         if (user == null) {
-            return "redirect:/login";
+            return "redirect:/";
         }
 
         List<String> savedMealNames =
