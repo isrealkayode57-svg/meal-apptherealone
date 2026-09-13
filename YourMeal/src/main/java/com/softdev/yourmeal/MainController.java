@@ -657,6 +657,23 @@ public class MainController {
     // ============================================================
     // AUTHENTICATED USER
     // ============================================================
+    //
+    // FIX: The previous version required the "userId" session
+    // attribute to be an exact java.lang.Long instance:
+    //
+    //     if (!(userId instanceof Long id)) { return null; }
+    //
+    // If AppUser's ID field is actually an Integer (or another
+    // Number type), that check always fails, getLoggedInUser()
+    // always returns null, and every page treats the user as
+    // logged out -- even though the session attribute was set
+    // correctly at login/register time. This version accepts
+    // any Number and converts it to a Long safely.
+    //
+    // NOTE: This assumes AppUserRepository's ID type is Long.
+    // If AppUser's @Id field is actually Integer, tell me and
+    // I'll change findById(...) to match instead.
+    // ============================================================
 
     private AppUser getLoggedInUser(
             HttpSession session) {
@@ -664,9 +681,11 @@ public class MainController {
         Object userId =
                 session.getAttribute("userId");
 
-        if (!(userId instanceof Long id)) {
+        if (!(userId instanceof Number number)) {
             return null;
         }
+
+        Long id = number.longValue();
 
         return appUserRepository
                 .findById(id)
