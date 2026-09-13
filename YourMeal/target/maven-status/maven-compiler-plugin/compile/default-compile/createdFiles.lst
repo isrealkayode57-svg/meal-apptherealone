@@ -1,9 +1,0 @@
-com\softdev\yourmeal\SQLeditor.class
-com\softdev\yourmeal\GeminiMealRecommendationClient.class
-com\softdev\yourmeal\MealRecommendationService.class
-com\softdev\yourmeal\AppUser.class
-com\softdev\yourmeal\MealRecommendationResult.class
-com\softdev\yourmeal\MealRecommendation.class
-com\softdev\yourmeal\DietaryProfile.class
-com\softdev\yourmeal\AppUserRepository.class
-com\softdev\yourmeal\DietaryProfileRepository.class
