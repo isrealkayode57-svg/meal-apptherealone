@@ -1,948 +1,414 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-
-    <title>Meals | MealMate</title>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YourMeal - Meals</title>
 
     <style>
-
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            background: #F8FAF8;
-            color: #1F2937;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        .layout {
+            display: flex;
             min-height: 100vh;
         }
 
-        .menu {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 54px;
-            height: 54px;
-            border-radius: 16px;
-            background: white;
-            color: #5F8D4E;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 28px;
-            cursor: pointer;
-            border: 1px solid #E5E7EB;
-            box-shadow: 0 10px 25px rgba(0,0,0,.06);
-            z-index: 1001;
-            transition: .3s;
-        }
-
-        .menu:hover {
-            background: #5F8D4E;
-            color: white;
-        }
-
         .sidebar {
-            position: fixed;
-            top: 0;
-            left: -260px;
-            width: 250px;
-            height: 100vh;
-            background: white;
-            border-right: 1px solid #E5E7EB;
-            padding: 30px;
-            transition: .35s;
-            box-shadow: 5px 0 25px rgba(0,0,0,.05);
-            z-index: 1000;
-        }
-
-        .sidebar.active {
-            left: 0;
+            width: 240px;
+            background: #111827;
+            color: white;
+            padding: 25px 15px;
         }
 
         .logo {
-            margin-top: 70px;
-            margin-bottom: 40px;
-            font-size: 32px;
-            font-weight: 700;
-            color: #5F8D4E;
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 35px;
+            padding-left: 12px;
         }
 
-        .sidebar a {
+        .nav a {
             display: block;
+            color: #d1d5db;
             text-decoration: none;
-            color: #374151;
-            padding: 15px;
+            padding: 13px 15px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            background: #374151;
+            color: white;
+        }
+
+        .main {
+            flex: 1;
+            padding: 35px;
+            max-width: 1400px;
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 32px;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        .card {
+            background: white;
             border-radius: 12px;
-            margin-bottom: 8px;
-            transition: .25s;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
         }
 
-        .sidebar a:hover {
-            background: #EEF6EE;
-            color: #5F8D4E;
-            transform: translateX(5px);
+        .ai-form {
+            margin-bottom: 0;
         }
 
-        .sidebar button {
-            width: 100%;
-            background: none;
+        button {
             border: none;
-            text-align: left;
-            padding: 15px;
-            border-radius: 12px;
-            color: #374151;
+            background: #2563eb;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 15px;
         }
 
-        .sidebar button:hover {
-            background: #FEE2E2;
-            color: #DC2626;
+        button:hover {
+            background: #1d4ed8;
         }
 
-        .main {
-            padding: 40px;
-            transition: .35s;
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
         }
 
-        .main.active {
-            margin-left: 250px;
-        }
-
-        .header {
-            margin-top: 80px;
-            margin-bottom: 35px;
-        }
-
-        .header h1 {
-            font-size: 42px;
-        }
-
-        .header p {
-            color: #6B7280;
-            margin-top: 8px;
-        }
-
-        .meal-grid {
-            display: grid;
-            grid-template-columns:
-                repeat(auto-fit, minmax(340px, 1fr));
-            gap: 28px;
-            margin-top: 28px;
-        }
-
-        .meal-card {
-            background: white;
-            border: 1px solid #E5E7EB;
-            border-radius: 24px;
-            padding: 25px;
-            box-shadow:
-                0 12px 30px rgba(0,0,0,.05);
-            transition: .3s;
-        }
-
-        .meal-card:hover {
-            transform: translateY(-6px);
-            box-shadow:
-                0 20px 35px rgba(95,141,78,.15);
-        }
-
-        .meal-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+        .recommendation {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
             margin-bottom: 15px;
         }
 
-        .meal-title {
+        .recommendation-header {
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
-        .meal-title input {
-            width: 20px;
-            height: 20px;
-            accent-color: #5F8D4E;
-            cursor: pointer;
-            flex-shrink: 0;
+        .recommendation-header input {
+            width: 18px;
+            height: 18px;
         }
 
-        .meal-card h3 {
-            color: #1F2937;
-            font-size: 22px;
+        .meal-name {
+            font-size: 20px;
+            font-weight: bold;
         }
 
-        .meal-card p {
-            color: #6B7280;
-            line-height: 1.7;
-            margin-top: 12px;
+        .reason {
+            margin-top: 10px;
+            color: #4b5563;
         }
 
         .tags {
-            margin-top: 18px;
-        }
-
-        .tag {
-            display: inline-block;
-            padding: 7px 12px;
-            background: #EEF6EE;
-            color: #5F8D4E;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: 600;
-            margin: 4px 3px;
-        }
-
-        .recipe-section {
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 1px solid #E5E7EB;
-        }
-
-        .recipe-section h4 {
-            font-size: 18px;
-            color: #1F2937;
-            margin-bottom: 14px;
-        }
-
-        .ingredient-list,
-        .instruction-list {
-            margin: 0;
-            padding-left: 22px;
-        }
-
-        .ingredient-list li,
-        .instruction-list li {
-            color: #4B5563;
-            line-height: 1.7;
-            margin-bottom: 8px;
-        }
-
-        .ingredient-list li::marker,
-        .instruction-list li::marker {
-            color: #5F8D4E;
-        }
-
-        .instruction-list li {
-            padding-left: 5px;
-        }
-
-        .empty-card {
-            background: white;
-            border-radius: 24px;
-            padding: 40px;
-            text-align: center;
-            border: 1px solid #E5E7EB;
-            color: #6B7280;
-            margin-top: 25px;
-        }
-
-        .save-area {
-            margin-top: 35px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .save-btn {
-            background: #5F8D4E;
-            color: white;
-            border: none;
-            padding: 15px 35px;
-            border-radius: 14px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: .25s;
-        }
-
-        .save-btn:hover {
-            background: #4F7641;
-            transform: translateY(-3px);
-        }
-
-        .save-btn:disabled {
-            opacity: .75;
-            cursor: wait;
-            transform: none;
-        }
-
-        .ai-loading {
-            display: none;
-            max-width: 520px;
-            margin: 18px auto 0;
-            background: white;
-            border: 1px solid #E5E7EB;
-            border-radius: 14px;
-            padding: 14px 16px;
-            box-shadow:
-                0 12px 30px rgba(0,0,0,.05);
-        }
-
-        .ai-loading.active {
-            display: block;
-        }
-
-        .ai-loading p {
-            color: #6B7280;
+            margin-top: 10px;
+            color: #2563eb;
             font-size: 14px;
+        }
+
+        .ingredients,
+        .instructions {
+            margin-top: 15px;
+        }
+
+        .ingredients ul,
+        .instructions ol {
+            margin-top: 8px;
+        }
+
+        .saved-meal {
+            padding: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
             margin-bottom: 10px;
         }
 
-        .loading-track {
-            height: 10px;
-            background: #EEF6EE;
-            border-radius: 50px;
-            overflow: hidden;
+        .saved-meal-name {
+            font-weight: bold;
+            font-size: 18px;
         }
 
-        .loading-bar {
-            height: 100%;
-            width: 45%;
-            border-radius: 50px;
-            background: #5F8D4E;
-            animation:
-                loadingBar 1.2s
-                ease-in-out
-                infinite;
+        .empty {
+            color: #6b7280;
         }
 
-        @keyframes loadingBar {
+        .save-section {
+            margin-top: 20px;
+        }
 
-            0% {
-                transform: translateX(-110%);
+        @media (max-width: 800px) {
+            .layout {
+                flex-direction: column;
             }
 
-            100% {
-                transform: translateX(240%);
+            .sidebar {
+                width: 100%;
             }
-
-        }
-
-        @media(max-width: 700px) {
 
             .main {
-                padding: 25px;
-            }
-
-            .main.active {
-                margin-left: 0;
-            }
-
-            .header h1 {
-                font-size: 34px;
-            }
-
-            .meal-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .meal-card {
                 padding: 20px;
             }
-
         }
-
     </style>
-
 </head>
 
 <body>
 
-    <!-- MENU -->
-
-    <div
-        class="menu"
-        onclick="toggleSidebar()"
-    >
-        ☰
-    </div>
+<div class="layout">
 
     <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">YourMeal</div>
 
-    <div class="sidebar">
+        <nav class="nav">
+            <a href="/dashboard/dashboard">Dashboard</a>
+            <a href="/dashboard/meals" class="active">Meals</a>
+            <a href="/dashboard/planner">Planner</a>
+            <a href="/dashboard/grocery">Grocery</a>
+            <a href="/selection">Dietary Selection</a>
+            <a href="/settings">Settings</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </aside>
 
-        <div class="logo">
-            🍽 MealMate
-        </div>
 
-        <a href="/dashboard/dashboard">
-            Dashboard
-        </a>
+    <!-- MAIN CONTENT -->
+    <main class="main">
 
-        <a href="/dashboard/meals">
-            Meals
-        </a>
+        <h1>Meals</h1>
 
-        <a href="/dashboard/planner">
-            Planner
-        </a>
-
-        <a href="/dashboard/grocery">
-            Grocery
-        </a>
-
-        <a href="/selection">
-            Change Restrictions
-        </a>
-
-        <a href="/settings">
-            Settings
-        </a>
-
-        <form
-            action="/logout"
-            method="post"
-        >
-
-            <button type="submit">
-                Logout
-            </button>
-
-        </form>
-
-    </div>
-
-    <!-- MAIN -->
-
-    <div class="main">
-
-        <div class="header">
-
-            <h1>
-                Choose Your Meals
-            </h1>
-
-            <p>
-                Discover meals personalized to your dietary needs.
-            </p>
-
-        </div>
 
         <!-- GENERATE RECOMMENDATIONS -->
+        <div class="card">
 
-        <form
-            action="/dashboard/meals/recommend"
-            method="post"
-            class="ai-form"
-        >
+            <h2>Get Meal Recommendations</h2>
 
-            <div class="save-area">
+            <p>
+                Generate meal recommendations based on your dietary profile.
+            </p>
 
-                <button
-                    class="save-btn"
-                    type="submit"
-                >
-                    Generate Meal Suggestions
+            <form
+                    action="/dashboard/meals/recommend"
+                    method="post"
+                    class="ai-form">
+
+                <button type="submit">
+                    Generate Recommendations
                 </button>
 
-            </div>
+            </form>
 
-            <div class="ai-loading">
+        </div>
 
-                <p>
-                    Creating personalized meals...
-                </p>
-
-                <div class="loading-track">
-
-                    <div class="loading-bar"></div>
-
-                </div>
-
-            </div>
-
-        </form>
 
         <!-- SAVED MEALS -->
+        <div class="card">
 
-        <div
-            th:if="${hasSavedMeals}"
-        >
+            <h2>Saved Meals</h2>
 
-            <div class="meal-grid">
+            <div th:if="${hasSavedMeals}">
 
                 <div
-                    class="meal-card"
-                    th:each="meal : ${savedMeals}"
-                >
+                        class="saved-meal"
+                        th:each="savedMeal : ${savedMeals}">
 
-                    <div class="meal-top">
-
-                        <h3
-                            th:text="${meal.mealNames}"
-                        >
-                            Saved Meal
-                        </h3>
-
+                    <div
+                            class="saved-meal-name"
+                            th:text="${savedMeal.mealNames}">
+                        Meal Name
                     </div>
 
                     <p>
                         Saved to your meal list.
                     </p>
 
-                    <!-- INGREDIENTS -->
-
-                    <div
-                        class="recipe-section"
-                        th:if="${meal.ingredients != null and !meal.ingredients.isEmpty()}"
-                    >
-
-                        <h4>
-                            🛒 Ingredients
-                        </h4>
-
-                        <ul class="ingredient-list">
-
-                            <li
-                                th:each="ingredient : ${meal.ingredients}"
-                                th:text="${ingredient}"
-                            >
-                                Ingredient
-                            </li>
-
-                        </ul>
-
-                    </div>
-
-                    <!-- RECIPE -->
-
-                    <div
-                        class="recipe-section"
-                        th:if="${meal.instructions != null and !meal.instructions.isEmpty()}"
-                    >
-
-                        <h4>
-                            👨‍🍳 Recipe
-                        </h4>
-
-                        <ol class="instruction-list">
-
-                            <li
-                                th:each="instruction : ${meal.instructions}"
-                                th:text="${instruction}"
-                            >
-                                Cooking instruction
-                            </li>
-
-                        </ol>
-
-                    </div>
-
-                    <div class="tags">
-
-                        <span class="tag">
-                            Saved
-                        </span>
-
-                    </div>
-
                 </div>
+
+            </div>
+
+            <div th:unless="${hasSavedMeals}" class="empty">
+                You haven't saved any meals yet.
+            </div>
+
+        </div>
+
+
+        <!-- RECOMMENDATIONS -->
+        <div
+                class="card"
+                th:if="${showRecommendations}">
+
+            <h2>Recommended Meals</h2>
+
+            <div
+                    th:if="${hasRecommendations}">
+
+                <form
+                        action="/dashboard/meals"
+                        method="post"
+                        id="saveMealsForm">
+
+                    <div
+                            class="recommendation"
+                            th:each="meal, stat : ${recommendations}">
+
+                        <div class="recommendation-header">
+
+                            <!-- THE MEAL NAME IS WHAT GETS SUBMITTED -->
+                            <input
+                                    type="checkbox"
+                                    name="mealName"
+                                    th:value="${meal.name()}"
+                            >
+
+                            <span
+                                    class="meal-name"
+                                    th:text="${meal.name()}">
+                                Meal Name
+                            </span>
+
+                        </div>
+
+
+                        <div
+                                class="reason"
+                                th:if="${meal.reason() != null}"
+                                th:text="${meal.reason()}">
+                            Reason
+                        </div>
+
+
+                        <div
+                                class="tags"
+                                th:if="${meal.tags() != null}"
+                                th:text="${meal.tags()}">
+                            Tags
+                        </div>
+
+
+                        <!-- INGREDIENTS ARE ONLY DISPLAYED -->
+                        <div
+                                class="ingredients"
+                                th:if="${meal.ingredients() != null and !meal.ingredients().isEmpty()}">
+
+                            <strong>Ingredients:</strong>
+
+                            <ul>
+                                <li
+                                        th:each="ingredient : ${meal.ingredients()}"
+                                        th:text="${ingredient}">
+                                    Ingredient
+                                </li>
+                            </ul>
+
+                        </div>
+
+
+                        <!-- INSTRUCTIONS ARE ONLY DISPLAYED -->
+                        <div
+                                class="instructions"
+                                th:if="${meal.instructions() != null and !meal.instructions().isEmpty()}">
+
+                            <strong>Instructions:</strong>
+
+                            <ol>
+                                <li
+                                        th:each="instruction : ${meal.instructions()}"
+                                        th:text="${instruction}">
+                                    Instruction
+                                </li>
+                            </ol>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="save-section">
+
+                        <button
+                                type="submit"
+                                id="saveMealsButton">
+                            Save Selected Meals
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <div
+                    th:unless="${hasRecommendations}"
+                    class="empty">
+
+                No recommendations were generated.
 
             </div>
 
         </div>
 
-        <!-- NO SAVED MEALS -->
+    </main>
 
-        <div
-            class="empty-card"
-            th:if="${!hasSavedMeals and !showRecommendations}"
-        >
+</div>
 
-            <p>
-                No saved meals yet.
-                Click the button above to get personalized meal suggestions.
-            </p>
 
-        </div>
+<script>
 
-        <!-- RECOMMENDATIONS -->
+    const saveForm = document.getElementById("saveMealsForm");
+    const saveButton = document.getElementById("saveMealsButton");
 
-        <div
-            th:if="${showRecommendations}"
-        >
+    if (saveForm && saveButton) {
 
-            <form
-                action="/dashboard/meals"
-                method="post"
-                id="saveMealsForm"
-            >
+        saveForm.addEventListener("submit", function(event) {
 
-                <div
-                    class="meal-grid"
-                    th:if="${hasRecommendations}"
-                >
-
-                    <div
-                        class="meal-card"
-                        th:each="meal, stat : ${recommendations}"
-                    >
-
-                        <!-- CHECKBOX + TITLE -->
-
-                        <div class="meal-top">
-
-                            <div class="meal-title">
-
-                                <input
-                                    type="checkbox"
-                                    name="mealIndex"
-                                    th:value="${stat.index}"
-                                >
-
-                                <h3
-                                    th:text="${meal.name()}"
-                                >
-                                    Meal Name
-                                </h3>
-
-                            </div>
-
-                        </div>
-
-                        <!-- REASON -->
-
-                        <p
-                            th:text="${meal.reason()}"
-                        >
-                            Meal reason goes here.
-                        </p>
-
-                        <!-- TAGS -->
-
-                        <div
-                            class="tags"
-                            th:if="${meal.tags() != null and !meal.tags().isBlank()}"
-                        >
-
-                            <span
-                                class="tag"
-                                th:each="tag : ${#strings.arraySplit(meal.tags(), ',')}"
-                                th:text="${tag.trim()}"
-                            >
-                                Healthy
-                            </span>
-
-                        </div>
-
-                        <!-- INGREDIENTS -->
-
-                        <div class="recipe-section">
-
-                            <h4>
-                                🛒 Ingredients
-                            </h4>
-
-                            <ul class="ingredient-list">
-
-                                <li
-                                    th:each="ingredient : ${meal.ingredients()}"
-                                    th:text="${ingredient}"
-                                >
-                                    Ingredient
-                                </li>
-
-                            </ul>
-
-                        </div>
-
-                        <!-- RECIPE -->
-
-                        <div class="recipe-section">
-
-                            <h4>
-                                👨‍🍳 Recipe
-                            </h4>
-
-                            <ol class="instruction-list">
-
-                                <li
-                                    th:each="instruction : ${meal.instructions()}"
-                                    th:text="${instruction}"
-                                >
-                                    Cooking instruction
-                                </li>
-
-                            </ol>
-
-                        </div>
-
-                        <!--
-                            Hidden fields keep every recommendation
-                            available to the controller.
-                        -->
-
-                        <input
-                            type="hidden"
-                            name="mealName"
-                            th:value="${meal.name()}"
-                        >
-
-                        <input
-                            type="hidden"
-                            name="mealIngredients"
-                            th:value="${#strings.listJoin(meal.ingredients(), '|||')}"
-                        >
-
-                        <input
-                            type="hidden"
-                            name="mealInstructions"
-                            th:value="${#strings.listJoin(meal.instructions(), '|||')}"
-                        >
-
-                    </div>
-
-                </div>
-
-                <!-- NO RECOMMENDATIONS -->
-
-                <div
-                    class="empty-card"
-                    th:unless="${hasRecommendations}"
-                >
-
-                    <p
-                        th:text="${recommendationStatus}"
-                    >
-                        No meals available.
-                    </p>
-
-                </div>
-
-                <!-- SAVE BUTTON -->
-
-                <div
-                    class="save-area"
-                    th:if="${hasRecommendations}"
-                >
-
-                    <button
-                        class="save-btn"
-                        type="submit"
-                        id="saveButton"
-                    >
-                        Save Selected Meals
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
-
-    <script>
-
-        const sidebar =
-            document.querySelector(".sidebar");
-
-        const main =
-            document.querySelector(".main");
-
-        const menu =
-            document.querySelector(".menu");
-
-        function toggleSidebar() {
-
-            sidebar.classList.toggle("active");
-
-            main.classList.toggle("active");
-
-        }
-
-        // ========================================================
-        // AI GENERATION LOADING
-        // ========================================================
-
-        document
-            .querySelectorAll(".ai-form")
-            .forEach((form) => {
-
-                form.addEventListener(
-                    "submit",
-                    () => {
-
-                        const button =
-                            form.querySelector(
-                                "button[type='submit']"
-                            );
-
-                        const loading =
-                            form.querySelector(
-                                ".ai-loading"
-                            );
-
-                        if (button) {
-
-                            button.disabled = true;
-
-                            button.textContent =
-                                "Generating...";
-                        }
-
-                        if (loading) {
-
-                            loading.classList.add(
-                                "active"
-                            );
-                        }
-
-                    }
+            const selectedMeals =
+                saveForm.querySelectorAll(
+                    "input[name='mealName']:checked"
                 );
 
-            });
+            if (selectedMeals.length === 0) {
 
-        // ========================================================
-        // SAVE MEALS
-        // ========================================================
+                event.preventDefault();
 
-        const saveMealsForm =
-            document.getElementById(
-                "saveMealsForm"
-            );
+                alert("Please select at least one meal.");
 
-        if (saveMealsForm) {
-
-            saveMealsForm.addEventListener(
-                "submit",
-                function(event) {
-
-                    const selectedMeals =
-                        saveMealsForm.querySelectorAll(
-                            "input[name='mealIndex']:checked"
-                        );
-
-                    if (selectedMeals.length === 0) {
-
-                        event.preventDefault();
-
-                        alert(
-                            "Please select at least one meal to save."
-                        );
-
-                        return;
-                    }
-
-                    const saveButton =
-                        document.getElementById(
-                            "saveButton"
-                        );
-
-                    if (saveButton) {
-
-                        saveButton.disabled = true;
-
-                        saveButton.textContent =
-                            "Saving...";
-                    }
-
-                }
-            );
-
-        }
-
-        // ========================================================
-        // CLOSE SIDEBAR WHEN CLICKING OUTSIDE
-        // ========================================================
-
-        document.addEventListener(
-            "click",
-            function(event) {
-
-                if (
-                    !sidebar.contains(event.target)
-                    &&
-                    !menu.contains(event.target)
-                ) {
-
-                    sidebar.classList.remove(
-                        "active"
-                    );
-
-                    main.classList.remove(
-                        "active"
-                    );
-
-                }
-
+                return;
             }
-        );
 
-        // ========================================================
-        // CARD ANIMATION
-        // ========================================================
+            saveButton.disabled = true;
 
-        window.addEventListener(
-            "load",
-            () => {
+        });
 
-                const cards =
-                    document.querySelectorAll(
-                        ".meal-card"
-                    );
+    }
 
-                cards.forEach(
-                    (card, index) => {
-
-                        card.style.opacity = "0";
-
-                        card.style.transform =
-                            "translateY(20px)";
-
-                        setTimeout(
-                            () => {
-
-                                card.style.transition =
-                                    ".5s";
-
-                                card.style.opacity =
-                                    "1";
-
-                                card.style.transform =
-                                    "translateY(0)";
-
-                            },
-                            index * 120
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-    </script>
+</script>
 
 </body>
-
 </html>
