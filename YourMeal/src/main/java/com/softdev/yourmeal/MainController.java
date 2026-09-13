@@ -305,17 +305,6 @@ public class MainController {
             return "redirect:/";
         }
 
-        List<SavedMeals> savedMeals =
-                savedMealsRepository.findByUser(user);
-
-        model.addAttribute(
-                "savedMeals",
-                savedMeals);
-
-        model.addAttribute(
-                "hasSavedMeals",
-                !savedMeals.isEmpty());
-
         model.addAttribute(
                 "showRecommendations",
                 false);
@@ -364,17 +353,6 @@ public class MainController {
         List<MealRecommendation> recommendations =
                 recommendationResult.meals();
 
-        List<SavedMeals> savedMeals =
-                savedMealsRepository.findByUser(user);
-
-        model.addAttribute(
-                "savedMeals",
-                savedMeals);
-
-        model.addAttribute(
-                "hasSavedMeals",
-                !savedMeals.isEmpty());
-
         model.addAttribute(
                 "recommendations",
                 recommendations);
@@ -413,7 +391,7 @@ public class MainController {
     // MealRecommendation object instead of only a plain string.
     // ============================================================
 
-    @PostMapping("/dashboard/meals")
+    @PostMapping("/dashboard/actualmeals/save")
     public String saveMeals(
             HttpSession session,
             @RequestParam(name = "mealIndex", required = false)
@@ -469,7 +447,36 @@ public class MainController {
             savedMealsRepository.save(savedMeal);
         }
 
-        return "redirect:/dashboard/meals";
+        return "redirect:/dashboard/actualmeals";
+    }
+
+    // ============================================================
+    // SAVED MEALS PAGE (the actual "Meals" page in the nav)
+    // ============================================================
+
+    @GetMapping("/dashboard/actualmeals")
+    public String actualMeals(
+            HttpSession session,
+            Model model) {
+
+        AppUser user = getLoggedInUser(session);
+
+        if (user == null) {
+            return "redirect:/";
+        }
+
+        List<SavedMeals> savedMeals =
+                savedMealsRepository.findByUser(user);
+
+        model.addAttribute(
+                "savedMeals",
+                savedMeals);
+
+        model.addAttribute(
+                "hasSavedMeals",
+                !savedMeals.isEmpty());
+
+        return "dashboard/actualmeals";
     }
 
     // ============================================================
