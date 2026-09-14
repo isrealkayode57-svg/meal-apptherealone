@@ -498,13 +498,9 @@ public class MainController {
         List<MealRecommendation> recommendations =
                 recommendationResult.meals();
 
-        /*
-         * Store the complete recommendations temporarily.
-         *
-         * This allows the save method to retrieve the
-         * ingredients and instructions when the user
-         * selects a meal.
-         */
+        // Store the full recommendations temporarily.
+        // This allows saveMeals() to save the ingredients
+        // and instructions along with the meal name.
         session.setAttribute(
                 "lastRecommendations",
                 recommendations);
@@ -546,8 +542,6 @@ public class MainController {
     // - Meal name
     // - Ingredients
     // - Instructions
-    //
-    // Then returns to dashboard/meals.
     // ============================================================
 
     @PostMapping("/dashboard/meals")
@@ -612,14 +606,44 @@ public class MainController {
             savedMealsRepository.save(savedMeal);
         }
 
-        /*
-         * The recipes are now stored in the database,
-         * so the temporary session data is no longer needed.
-         */
+        // The recipes have now been saved to the database.
         session.removeAttribute(
                 "lastRecommendations");
 
         return "redirect:/dashboard/meals";
+    }
+
+    // ============================================================
+    // RECIPES PAGE
+    //
+    // Shows the complete recipes for the meals the user
+    // selected on the Meals page.
+    // ============================================================
+
+    @GetMapping("/dashboard/actualmeals")
+    public String actualMeals(
+            HttpSession session,
+            Model model) {
+
+        AppUser user =
+                getLoggedInUser(session);
+
+        if (user == null) {
+            return "redirect:/";
+        }
+
+        List<SavedMeals> savedMeals =
+                savedMealsRepository.findByUser(user);
+
+        model.addAttribute(
+                "savedMeals",
+                savedMeals);
+
+        model.addAttribute(
+                "hasSavedMeals",
+                !savedMeals.isEmpty());
+
+        return "dashboard/actualmeals";
     }
 
     // ============================================================
