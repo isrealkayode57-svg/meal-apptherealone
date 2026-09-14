@@ -391,7 +391,7 @@ public class MainController {
     // MealRecommendation object instead of only a plain string.
     // ============================================================
 
-    @PostMapping("/dashboard/actualmeals")
+    @PostMapping("/dashboard/actualmeals/save")
     public String saveMeals(
             HttpSession session,
             @RequestParam(name = "mealIndex", required = false)
