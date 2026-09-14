@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +19,6 @@ public class MainController {
     private final SavedMealsRepository savedMealsRepository;
     private final GroceryIngredientRepository groceryIngredientRepository;
     private final MealRecommendationService mealRecommendationService;
-    private final BCryptPasswordEncoder passwordEncoder =
-            new BCryptPasswordEncoder();
     private final SQLeditor sqleditor;
 
     public MainController(
@@ -50,112 +47,6 @@ public class MainController {
     }
 
     // ============================================================
-    // LOGIN
-    // ============================================================
-
-    @GetMapping("/login")
-    public String login() {
-        return "login";
-    }
-
-    @PostMapping("/login")
-    public String loginUser(
-            @RequestParam String email,
-            @RequestParam String password,
-            HttpSession session,
-            Model model) {
-
-        return appUserRepository
-                .findByEmail(normalizeEmail(email))
-                .filter(user ->
-                        passwordEncoder.matches(
-                                password,
-                                user.getPasswordHash()))
-                .map(user -> {
-
-                    session.setAttribute(
-                            "userId",
-                            user.getId());
-
-                    if (email.equals("admin@gmail.com")) {
-                        return "redirect:admin/adminSelection";
-                    }
-
-                    return "redirect:/dashboard/dashboard";
-                })
-                .orElseGet(() -> {
-
-                    model.addAttribute(
-                            "loginError",
-                            "Email or password is incorrect.");
-
-                    return "login";
-                });
-    }
-
-    // ============================================================
-    // REGISTER
-    // ============================================================
-
-    @GetMapping("/register")
-    public String register() {
-        return "register";
-    }
-
-    @PostMapping("/register")
-    public String registerUser(
-            @RequestParam String name,
-            @RequestParam String email,
-            @RequestParam String password,
-            @RequestParam String confirm_password,
-            HttpSession session,
-            Model model) {
-
-        String normalizedEmail =
-                normalizeEmail(email);
-
-        if (appUserRepository
-                .findByEmail(normalizedEmail)
-                .isPresent()) {
-
-            model.addAttribute(
-                    "registerError",
-                    "An account with that email already exists.");
-
-            return "register";
-        }
-
-        if (!password.equals(confirm_password)) {
-
-            model.addAttribute(
-                    "registerError",
-                    "Passwords do not match.");
-
-            return "register";
-        }
-
-        AppUser user =
-                appUserRepository.save(
-                        new AppUser(
-                                normalizedEmail,
-                                passwordEncoder.encode(password),
-                                name));
-
-        dietaryProfileRepository.save(
-                new DietaryProfile(user));
-
-        session.setAttribute(
-                "userId",
-                user.getId());
-
-        if (email.equals("admin@gmail.com")) {
-            return "redirect:admin/adminSelection";
-        }
-
-        return "redirect:/selection";
-    }
-
-    // ============================================================
     // DIETARY SELECTION
     // ============================================================
 
@@ -164,27 +55,20 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/login";
         }
 
         DietaryProfile profile =
-                dietaryProfileRepository
-                        .findByUser(user)
+                dietaryProfileRepository.findByUser(user)
                         .orElseGet(() ->
                                 dietaryProfileRepository.save(
                                         new DietaryProfile(user)));
 
-        model.addAttribute(
-                "name",
-                user.getName());
-
-        model.addAttribute(
-                "profile",
-                profile);
+        model.addAttribute("name", user.getName());
+        model.addAttribute("profile", profile);
 
         return "selection";
     }
@@ -241,8 +125,7 @@ public class MainController {
 
             HttpSession session) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/login";
@@ -285,21 +168,28 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        model.addAttribute(
-                "users",
-                appUserRepository.findAll());
-
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null
-                || !user.getEmail()
-                        .equals("admin@gmail.com")) {
+                || !"admin@gmail.com".equals(user.getEmail())) {
 
             return "redirect:/";
         }
 
+        model.addAttribute(
+                "users",
+                appUserRepository.findAll());
+
         return "admin/users";
+    }
+
+    @PostMapping("/admin/users/delete")
+    public String deleteUser(
+            @RequestParam Long userId) {
+
+        sqleditor.deleteUserById(userId);
+
+        return "redirect:/admin/users";
     }
 
     @GetMapping("/admin/adminSelection")
@@ -307,8 +197,7 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/";
@@ -321,28 +210,6 @@ public class MainController {
         return "admin/adminSelection";
     }
 
-    @PostMapping("/admin/users/delete")
-    public String deleteUser(
-            @RequestParam Long userId) {
-
-        sqleditor.deleteUserById(userId);
-
-        return "redirect:/admin/users";
-    }
-
-    // ============================================================
-    // LOGOUT
-    // ============================================================
-
-    @PostMapping("/logout")
-    public String logout(
-            HttpSession session) {
-
-        session.invalidate();
-
-        return "redirect:/login";
-    }
-
     // ============================================================
     // ERROR
     // ============================================================
@@ -353,7 +220,7 @@ public class MainController {
     }
 
     // ============================================================
-    // MAIN DASHBOARD
+    // DASHBOARD
     // ============================================================
 
     @GetMapping("/dashboard/dashboard")
@@ -361,8 +228,7 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/";
@@ -383,8 +249,10 @@ public class MainController {
                 mealRecommendationService
                         .describeRestrictions(profile);
 
-        for (SavedMeals meal :
-                savedMealsRepository.findByUser(user)) {
+        List<SavedMeals> existingMeals =
+                savedMealsRepository.findByUser(user);
+
+        for (SavedMeals meal : existingMeals) {
 
             if (meal.getMealNames() == null) {
                 sqleditor.deleteNullMeals(
@@ -431,8 +299,7 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/";
@@ -477,8 +344,7 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/";
@@ -498,9 +364,12 @@ public class MainController {
         List<MealRecommendation> recommendations =
                 recommendationResult.meals();
 
-        // Store the full recommendations temporarily.
-        // This allows saveMeals() to save the ingredients
-        // and instructions along with the meal name.
+        /*
+         * Keep the complete recommendations in the session.
+         * This allows the save operation to recover the
+         * ingredients and instructions without changing
+         * meals.html.
+         */
         session.setAttribute(
                 "lastRecommendations",
                 recommendations);
@@ -538,75 +407,87 @@ public class MainController {
     // ============================================================
     // SAVE SELECTED MEALS
     //
-    // Saves:
-    // - Meal name
-    // - Ingredients
-    // - Instructions
+    // Keeps the existing mealName parameter so the current
+    // meals.html does NOT need to be changed.
+    //
+    // If the recommendation is still in the session, the
+    // matching full recipe is saved as well.
     // ============================================================
 
     @PostMapping("/dashboard/meals")
     public String saveMeals(
             HttpSession session,
-            @RequestParam(
-                    name = "mealIndex",
-                    required = false)
-            List<Integer> mealIndexes) {
 
-        AppUser user =
-                getLoggedInUser(session);
+            @RequestParam(
+                    name = "mealName",
+                    required = false)
+            List<String> mealNames) {
+
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/login";
         }
 
-        if (mealIndexes == null
-                || mealIndexes.isEmpty()) {
+        if (mealNames == null || mealNames.isEmpty()) {
+
+            session.removeAttribute(
+                    "lastRecommendations");
 
             return "redirect:/dashboard/meals";
         }
 
         @SuppressWarnings("unchecked")
-        List<MealRecommendation> lastRecommendations =
+        List<MealRecommendation> recommendations =
                 (List<MealRecommendation>)
                         session.getAttribute(
                                 "lastRecommendations");
 
-        if (lastRecommendations == null
-                || lastRecommendations.isEmpty()) {
+        for (String mealName : mealNames) {
 
-            return "redirect:/dashboard/meals";
-        }
-
-        for (Integer index : mealIndexes) {
-
-            if (index == null
-                    || index < 0
-                    || index >= lastRecommendations.size()) {
+            if (mealName == null
+                    || mealName.isBlank()) {
 
                 continue;
             }
 
-            MealRecommendation meal =
-                    lastRecommendations.get(index);
+            String trimmedMealName =
+                    mealName.trim();
 
-            if (meal == null
-                    || meal.name() == null
-                    || meal.name().isBlank()) {
+            MealRecommendation matchingMeal =
+                    findRecommendation(
+                            recommendations,
+                            trimmedMealName);
 
-                continue;
+            SavedMeals savedMeal;
+
+            /*
+             * If we can find the recommendation,
+             * save the complete recipe.
+             *
+             * Otherwise preserve the old behavior
+             * and save just the meal name.
+             */
+            if (matchingMeal != null) {
+
+                savedMeal =
+                        new SavedMeals(
+                                user,
+                                matchingMeal.name().trim(),
+                                matchingMeal.ingredients(),
+                                matchingMeal.instructions());
+
+            } else {
+
+                savedMeal =
+                        new SavedMeals(
+                                user,
+                                trimmedMealName);
             }
-
-            SavedMeals savedMeal =
-                    new SavedMeals(
-                            user,
-                            meal.name().trim(),
-                            meal.ingredients(),
-                            meal.instructions());
 
             savedMealsRepository.save(savedMeal);
         }
 
-        // The recipes have now been saved to the database.
         session.removeAttribute(
                 "lastRecommendations");
 
@@ -614,10 +495,7 @@ public class MainController {
     }
 
     // ============================================================
-    // RECIPES PAGE
-    //
-    // Shows the complete recipes for the meals the user
-    // selected on the Meals page.
+    // RECIPES / ACTUAL MEALS
     // ============================================================
 
     @GetMapping("/dashboard/actualmeals")
@@ -625,8 +503,7 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/";
@@ -647,21 +524,20 @@ public class MainController {
     }
 
     // ============================================================
-    // SEND TO DASHBOARD
+    // DASHBOARD POST
     // ============================================================
 
     @PostMapping("/dashboard/dashboard")
     public String sendToDashboard(
             HttpSession session) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/";
         }
 
-        return "dashboard/dashboard";
+        return "redirect:/dashboard/dashboard";
     }
 
     // ============================================================
@@ -673,8 +549,7 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/";
@@ -684,7 +559,7 @@ public class MainController {
     }
 
     // ============================================================
-    // GROCERY PAGE
+    // GROCERY
     // ============================================================
 
     @GetMapping("/dashboard/grocery")
@@ -692,8 +567,7 @@ public class MainController {
             HttpSession session,
             Model model) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/";
@@ -714,17 +588,12 @@ public class MainController {
         return "dashboard/grocery";
     }
 
-    // ============================================================
-    // UPDATE GROCERY LIST
-    // ============================================================
-
     @PostMapping("/dashboard/grocery/update")
     public String updateGrocery(
             HttpSession session,
             Model model) {
 
-        AppUser user =
-                getLoggedInUser(session);
+        AppUser user = getLoggedInUser(session);
 
         if (user == null) {
             return "redirect:/";
@@ -768,7 +637,8 @@ public class MainController {
             Model model) {
 
         List<SavedMeals> savedMeals =
-                savedMealsRepository.findByUser(user);
+                savedMealsRepository
+                        .findByUser(user);
 
         List<String> savedMealNames =
                 new ArrayList<>();
@@ -816,6 +686,10 @@ public class MainController {
             List<String> ingredients) {
 
         int newIngredients = 0;
+
+        if (ingredients == null) {
+            return 0;
+        }
 
         for (String ingredient : ingredients) {
 
@@ -866,7 +740,42 @@ public class MainController {
     }
 
     // ============================================================
-    // USER HELPER
+    // FIND FULL RECOMMENDATION
+    // ============================================================
+
+    private MealRecommendation findRecommendation(
+            List<MealRecommendation> recommendations,
+            String mealName) {
+
+        if (recommendations == null
+                || mealName == null) {
+
+            return null;
+        }
+
+        for (MealRecommendation recommendation :
+                recommendations) {
+
+            if (recommendation == null
+                    || recommendation.name() == null) {
+
+                continue;
+            }
+
+            if (recommendation.name()
+                    .trim()
+                    .equalsIgnoreCase(
+                            mealName.trim())) {
+
+                return recommendation;
+            }
+        }
+
+        return null;
+    }
+
+    // ============================================================
+    // AUTHENTICATED USER
     // ============================================================
 
     private AppUser getLoggedInUser(
@@ -882,13 +791,5 @@ public class MainController {
         return appUserRepository
                 .findById(id)
                 .orElse(null);
-    }
-
-    private String normalizeEmail(
-            String email) {
-
-        return email
-                .trim()
-                .toLowerCase();
     }
 }
