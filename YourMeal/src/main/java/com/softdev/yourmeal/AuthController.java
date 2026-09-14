@@ -1,4 +1,3 @@
-```java
 package com.softdev.yourmeal;
 
 import jakarta.servlet.http.HttpSession;
@@ -69,12 +68,12 @@ public class AuthController {
 
     @PostMapping("/register")
     public String register(
-            @RequestParam String name,
-            @RequestParam String email,
-            @RequestParam String password,
-            @RequestParam("confirm_password") String confirmPassword,
-            Model model) {
-
+        @RequestParam String name,
+        @RequestParam String email,
+        @RequestParam String password,
+        @RequestParam("confirm_password") String confirmPassword,
+        HttpSession session,
+        Model model) {
         // Check passwords
         if (!password.equals(confirmPassword)) {
             model.addAttribute(
@@ -96,16 +95,19 @@ public class AuthController {
         }
 
         // Create and save user
-        AppUser user = new AppUser(
-                email,
-                password,
-                name
-        );
+      AppUser user = new AppUser(
+        email,
+        password,
+        name
+);
 
-        appUserRepository.save(user);
+appUserRepository.save(user);
 
-        // Send them to login after registering
-        return "redirect:/login";
+// Automatically log the user in
+session.setAttribute("userId", user.getId());
+
+// Go straight to the dietary selection page
+return "redirect:/selection";
     }
 
     // -------------------------
@@ -120,4 +122,3 @@ public class AuthController {
         return "redirect:/login";
     }
 }
-```
