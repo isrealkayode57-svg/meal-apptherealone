@@ -295,206 +295,188 @@ public class MainController {
     // ============================================================
 
     @GetMapping("/dashboard/meals")
-    public String meals(
-            HttpSession session,
-            Model model) {
+public String meals(
+        HttpSession session,
+        Model model) {
 
-        AppUser user = getLoggedInUser(session);
+    AppUser user = getLoggedInUser(session);
 
-        if (user == null) {
-            return "redirect:/";
-        }
-
-        model.addAttribute(
-                "showRecommendations",
-                false);
-
-        model.addAttribute(
-                "hasRecommendations",
-                false);
-
-        model.addAttribute(
-                "recommendations",
-                List.of());
-
-        model.addAttribute(
-                "recommendationStatus",
-                "");
-
-        return "dashboard/meals";
+    if (user == null) {
+        return "redirect:/";
     }
 
-    // ============================================================
-    // GENERATE MEAL RECOMMENDATIONS
-    // ============================================================
+    model.addAttribute(
+            "showRecommendations",
+            false);
 
-    @PostMapping("/dashboard/meals/recommend")
-    public String recommendMeals(
-            HttpSession session,
-            Model model) {
+    model.addAttribute(
+            "hasRecommendations",
+            false);
 
-        AppUser user = getLoggedInUser(session);
+    model.addAttribute(
+            "recommendations",
+            List.of());
 
-        if (user == null) {
-            return "redirect:/";
-        }
+    model.addAttribute(
+            "recommendationStatus",
+            "");
 
-        DietaryProfile profile =
-                dietaryProfileRepository
-                        .findByUser(user)
-                        .orElseGet(() ->
-                                dietaryProfileRepository.save(
-                                        new DietaryProfile(user)));
+    return "dashboard/meals";
+}
 
-        MealRecommendationResult recommendationResult =
-                mealRecommendationService
-                        .recommendMeals(profile);
 
-        List<MealRecommendation> recommendations =
-                recommendationResult.meals();
+// ============================================================
+// GENERATE MEAL RECOMMENDATIONS
+// ============================================================
 
-        model.addAttribute(
-                "recommendations",
-                recommendations);
+@PostMapping("/dashboard/meals/recommend")
+public String recommendMeals(
+        HttpSession session,
+        Model model) {
 
-        model.addAttribute(
-                "hasRecommendations",
-                recommendationResult.hasMeals());
+    AppUser user = getLoggedInUser(session);
 
-        model.addAttribute(
-                "recommendationStatus",
-                recommendationResult.statusMessage());
-
-        model.addAttribute(
-                "showRecommendations",
-                true);
-
-        // Stash the generated recommendations in the session so
-        // that saveMeals() below can look up the FULL recipe
-        // (ingredients + instructions) by index, instead of only
-        // ever receiving a bare meal name from the form.
-        session.setAttribute(
-                "lastRecommendations",
-                recommendations);
-
-        return "dashboard/meals";
+    if (user == null) {
+        return "redirect:/";
     }
 
-    // ============================================================
-    // SAVE SELECTED MEALS
-    //
-    // Saves the full recipe (name, ingredients, instructions) for
-    // each checked recommendation. The form submits the INDEX of
-    // each checked meal (matching its position in the last
-    // generated recommendation list, stored in the session above)
-    // rather than just its name, so we can recover the full
-    // MealRecommendation object instead of only a plain string.
-    // ============================================================
+    DietaryProfile profile =
+            dietaryProfileRepository
+                    .findByUser(user)
+                    .orElseGet(() ->
+                            dietaryProfileRepository.save(
+                                    new DietaryProfile(user)));
 
-    @PostMapping("/dashboard/meals/save")
-    public String saveMeals(
-            HttpSession session,
-            @RequestParam(name = "mealIndex", required = false)
-            List<Integer> mealIndexes) {
+    MealRecommendationResult recommendationResult =
+            mealRecommendationService
+                    .recommendMeals(profile);
 
-        AppUser user = getLoggedInUser(session);
+    List<MealRecommendation> recommendations =
+            recommendationResult.meals();
 
-        if (user == null) {
-            return "redirect:/login";
-        }
+    // Keep the FULL recommendation objects temporarily
+    // so the save endpoint can retrieve ingredients
+    // and instructions.
+    session.setAttribute(
+            "lastRecommendations",
+            recommendations);
 
-        if (mealIndexes == null || mealIndexes.isEmpty()) {
-            return "redirect:/dashboard/meals";
-        }
+    model.addAttribute(
+            "recommendations",
+            recommendations);
 
-        @SuppressWarnings("unchecked")
-        List<MealRecommendation> lastRecommendations =
-                (List<MealRecommendation>)
-                        session.getAttribute("lastRecommendations");
+    model.addAttribute(
+            "hasRecommendations",
+            recommendationResult.hasMeals());
 
-        if (lastRecommendations == null
-                || lastRecommendations.isEmpty()) {
+    model.addAttribute(
+            "recommendationStatus",
+            recommendationResult.statusMessage());
 
-            // Session expired, or the user navigated here without
-            // generating recommendations first. Nothing to save.
-            return "redirect:/dashboard/meals";
-        }
+    model.addAttribute(
+            "showRecommendations",
+            true);
 
-        for (Integer index : mealIndexes) {
+    return "dashboard/meals";
+}
 
-            if (index == null
-                    || index < 0
-                    || index >= lastRecommendations.size()) {
-                continue;
-            }
 
-            MealRecommendation meal =
-                    lastRecommendations.get(index);
+// ============================================================
+// SAVE SELECTED MEALS
+// ============================================================
 
-            if (meal == null
-                    || meal.name() == null
-                    || meal.name().isBlank()) {
-                continue;
-            }
+@PostMapping("/dashboard/meals/save")
+public String saveMeals(
+        HttpSession session,
+        @RequestParam(
+                name = "mealIndex",
+                required = false)
+        List<Integer> mealIndexes) {
 
-            SavedMeals savedMeal =
-                    new SavedMeals(
-                            user,
-                            meal.name().trim(),
-                            meal.ingredients(),
-                            meal.instructions());
+    AppUser user = getLoggedInUser(session);
 
-            savedMealsRepository.save(savedMeal);
-        }
-
-        return "redirect:/dashboard/actualmeals";
+    if (user == null) {
+        return "redirect:/login";
     }
 
-    // ============================================================
-    // SAVED MEALS PAGE (the actual "Meals" page in the nav)
-    // ============================================================
-
-    @GetMapping("/dashboard/actualmeals")
-    public String actualMeals(
-            HttpSession session,
-            Model model) {
-
-        AppUser user = getLoggedInUser(session);
-
-        if (user == null) {
-            return "redirect:/";
-        }
-
-        List<SavedMeals> savedMeals =
-                savedMealsRepository.findByUser(user);
-
-        model.addAttribute(
-                "savedMeals",
-                savedMeals);
-
-        model.addAttribute(
-                "hasSavedMeals",
-                !savedMeals.isEmpty());
-
-        return "dashboard/actualmeals";
+    if (mealIndexes == null || mealIndexes.isEmpty()) {
+        return "redirect:/dashboard/meals";
     }
 
-    // ============================================================
-    // DASHBOARD POST
-    // ============================================================
+    @SuppressWarnings("unchecked")
+    List<MealRecommendation> lastRecommendations =
+            (List<MealRecommendation>)
+                    session.getAttribute(
+                            "lastRecommendations");
 
-    @PostMapping("/dashboard/dashboard")
-    public String sendToDashboard(
-            HttpSession session) {
+    if (lastRecommendations == null
+            || lastRecommendations.isEmpty()) {
 
-        AppUser user = getLoggedInUser(session);
+        return "redirect:/dashboard/meals";
+    }
 
-        if (user == null) {
-            return "redirect:/";
+    for (Integer index : mealIndexes) {
+
+        if (index == null
+                || index < 0
+                || index >= lastRecommendations.size()) {
+            continue;
         }
 
-        return "redirect:/dashboard/dashboard";
+        MealRecommendation meal =
+                lastRecommendations.get(index);
+
+        if (meal == null
+                || meal.name() == null
+                || meal.name().isBlank()) {
+            continue;
+        }
+
+        SavedMeals savedMeal =
+                new SavedMeals(
+                        user,
+                        meal.name().trim(),
+                        meal.ingredients(),
+                        meal.instructions());
+
+        savedMealsRepository.save(savedMeal);
     }
+
+    // Clear the temporary recommendations after saving
+    session.removeAttribute("lastRecommendations");
+
+    return "redirect:/dashboard/actualmeals";
+}
+
+
+// ============================================================
+// SAVED MEALS PAGE
+// ============================================================
+
+@GetMapping("/dashboard/actualmeals")
+public String actualMeals(
+        HttpSession session,
+        Model model) {
+
+    AppUser user = getLoggedInUser(session);
+
+    if (user == null) {
+        return "redirect:/";
+    }
+
+    List<SavedMeals> savedMeals =
+            savedMealsRepository.findByUser(user);
+
+    model.addAttribute(
+            "savedMeals",
+            savedMeals);
+
+    model.addAttribute(
+            "hasSavedMeals",
+            !savedMeals.isEmpty());
+
+    return "dashboard/actualmeals";
+}
 
     // ============================================================
     // PLANNER
