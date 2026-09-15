@@ -254,9 +254,6 @@ public class MainController {
             return "redirect:/";
         }
 
-        List<SavedMeals> savedMeals = savedMealsRepository.findByUser(user);
-        model.addAttribute("savedMeals", savedMeals);
-        model.addAttribute("hasSavedMeals", !savedMeals.isEmpty());
         model.addAttribute("showRecommendations", false);
 
         return "dashboard/meals";
@@ -274,14 +271,17 @@ public class MainController {
                 .orElseGet(() -> dietaryProfileRepository.save(new DietaryProfile(user)));
         MealRecommendationResult recommendationResult = mealRecommendationService.recommendMeals(profile);
         List<MealRecommendation> recommendations = recommendationResult.meals();
-        List<SavedMeals> savedMeals = savedMealsRepository.findByUser(user);
 
-        model.addAttribute("savedMeals", savedMeals);
-        model.addAttribute("hasSavedMeals", !savedMeals.isEmpty());
         model.addAttribute("recommendations", recommendations);
         model.addAttribute("hasRecommendations", recommendationResult.hasMeals());
         model.addAttribute("recommendationStatus", recommendationResult.statusMessage());
         model.addAttribute("showRecommendations", true);
+
+        // Stash the generated recommendations in the session so that
+        // saveMeals() below can look up the FULL recipe (ingredients +
+        // instructions) by name, instead of only ever receiving a bare
+        // meal name from the form.
+        session.setAttribute("lastRecommendations", recommendations);
 
         return "dashboard/meals";
     }
@@ -295,12 +295,61 @@ public class MainController {
         }
 
         if (meals != null) {
-            for (String meal : meals) {
-                savedMealsRepository.save(new SavedMeals(user, meal));
+
+            @SuppressWarnings("unchecked")
+            List<MealRecommendation> lastRecommendations =
+                    (List<MealRecommendation>) session.getAttribute("lastRecommendations");
+
+            for (String mealName : meals) {
+
+                if (mealName == null || mealName.isBlank()) {
+                    continue;
+                }
+
+                MealRecommendation matched = null;
+
+                if (lastRecommendations != null) {
+                    for (MealRecommendation recommendation : lastRecommendations) {
+                        if (recommendation != null
+                                && recommendation.name() != null
+                                && recommendation.name().equals(mealName)) {
+                            matched = recommendation;
+                            break;
+                        }
+                    }
+                }
+
+                if (matched != null) {
+                    savedMealsRepository.save(new SavedMeals(
+                            user,
+                            matched.name(),
+                            matched.ingredients(),
+                            matched.instructions()));
+                } else {
+                    // Session expired or name didn't match a
+                    // generated recommendation -- fall back to
+                    // saving just the name so nothing is lost.
+                    savedMealsRepository.save(new SavedMeals(user, mealName));
+                }
             }
         }
 
-        return "redirect:/dashboard/meals";
+        return "redirect:/dashboard/actualmeals";
+    }
+
+    @GetMapping("/dashboard/actualmeals")
+    public String actualMeals(HttpSession session, Model model){
+        AppUser user = getLoggedInUser(session);
+
+        if (user == null){
+            return "redirect:/";
+        }
+
+        List<SavedMeals> savedMeals = savedMealsRepository.findByUser(user);
+        model.addAttribute("savedMeals", savedMeals);
+        model.addAttribute("hasSavedMeals", !savedMeals.isEmpty());
+
+        return "dashboard/actualmeals";
     }
 
     @PostMapping("/dashboard/dashboard")
