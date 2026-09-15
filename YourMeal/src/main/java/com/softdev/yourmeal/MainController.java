@@ -1,3 +1,4 @@
+```java
 package com.softdev.yourmeal;
 
 import jakarta.servlet.http.HttpSession;
@@ -277,7 +278,8 @@ public class MainController {
         List<MealRecommendation> recommendations =
                 recommendationResult.meals();
 
-        // Store the recommendations so saveMeals() can use the selected indexes.
+        // Keep the generated recommendations in the session
+        // so the selected indexes can be saved with full recipe data.
         session.setAttribute("lastRecommendations", recommendations);
 
         List<SavedMeals> savedMeals = savedMealsRepository.findByUser(user);
@@ -304,39 +306,37 @@ public class MainController {
             return "redirect:/login";
         }
 
-        if (mealIndexes == null || mealIndexes.isEmpty()){
-            return "redirect:/dashboard/meals";
-        }
-
         @SuppressWarnings("unchecked")
         List<MealRecommendation> recommendations =
                 (List<MealRecommendation>) session.getAttribute("lastRecommendations");
 
-        if (recommendations == null){
-            return "redirect:/dashboard/meals";
-        }
+        if (mealIndexes != null && recommendations != null) {
 
-        for (Integer index : mealIndexes){
+            for (Integer index : mealIndexes) {
 
-            if (index == null || index < 0 || index >= recommendations.size()){
-                continue;
+                if (index == null
+                        || index < 0
+                        || index >= recommendations.size()) {
+                    continue;
+                }
+
+                MealRecommendation meal = recommendations.get(index);
+
+                savedMealsRepository.save(
+                        new SavedMeals(
+                                user,
+                                meal.name(),
+                                meal.ingredients(),
+                                meal.instructions()
+                        )
+                );
             }
-
-            MealRecommendation meal = recommendations.get(index);
-
-            savedMealsRepository.save(
-                    new SavedMeals(
-                            user,
-                            meal.name(),
-                            meal.ingredients(),
-                            meal.instructions()
-                    )
-            );
         }
 
         session.removeAttribute("lastRecommendations");
 
-        return "redirect:/dashboard/meals";
+        // Saved meals go directly to actualmeals.html.
+        return "redirect:/dashboard/actualmeals";
     }
 
     @PostMapping("/dashboard/dashboard")
@@ -449,4 +449,12 @@ public class MainController {
         return newIngredients + " new ingredient(s) added.";
     }
 }
+```
 
+The key part is now:
+
+```java
+return "redirect:/dashboard/actualmeals";
+```
+
+So **the save button sends the selected recommendations to the database, then takes you to `actualmeals.html`**, where the saved recipe data can be displayed.
