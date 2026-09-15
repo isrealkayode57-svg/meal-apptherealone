@@ -365,10 +365,10 @@ public class MainController {
                 recommendationResult.meals();
 
         /*
-         * Keep the complete recommendations in the session.
-         * This allows the save operation to recover the
-         * ingredients and instructions without changing
-         * meals.html.
+         * Store the complete recommendations temporarily.
+         *
+         * meals.html sends the recommendation INDEX when
+         * the user clicks "Save Selected Meals".
          */
         session.setAttribute(
                 "lastRecommendations",
@@ -406,12 +406,6 @@ public class MainController {
 
     // ============================================================
     // SAVE SELECTED MEALS
-    //
-    // Keeps the existing mealName parameter so the current
-    // meals.html does NOT need to be changed.
-    //
-    // If the recommendation is still in the session, the
-    // matching full recipe is saved as well.
     // ============================================================
 
     @PostMapping("/dashboard/meals")
@@ -419,9 +413,9 @@ public class MainController {
             HttpSession session,
 
             @RequestParam(
-                    name = "mealName",
+                    name = "mealIndex",
                     required = false)
-            List<String> mealNames) {
+            List<Integer> mealIndexes) {
 
         AppUser user = getLoggedInUser(session);
 
@@ -429,7 +423,22 @@ public class MainController {
             return "redirect:/login";
         }
 
-        if (mealNames == null || mealNames.isEmpty()) {
+        /*
+         * Get the exact recommendations that were displayed
+         * on the Meals page.
+         */
+        @SuppressWarnings("unchecked")
+        List<MealRecommendation> recommendations =
+                (List<MealRecommendation>)
+                        session.getAttribute(
+                                "lastRecommendations");
+
+        /*
+         * Nothing was selected.
+         */
+        if (mealIndexes == null
+                || mealIndexes.isEmpty()
+                || recommendations == null) {
 
             session.removeAttribute(
                     "lastRecommendations");
@@ -437,57 +446,45 @@ public class MainController {
             return "redirect:/dashboard/meals";
         }
 
-        @SuppressWarnings("unchecked")
-        List<MealRecommendation> recommendations =
-                (List<MealRecommendation>)
-                        session.getAttribute(
-                                "lastRecommendations");
+        /*
+         * Save each selected recommendation with:
+         * - meal name
+         * - ingredients
+         * - instructions
+         */
+        for (Integer mealIndex : mealIndexes) {
 
-        for (String mealName : mealNames) {
-
-            if (mealName == null
-                    || mealName.isBlank()) {
-
+            if (mealIndex == null) {
                 continue;
             }
 
-            String trimmedMealName =
-                    mealName.trim();
-
-            MealRecommendation matchingMeal =
-                    findRecommendation(
-                            recommendations,
-                            trimmedMealName);
-
-            SavedMeals savedMeal;
-
-            /*
-             * If we can find the recommendation,
-             * save the complete recipe.
-             *
-             * Otherwise preserve the old behavior
-             * and save just the meal name.
-             */
-            if (matchingMeal != null) {
-
-                savedMeal =
-                        new SavedMeals(
-                                user,
-                                matchingMeal.name().trim(),
-                                matchingMeal.ingredients(),
-                                matchingMeal.instructions());
-
-            } else {
-
-                savedMeal =
-                        new SavedMeals(
-                                user,
-                                trimmedMealName);
+            if (mealIndex < 0
+                    || mealIndex >= recommendations.size()) {
+                continue;
             }
+
+            MealRecommendation meal =
+                    recommendations.get(mealIndex);
+
+            if (meal == null
+                    || meal.name() == null
+                    || meal.name().isBlank()) {
+                continue;
+            }
+
+            SavedMeals savedMeal =
+                    new SavedMeals(
+                            user,
+                            meal.name().trim(),
+                            meal.ingredients(),
+                            meal.instructions());
 
             savedMealsRepository.save(savedMeal);
         }
 
+        /*
+         * Recommendations are no longer needed after saving.
+         */
         session.removeAttribute(
                 "lastRecommendations");
 
@@ -495,7 +492,7 @@ public class MainController {
     }
 
     // ============================================================
-    // RECIPES / ACTUAL MEALS
+    // RECIPES
     // ============================================================
 
     @GetMapping("/dashboard/actualmeals")
@@ -506,7 +503,7 @@ public class MainController {
         AppUser user = getLoggedInUser(session);
 
         if (user == null) {
-            return "redirect:/";
+            return "redirect:/login";
         }
 
         List<SavedMeals> savedMeals =
@@ -737,41 +734,6 @@ public class MainController {
 
         return newIngredients
                 + " new ingredient(s) added.";
-    }
-
-    // ============================================================
-    // FIND FULL RECOMMENDATION
-    // ============================================================
-
-    private MealRecommendation findRecommendation(
-            List<MealRecommendation> recommendations,
-            String mealName) {
-
-        if (recommendations == null
-                || mealName == null) {
-
-            return null;
-        }
-
-        for (MealRecommendation recommendation :
-                recommendations) {
-
-            if (recommendation == null
-                    || recommendation.name() == null) {
-
-                continue;
-            }
-
-            if (recommendation.name()
-                    .trim()
-                    .equalsIgnoreCase(
-                            mealName.trim())) {
-
-                return recommendation;
-            }
-        }
-
-        return null;
     }
 
     // ============================================================
