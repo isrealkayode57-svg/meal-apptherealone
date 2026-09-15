@@ -1,4 +1,3 @@
-```java
 package com.softdev.yourmeal;
 
 import jakarta.servlet.http.HttpSession;
@@ -449,12 +448,3 @@ public class MainController {
         return newIngredients + " new ingredient(s) added.";
     }
 }
-```
-
-The key part is now:
-
-```java
-return "redirect:/dashboard/actualmeals";
-```
-
-So **the save button sends the selected recommendations to the database, then takes you to `actualmeals.html`**, where the saved recipe data can be displayed.
