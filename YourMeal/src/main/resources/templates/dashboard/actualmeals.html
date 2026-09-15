@@ -1,12 +1,9 @@
 <!DOCTYPE html>
-<html lang="en"
-      xmlns:th="http://www.thymeleaf.org">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Recipes - MealMate</title>
+    <title>YourMeal - Meals</title>
 
     <style>
         * {
@@ -16,131 +13,104 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #f7f8f5;
+            background: #f5f7fb;
             color: #222;
         }
 
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
         .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
             width: 240px;
-            height: 100vh;
-            background: #ffffff;
-            padding: 30px 20px;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.08);
+            background: #111827;
+            color: white;
+            padding: 25px 15px;
         }
 
         .logo {
-            font-size: 24px;
+            font-size: 25px;
             font-weight: bold;
             margin-bottom: 35px;
+            padding-left: 12px;
         }
 
-        .sidebar a {
+        .nav a {
             display: block;
-            padding: 14px 15px;
-            margin-bottom: 8px;
+            color: #d1d5db;
             text-decoration: none;
-            color: #333;
+            padding: 13px 15px;
             border-radius: 8px;
+            margin-bottom: 5px;
         }
 
-        .sidebar a:hover {
-            background: #f0f2ed;
-        }
-
-        .sidebar form {
-            margin-top: 25px;
-        }
-
-        .sidebar button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            background: #eee;
+        .nav a:hover,
+        .nav a.active {
+            background: #374151;
+            color: white;
         }
 
         .main {
-            margin-left: 240px;
-            padding: 45px;
-            max-width: 1200px;
+            flex: 1;
+            padding: 35px;
+            max-width: 1400px;
         }
 
-        .header {
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            margin-bottom: 8px;
-            font-size: 36px;
-        }
-
-        .header p {
-            color: #666;
-            font-size: 16px;
-        }
-
-        .recipe-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
-        }
-
-        .recipe-card {
-            background: white;
-            border-radius: 14px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
-        }
-
-        .recipe-card h2 {
+        h1 {
             margin-top: 0;
-            margin-bottom: 20px;
+            font-size: 32px;
         }
 
-        .recipe-card h3 {
-            margin-top: 22px;
+        h2 {
+            margin-top: 0;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
+        .ingredients,
+        .instructions {
+            margin-top: 15px;
+        }
+
+        .ingredients ul,
+        .instructions ol {
+            margin-top: 8px;
+        }
+
+        .saved-meal {
+            padding: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
             margin-bottom: 10px;
         }
 
-        .ingredients {
-            padding-left: 20px;
+        .saved-meal-name {
+            font-weight: bold;
+            font-size: 18px;
         }
 
-        .ingredients li {
-            margin-bottom: 7px;
-        }
-
-        .instructions {
-            padding-left: 20px;
-        }
-
-        .instructions li {
-            margin-bottom: 12px;
-            line-height: 1.5;
-        }
-
-        .empty-card {
-            background: white;
-            padding: 30px;
-            border-radius: 14px;
-            text-align: center;
-            color: #666;
+        .empty {
+            color: #6b7280;
         }
 
         @media (max-width: 800px) {
+            .layout {
+                flex-direction: column;
+            }
+
             .sidebar {
-                position: static;
                 width: 100%;
-                height: auto;
             }
 
             .main {
-                margin-left: 0;
-                padding: 25px;
+                padding: 20px;
             }
         }
     </style>
@@ -148,109 +118,100 @@
 
 <body>
 
-<div class="sidebar">
+<div class="layout">
 
-    <div class="logo">
-        🍽 MealMate
-    </div>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">YourMeal</div>
 
-    <a href="/dashboard/dashboard">
-        Dashboard
-    </a>
+        <nav class="nav">
+            <a href="/dashboard/dashboard">Dashboard</a>
+            <a href="/dashboard/meals">Meal Recommendations</a>
+            <a href="/dashboard/actualmeals" class="active">Meals</a>
+            <a href="/dashboard/planner">Planner</a>
+            <a href="/dashboard/grocery">Grocery</a>
+            <a href="/selection">Dietary Selection</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </aside>
 
-    <a href="/dashboard/meals">
-        Meals
-    </a>
 
-    <a href="/dashboard/actualmeals">
-        Recipes
-    </a>
+    <!-- MAIN CONTENT -->
+    <main class="main">
 
-    <a href="/dashboard/planner">
-        Planner
-    </a>
+        <h1>Meals</h1>
 
-    <a href="/dashboard/grocery">
-        Grocery
-    </a>
 
-    <a href="/selection">
-        Change Restrictions
-    </a>
+        <!-- SAVED MEALS -->
+        <div class="card">
 
-    <a href="/settings">
-        Settings
-    </a>
+            <h2>Saved Meals</h2>
 
-    <form action="/logout" method="post">
-        <button type="submit">
-            Logout
-        </button>
-    </form>
+            <div th:if="${hasSavedMeals}">
 
-</div>
+                <div
+                        class="saved-meal"
+                        th:each="savedMeal : ${savedMeals}">
 
-<div class="main">
+                    <div
+                            class="saved-meal-name"
+                            th:text="${savedMeal.mealNames}">
+                        Meal Name
+                    </div>
 
-    <div class="header">
-        <h1>My Recipes</h1>
-        <p>
-            Recipes for the meals you've selected.
-        </p>
-    </div>
+                    <!-- INGREDIENTS, IF ANY WERE SAVED -->
+                    <div
+                            class="ingredients"
+                            th:if="${savedMeal.ingredients != null and !savedMeal.ingredients.isEmpty()}">
 
-    <div
-        class="empty-card"
-        th:unless="${hasSavedMeals}"
-    >
-        <p>
-            You haven't selected any meals yet.
-        </p>
+                        <strong>Ingredients:</strong>
 
-        <p>
-            Go to Meals to choose some personalized recipes.
-        </p>
-    </div>
+                        <ul>
+                            <li
+                                    th:each="ingredient : ${savedMeal.ingredients}"
+                                    th:text="${ingredient}">
+                                Ingredient
+                            </li>
+                        </ul>
 
-    <div
-        class="recipe-grid"
-        th:if="${hasSavedMeals}"
-    >
+                    </div>
 
-        <div
-            class="recipe-card"
-            th:each="meal : ${savedMeals}"
-        >
+                    <!-- INSTRUCTIONS, IF ANY WERE SAVED -->
+                    <div
+                            class="instructions"
+                            th:if="${savedMeal.instructions != null and !savedMeal.instructions.isEmpty()}">
 
-            <h2 th:text="${meal.mealNames}">
-                Recipe Name
-            </h2>
+                        <strong>Instructions:</strong>
 
-            <h3>Ingredients</h3>
+                        <ol>
+                            <li
+                                    th:each="instruction : ${savedMeal.instructions}"
+                                    th:text="${instruction}">
+                                Instruction
+                            </li>
+                        </ol>
 
-            <ul class="ingredients">
-                <li
-                    th:each="ingredient : ${meal.ingredients}"
-                    th:text="${ingredient}"
-                >
-                    Ingredient
-                </li>
-            </ul>
+                    </div>
 
-            <h3>Instructions</h3>
+                    <p
+                            th:if="${savedMeal.ingredients == null or savedMeal.ingredients.isEmpty()}"
+                            class="empty">
+                        Saved to your meal list.
+                    </p>
 
-            <ol class="instructions">
-                <li
-                    th:each="instruction : ${meal.instructions}"
-                    th:text="${instruction}"
-                >
-                    Instruction
-                </li>
-            </ol>
+                </div>
+
+            </div>
+
+            <div th:unless="${hasSavedMeals}" class="empty">
+                You haven't saved any meals yet. Head to
+                <a href="/dashboard/meals">Meal Recommendations</a>
+                to generate and save some.
+            </div>
 
         </div>
 
-    </div>
+    </main>
 
 </div>
 
