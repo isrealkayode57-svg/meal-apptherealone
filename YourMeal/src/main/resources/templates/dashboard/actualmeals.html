@@ -1,116 +1,397 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
+    <title>Recipes | MealMate</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YourMeal - Recipes</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
 
     <style>
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f5f7fb;
-            color: #222;
-        }
-
-        .layout {
-            display: flex;
+            background: #F8FAF8;
+            color: #1F2937;
             min-height: 100vh;
         }
 
-        .sidebar {
-            width: 240px;
-            background: #111827;
+        /* MENU BUTTON */
+
+        .menu {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            background: white;
+            color: #5F8D4E;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            cursor: pointer;
+            border: 1px solid #E5E7EB;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .06);
+            z-index: 1001;
+            transition: .3s;
+        }
+
+        .menu:hover {
+            background: #5F8D4E;
             color: white;
-            padding: 25px 15px;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -260px;
+            width: 250px;
+            height: 100vh;
+            background: white;
+            border-right: 1px solid #E5E7EB;
+            padding: 30px;
+            transition: .35s;
+            box-shadow: 5px 0 25px rgba(0, 0, 0, .05);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
         }
 
         .logo {
-            font-size: 25px;
-            font-weight: bold;
-            margin-bottom: 35px;
-            padding-left: 12px;
+            margin-top: 70px;
+            margin-bottom: 40px;
+            font-size: 30px;
+            font-weight: 700;
+            color: #5F8D4E;
+            white-space: nowrap;
         }
 
-        .nav a {
+        .sidebar a {
             display: block;
-            color: #d1d5db;
             text-decoration: none;
-            padding: 13px 15px;
-            border-radius: 8px;
-            margin-bottom: 5px;
+            color: #374151;
+            padding: 14px 15px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            transition: .25s;
         }
 
-        .nav a:hover,
-        .nav a.active {
-            background: #374151;
-            color: white;
+        .sidebar a:hover {
+            background: #EEF6EE;
+            color: #5F8D4E;
+            transform: translateX(5px);
         }
+
+        .sidebar a.active {
+            background: #EEF6EE;
+            color: #5F8D4E;
+            font-weight: 600;
+        }
+
+        .sidebar form {
+            margin-top: 5px;
+        }
+
+        .sidebar button {
+            width: 100%;
+            background: none;
+            border: none;
+            text-align: left;
+            padding: 14px 15px;
+            border-radius: 12px;
+            color: #374151;
+            cursor: pointer;
+            font-size: 15px;
+            transition: .25s;
+        }
+
+        .sidebar button:hover {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+
+        /* MAIN CONTENT */
 
         .main {
-            flex: 1;
-            padding: 35px;
-            max-width: 1400px;
+            padding: 40px;
+            transition: .35s;
+            min-height: 100vh;
         }
 
-        h1 {
-            margin-top: 0;
-            font-size: 32px;
+        .main.active {
+            margin-left: 250px;
         }
 
-        h2 {
-            margin-top: 0;
+        /* HEADER */
+
+        .header {
+            margin-top: 80px;
+            margin-bottom: 35px;
         }
 
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        .header h1 {
+            font-size: 42px;
+            font-weight: 700;
+            color: #1F2937;
         }
 
-        .ingredients,
-        .instructions {
-            margin-top: 15px;
-        }
-
-        .ingredients ul,
-        .instructions ol {
+        .header p {
+            color: #6B7280;
             margin-top: 8px;
+            line-height: 1.7;
         }
 
-        .saved-meal {
-            padding: 15px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
+        /* SECTION HEADING */
+
+        .section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .section-heading h2 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .recipe-count {
+            display: inline-block;
+            padding: 7px 14px;
+            background: #EEF6EE;
+            color: #5F8D4E;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* RECIPE GRID */
+
+        .meal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        /* RECIPE CARD */
+
+        .meal-card {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .05);
+            transition: transform .3s, box-shadow .3s;
+            min-width: 0;
+            overflow-wrap: anywhere;
+            animation: fadeIn .5s ease both;
+        }
+
+        .meal-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 35px rgba(95, 141, 78, .15);
+        }
+
+        .meal-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .meal-card h3 {
+            color: #1F2937;
+            font-size: 22px;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .meal-card p {
+            color: #6B7280;
+            line-height: 1.7;
+            margin-top: 10px;
+        }
+
+        /* RECIPE DETAILS */
+
+        .recipe-section {
+            margin-top: 24px;
+        }
+
+        .recipe-section h4 {
+            color: #374151;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .recipe-section ul,
+        .recipe-section ol {
+            padding-left: 22px;
+            color: #6B7280;
+        }
+
+        .recipe-section li {
+            margin-bottom: 8px;
+            line-height: 1.7;
+            padding-left: 3px;
+        }
+
+        .recipe-section li::marker {
+            color: #5F8D4E;
+        }
+
+        /* TAGS */
+
+        .tags {
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 1px solid #F0F2F0;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 8px 14px;
+            background: #EEF6EE;
+            color: #5F8D4E;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 4px 4px 0 0;
+        }
+
+        /* EMPTY STATE */
+
+        .empty-card {
+            background: white;
+            border-radius: 24px;
+            padding: 55px 30px;
+            text-align: center;
+            border: 1px solid #E5E7EB;
+            color: #6B7280;
+            margin-top: 25px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .04);
+        }
+
+        .empty-icon {
+            width: 76px;
+            height: 76px;
+            margin: 0 auto 22px;
+            background: #EEF6EE;
+            color: #5F8D4E;
+            border-radius: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 36px;
+        }
+
+        .empty-card h3 {
+            font-size: 22px;
+            color: #1F2937;
             margin-bottom: 10px;
         }
 
-        .saved-meal-name {
-            font-weight: bold;
-            font-size: 18px;
+        .empty-card p {
+            line-height: 1.8;
+            max-width: 460px;
+            margin: 0 auto 25px;
         }
 
-        .empty {
-            color: #6b7280;
+        /* BUTTON */
+
+        .save-area {
+            margin-top: 25px;
         }
 
-        @media (max-width: 800px) {
-            .layout {
-                flex-direction: column;
+        .save-btn {
+            display: inline-block;
+            background: #5F8D4E;
+            color: white;
+            text-decoration: none;
+            border: none;
+            padding: 13px 25px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: .25s;
+        }
+
+        .save-btn:hover {
+            background: #4F7641;
+            transform: translateY(-3px);
+        }
+
+        /* ANIMATIONS */
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
 
-            .sidebar {
-                width: 100%;
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
+        }
 
+        /* RESPONSIVE */
+
+        @media (max-width: 700px) {
             .main {
-                padding: 20px;
+                padding: 25px;
+            }
+
+            .main.active {
+                margin-left: 0;
+            }
+
+            .header h1 {
+                font-size: 34px;
+            }
+
+            .section-heading h2 {
+                font-size: 21px;
+            }
+
+            .meal-grid {
+                grid-template-columns: 1fr;
+                gap: 22px;
+            }
+
+            .meal-card {
+                padding: 22px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
@@ -118,102 +399,253 @@
 
 <body>
 
-<div class="layout">
+    <!-- MENU BUTTON -->
+
+    <button class="menu"
+            type="button"
+            onclick="toggleSidebar()"
+            aria-label="Toggle navigation"
+            aria-expanded="false">
+        ☰
+    </button>
 
     <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="logo">YourMeal</div>
 
-        <nav class="nav">
-            <a href="/dashboard/dashboard">Dashboard</a>
-            <a href="/dashboard/meals">Meals</a>
-            <a href="/dashboard/actualmeals" class="active">Recipes</a>
-            <a href="/dashboard/planner">Planner</a>
-            <a href="/dashboard/grocery">Grocery</a>
-            <a href="/selection">Dietary Selection</a>
-            <a href="/logout">Logout</a>
+    <aside class="sidebar">
+
+        <div class="logo">
+            🍽 MealMate
+        </div>
+
+        <nav aria-label="Main navigation">
+
+            <a href="/dashboard/dashboard">
+                Dashboard
+            </a>
+
+            <a href="/dashboard/meals">
+                Meals
+            </a>
+
+            <a href="/dashboard/actualmeals" class="active"
+               aria-current="page">
+                Recipes
+            </a>
+
+            <a href="/dashboard/planner">
+                Planner
+            </a>
+
+            <a href="/dashboard/grocery">
+                Grocery
+            </a>
+
+            <a href="/selection">
+                Dietary Selection
+            </a>
+
         </nav>
+
+        <form action="/logout" method="post">
+            <button type="submit">
+                Logout
+            </button>
+        </form>
+
     </aside>
 
-
     <!-- MAIN CONTENT -->
+
     <main class="main">
 
-        <h1>Recipes</h1>
+        <!-- PAGE HEADER -->
 
+        <header class="header">
 
-        <!-- SAVED MEALS -->
-        <div class="card">
+            <h1>My Recipes</h1>
 
-            <h2>Your Saved Recipes</h2>
+            <p>
+                All your saved meals, ingredients, and cooking instructions
+                in one place.
+            </p>
 
-            <div th:if="${hasSavedMeals}">
+        </header>
 
-                <div
-                        class="saved-meal"
-                        th:each="savedMeal : ${savedMeals}">
+        <!-- SAVED RECIPES -->
 
-                    <div
-                            class="saved-meal-name"
-                            th:text="${savedMeal.mealNames}">
-                        Meal Name
+        <section aria-labelledby="recipes-heading">
+
+            <div class="section-heading">
+
+                <h2 id="recipes-heading">
+                    Your Saved Recipes
+                </h2>
+
+                <span class="recipe-count"
+                      th:if="${hasSavedMeals}"
+                      th:text="${#lists.size(savedMeals)} + ' saved recipes'">
+                    Saved recipes
+                </span>
+
+            </div>
+
+            <!-- RECIPES GRID -->
+
+            <div class="meal-grid"
+                 th:if="${hasSavedMeals}">
+
+                <article class="meal-card"
+                         th:each="savedMeal, stat : ${savedMeals}"
+                         th:style="'animation-delay:' + ${stat.index * 100} + 'ms'">
+
+                    <div class="meal-top">
+
+                        <h3 th:text="${savedMeal.mealNames}">
+                            Saved Meal
+                        </h3>
+
                     </div>
 
-                    <!-- INGREDIENTS, IF ANY WERE SAVED -->
-                    <div
-                            class="ingredients"
-                            th:if="${savedMeal.ingredients != null and !savedMeal.ingredients.isEmpty()}">
+                    <p>
+                        Your recipe is saved and ready whenever
+                        you want to make it.
+                    </p>
 
-                        <strong>Ingredients:</strong>
+                    <!-- INGREDIENTS -->
+
+                    <div class="recipe-section"
+                         th:if="${savedMeal.ingredients != null and !savedMeal.ingredients.isEmpty()}">
+
+                        <h4>
+                            🥬 Ingredients
+                        </h4>
 
                         <ul>
-                            <li
-                                    th:each="ingredient : ${savedMeal.ingredients}"
-                                    th:text="${ingredient}">
+                            <li th:each="ingredient : ${savedMeal.ingredients}"
+                                th:text="${ingredient}">
                                 Ingredient
                             </li>
                         </ul>
 
                     </div>
 
-                    <!-- INSTRUCTIONS, IF ANY WERE SAVED -->
-                    <div
-                            class="instructions"
-                            th:if="${savedMeal.instructions != null and !savedMeal.instructions.isEmpty()}">
+                    <!-- INSTRUCTIONS -->
 
-                        <strong>Instructions:</strong>
+                    <div class="recipe-section"
+                         th:if="${savedMeal.instructions != null and !savedMeal.instructions.isEmpty()}">
+
+                        <h4>
+                            👨‍🍳 Instructions
+                        </h4>
 
                         <ol>
-                            <li
-                                    th:each="instruction : ${savedMeal.instructions}"
-                                    th:text="${instruction}">
+                            <li th:each="instruction : ${savedMeal.instructions}"
+                                th:text="${instruction}">
                                 Instruction
                             </li>
                         </ol>
 
                     </div>
 
-                    <p
-                            th:if="${savedMeal.ingredients == null or savedMeal.ingredients.isEmpty()}"
-                            class="empty">
-                        Saved to your meal list.
+                    <!-- FALLBACK WHEN RECIPE DETAILS ARE MISSING -->
+
+                    <p th:if="${(savedMeal.ingredients == null or savedMeal.ingredients.isEmpty()) and (savedMeal.instructions == null or savedMeal.instructions.isEmpty())}">
+                        This meal is saved to your meal list.
                     </p>
+
+                    <!-- SAVED TAG -->
+
+                    <div class="tags">
+
+                        <span class="tag">
+                            ✓ Saved
+                        </span>
+
+                        <span class="tag"
+                              th:if="${savedMeal.ingredients != null and !savedMeal.ingredients.isEmpty()}">
+                            Ingredients Included
+                        </span>
+
+                        <span class="tag"
+                              th:if="${savedMeal.instructions != null and !savedMeal.instructions.isEmpty()}">
+                            Recipe Available
+                        </span>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+            <!-- EMPTY STATE -->
+
+            <div class="empty-card"
+                 th:unless="${hasSavedMeals}">
+
+                <div class="empty-icon">
+                    🍲
+                </div>
+
+                <h3>No Recipes Yet</h3>
+
+                <p>
+                    Your recipe collection is empty for now.
+                    Head over to Meals to discover meal suggestions
+                    and save your favourites here.
+                </p>
+
+                <div class="save-area">
+
+                    <a href="/dashboard/meals" class="save-btn">
+                        Explore Meals →
+                    </a>
 
                 </div>
 
             </div>
 
-            <div th:unless="${hasSavedMeals}" class="empty">
-                You haven't saved any meals yet. Head to
-                <a href="/dashboard/meals">Meals</a>
-                to generate and save some.
-            </div>
-
-        </div>
+        </section>
 
     </main>
 
-</div>
+    <!-- SIDEBAR SCRIPT -->
+
+    <script>
+        const sidebar = document.querySelector(".sidebar");
+        const main = document.querySelector(".main");
+        const menu = document.querySelector(".menu");
+
+        function toggleSidebar() {
+            const isActive = sidebar.classList.toggle("active");
+
+            main.classList.toggle("active", isActive);
+            menu.setAttribute("aria-expanded", String(isActive));
+        }
+
+        // Close sidebar when clicking outside
+
+        document.addEventListener("click", function(event) {
+            if (
+                !sidebar.contains(event.target) &&
+                !menu.contains(event.target)
+            ) {
+                sidebar.classList.remove("active");
+                main.classList.remove("active");
+                menu.setAttribute("aria-expanded", "false");
+            }
+        });
+
+        // Close sidebar using Escape
+
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "Escape") {
+                sidebar.classList.remove("active");
+                main.classList.remove("active");
+                menu.setAttribute("aria-expanded", "false");
+                menu.focus();
+            }
+        });
+    </script>
 
 </body>
 </html>
