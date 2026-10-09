@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YourMeal - Meals</title>
+    <title>YourMeal - Recipes</title>
 
     <style>
         * {
@@ -126,8 +126,8 @@
 
         <nav class="nav">
             <a href="/dashboard/dashboard">Dashboard</a>
-            <a href="/dashboard/meals">Meal Recommendations</a>
-            <a href="/dashboard/actualmeals" class="active">Meals</a>
+            <a href="/dashboard/meals">Meals</a>
+            <a href="/dashboard/actualmeals" class="active">Recipes</a>
             <a href="/dashboard/planner">Planner</a>
             <a href="/dashboard/grocery">Grocery</a>
             <a href="/selection">Dietary Selection</a>
@@ -139,13 +139,13 @@
     <!-- MAIN CONTENT -->
     <main class="main">
 
-        <h1>Meals</h1>
+        <h1>Recipes</h1>
 
 
         <!-- SAVED MEALS -->
         <div class="card">
 
-            <h2>Saved Meals</h2>
+            <h2>Your Saved Recipes</h2>
 
             <div th:if="${hasSavedMeals}">
 
@@ -205,7 +205,7 @@
 
             <div th:unless="${hasSavedMeals}" class="empty">
                 You haven't saved any meals yet. Head to
-                <a href="/dashboard/meals">Meal Recommendations</a>
+                <a href="/dashboard/meals">Meals</a>
                 to generate and save some.
             </div>
 
