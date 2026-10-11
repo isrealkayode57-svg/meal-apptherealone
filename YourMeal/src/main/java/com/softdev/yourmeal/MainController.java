@@ -2,7 +2,6 @@ package com.softdev.yourmeal;
 
 import jakarta.servlet.http.HttpSession;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -382,7 +381,15 @@ public class MainController {
         return "dashboard/planner";
     }
 
+    // The dashboard's "Grocery List" button submits a POST form,
+    // so accept it and send the user to the grocery page.
+    @PostMapping("/dashboard/grocery")
+    public String groceryFromDashboard(){
+        return "redirect:/dashboard/grocery";
+    }
+
     @GetMapping("/dashboard/grocery")
+    @Transactional(readOnly = true)
     public String grocery(HttpSession session, Model model){
         AppUser user = getLoggedInUser(session);
 
@@ -390,84 +397,13 @@ public class MainController {
             return "redirect:/";
         }
 
-        addGroceryBaseModel(user, model);
-        addGroceryIngredientsModel(user, model);
-        model.addAttribute("groceryStatus", "Click update to add missing ingredients from your saved meals.");
-
-        return "dashboard/grocery";
-    }
-
-    @PostMapping("/dashboard/grocery/update")
-    public String updateGrocery(HttpSession session, Model model){
-        AppUser user = getLoggedInUser(session);
-
-        if(user == null){
-            return "redirect:/";
-        }
-
-        List<String> savedMealNames = addGroceryBaseModel(user, model);
-        GroceryListResult groceryListResult = mealRecommendationService.recommendIngredients(savedMealNames);
-        int newIngredients = saveNewIngredients(user, groceryListResult.ingredients());
-
-        addGroceryIngredientsModel(user, model);
-        model.addAttribute("groceryStatus", groceryListResult.hasIngredients()
-                ? groceryUpdateStatus(newIngredients)
-                : groceryListResult.statusMessage());
-
-        return "dashboard/grocery";
-    }
-
-    private List<String> addGroceryBaseModel(AppUser user, Model model) {
         List<SavedMeals> savedMeals = savedMealsRepository.findByUser(user);
-        List<String> savedMealNames = new ArrayList<>();
-
-        for (SavedMeals meal : savedMeals) {
-            if (meal.getMealNames() != null && !meal.getMealNames().isBlank()) {
-                savedMealNames.add(meal.getMealNames());
-            }
-        }
+        loadRecipes(savedMeals);
 
         model.addAttribute("savedMeals", savedMeals);
-        model.addAttribute("hasSavedMeals", !savedMealNames.isEmpty());
-        return savedMealNames;
-    }
+        model.addAttribute("hasSavedMeals", !savedMeals.isEmpty());
 
-    private void addGroceryIngredientsModel(AppUser user, Model model) {
-        List<GroceryIngredient> groceryIngredients = groceryIngredientRepository.findByUser(user);
-        model.addAttribute("groceryIngredients", groceryIngredients);
-        model.addAttribute("hasGroceryIngredients", !groceryIngredients.isEmpty());
-    }
-
-    private int saveNewIngredients(AppUser user, List<String> ingredients) {
-        int newIngredients = 0;
-
-        for (String ingredient : ingredients) {
-            String normalizedIngredient = normalizeIngredient(ingredient);
-
-            if (!normalizedIngredient.isBlank()
-                    && !groceryIngredientRepository.existsByUserAndNormalizedName(user, normalizedIngredient)) {
-                groceryIngredientRepository.save(new GroceryIngredient(user, ingredient.trim(), normalizedIngredient));
-                newIngredients++;
-            }
-        }
-
-        return newIngredients;
-    }
-
-    private String normalizeIngredient(String ingredient) {
-        if (ingredient == null) {
-            return "";
-        }
-
-        return ingredient.trim().toLowerCase();
-    }
-
-    private String groceryUpdateStatus(int newIngredients) {
-        if (newIngredients == 0) {
-            return "No new ingredients were added.";
-        }
-
-        return newIngredients + " new ingredient(s) added.";
+        return "dashboard/grocery";
     }
 
 }
