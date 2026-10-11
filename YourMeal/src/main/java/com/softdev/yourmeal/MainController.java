@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -247,6 +248,7 @@ public class MainController {
 
 
     @GetMapping("/dashboard/meals")
+    @Transactional(readOnly = true)
     public String meals(HttpSession session, Model model){
         AppUser user = getLoggedInUser(session);
 
@@ -255,6 +257,7 @@ public class MainController {
         }
 
         List<SavedMeals> savedMeals = savedMealsRepository.findByUser(user);
+        loadRecipes(savedMeals);
         model.addAttribute("savedMeals", savedMeals);
         model.addAttribute("hasSavedMeals", !savedMeals.isEmpty());
         model.addAttribute("showRecommendations", false);
@@ -331,6 +334,7 @@ public class MainController {
     }
 
     @GetMapping("/dashboard/actualmeals")
+    @Transactional(readOnly = true)
     public String actualMeals(HttpSession session, Model model){
         AppUser user = getLoggedInUser(session);
 
@@ -339,10 +343,21 @@ public class MainController {
         }
 
         List<SavedMeals> savedMeals = savedMealsRepository.findByUser(user);
+        loadRecipes(savedMeals);
+
         model.addAttribute("savedMeals", savedMeals);
         model.addAttribute("hasSavedMeals", !savedMeals.isEmpty());
 
         return "dashboard/actualmeals";
+    }
+
+    // Touch the ingredient/instruction lists while the transaction is open,
+    // so the page can show them after the transaction has ended.
+    private void loadRecipes(List<SavedMeals> savedMeals) {
+        for (SavedMeals meal : savedMeals) {
+            meal.getIngredients().size();
+            meal.getInstructions().size();
+        }
     }
 
     @PostMapping("/dashboard/dashboard")
