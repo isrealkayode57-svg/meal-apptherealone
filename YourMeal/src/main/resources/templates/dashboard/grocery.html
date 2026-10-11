@@ -1,414 +1,504 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grocery List | MealMate</title>
 
-<title>Grocery | MealMate</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        body {
+            background: #F8FAF8;
+            color: #1F2937;
+            min-height: 100vh;
+        }
 
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
-}
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 30px 20px 60px;
+        }
 
-body{
-    background:#F8FAF8;
-    color:#1F2937;
-    min-height:100vh;
-}
+        .back {
+            display: inline-block;
+            text-decoration: none;
+            color: #5F8D4E;
+            font-weight: 500;
+            padding: 10px 16px;
+            border-radius: 12px;
+            background: white;
+            border: 1px solid #E5E7EB;
+            transition: .25s;
+            margin-bottom: 25px;
+        }
 
-.menu{
-    position:fixed;
-    top:20px;
-    left:20px;
-    width:54px;
-    height:54px;
-    border-radius:16px;
-    background:white;
-    color:#5F8D4E;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:28px;
-    cursor:pointer;
-    border:1px solid #E5E7EB;
-    box-shadow:0 10px 25px rgba(0,0,0,.06);
-    z-index:1001;
-    transition:.3s;
-}
+        .back:hover {
+            background: #EEF6EE;
+        }
 
-.menu:hover{
-    background:#5F8D4E;
-    color:white;
-}
+        .header h1 {
+            font-size: 34px;
+            color: #1F2937;
+        }
 
-.sidebar{
-    position:fixed;
-    top:0;
-    left:-260px;
-    width:250px;
-    height:100vh;
-    background:white;
-    border-right:1px solid #E5E7EB;
-    padding:30px;
-    transition:.35s;
-    box-shadow:5px 0 25px rgba(0,0,0,.05);
-    z-index:1000;
-}
+        .header p {
+            margin-top: 6px;
+            color: #6B7280;
+        }
 
-.sidebar.active{
-    left:0;
-}
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-top: 28px;
+            align-items: start;
+        }
 
-.logo{
-    margin-top:70px;
-    margin-bottom:40px;
-    font-size:32px;
-    font-weight:700;
-    color:#5F8D4E;
-}
+        .panel {
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .05);
+        }
 
-.sidebar a{
-    display:block;
-    text-decoration:none;
-    color:#374151;
-    padding:15px;
-    border-radius:12px;
-    margin-bottom:8px;
-    transition:.25s;
-}
+        .panel-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
 
-.sidebar a:hover{
-    background:#EEF6EE;
-    color:#5F8D4E;
-    transform:translateX(5px);
-}
+        .panel-head h2 {
+            font-size: 20px;
+        }
 
-.sidebar button{
-    width:100%;
-    background:none;
-    border:none;
-    text-align:left;
-    padding:15px;
-    border-radius:12px;
-    color:#374151;
-    cursor:pointer;
-    font-size:15px;
-}
+        .small-btn {
+            border: 1px solid #E5E7EB;
+            background: white;
+            color: #374151;
+            padding: 7px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: .2s;
+        }
 
-.sidebar button:hover{
-    background:#FEE2E2;
-    color:#DC2626;
-}
+        .small-btn:hover {
+            background: #EEF6EE;
+            color: #5F8D4E;
+        }
 
-.main{
-    padding:40px;
-    transition:.35s;
-}
+        .small-btn.primary {
+            background: #5F8D4E;
+            color: white;
+            border-color: #5F8D4E;
+        }
 
-.main.active{
-    margin-left:250px;
-}
+        .small-btn.primary:hover {
+            background: #4E7640;
+            color: white;
+        }
 
-.header{
-    margin-top:80px;
-    margin-bottom:35px;
-}
+        .btn-row {
+            display: flex;
+            gap: 8px;
+        }
 
-.header h1{
-    font-size:42px;
-}
+        /* ---------- meal picker ---------- */
 
-.header p{
-    color:#6B7280;
-    margin-top:8px;
-}
+        .meal-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
-.update-area{
-    margin-bottom:30px;
-}
+        .meal-pick {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border: 1px solid #E5E7EB;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: .2s;
+        }
 
-.update-btn{
-    background:#5F8D4E;
-    color:white;
-    border:none;
-    padding:15px 35px;
-    border-radius:14px;
-    cursor:pointer;
-    font-size:16px;
-    font-weight:600;
-    transition:.25s;
-}
+        .meal-pick:hover {
+            border-color: #5F8D4E;
+        }
 
-.update-btn:hover{
-    background:#4F7641;
-    transform:translateY(-3px);
-}
+        .meal-pick.selected {
+            background: #EEF6EE;
+            border-color: #5F8D4E;
+        }
 
-.update-btn:disabled{
-    opacity:.75;
-    cursor:wait;
-    transform:none;
-}
+        .meal-pick.disabled {
+            opacity: .55;
+            cursor: not-allowed;
+        }
 
-.ai-loading{
-    display:none;
-    max-width:520px;
-    margin:18px 0 0;
-    background:white;
-    border:1px solid #E5E7EB;
-    border-radius:14px;
-    padding:14px 16px;
-    box-shadow:0 12px 30px rgba(0,0,0,.05);
-}
+        .meal-pick.disabled:hover {
+            border-color: #E5E7EB;
+        }
 
-.ai-loading.active{
-    display:block;
-}
+        .meal-check,
+        .item-check {
+            width: 20px;
+            height: 20px;
+            accent-color: #5F8D4E;
+            flex-shrink: 0;
+        }
 
-.ai-loading p{
-    color:#6B7280;
-    font-size:14px;
-    margin-bottom:10px;
-}
+        .meal-name {
+            display: block;
+            font-weight: 600;
+        }
 
-.loading-track{
-    height:10px;
-    background:#EEF6EE;
-    border-radius:50px;
-    overflow:hidden;
-}
+        .meal-count {
+            display: block;
+            font-size: 13px;
+            color: #6B7280;
+            margin-top: 2px;
+        }
 
-.loading-bar{
-    height:100%;
-    width:45%;
-    border-radius:50px;
-    background:#5F8D4E;
-    animation:loadingBar 1.2s ease-in-out infinite;
-}
+        .ingredient-data {
+            display: none;
+        }
 
-@keyframes loadingBar{
-    0%{ transform:translateX(-110%); }
-    100%{ transform:translateX(240%); }
-}
+        /* ---------- shopping list ---------- */
 
-.grocery-grid{
-    display:grid;
-    grid-template-columns:1fr 1.5fr;
-    gap:30px;
-}
+        #summary {
+            color: #6B7280;
+            font-size: 14px;
+            margin-bottom: 14px;
+        }
 
-.panel{
-    background:white;
-    border:1px solid #E5E7EB;
-    border-radius:24px;
-    padding:25px;
-    box-shadow:0 12px 30px rgba(0,0,0,.05);
-}
+        #shoppingList {
+            list-style: none;
+        }
 
-.panel h2{
-    margin-bottom:18px;
-    color:#1F2937;
-}
+        #shoppingList li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 4px;
+            border-bottom: 1px solid #F3F4F6;
+        }
 
-.panel p{
-    color:#6B7280;
-    line-height:1.7;
-}
+        #shoppingList li:last-child {
+            border-bottom: none;
+        }
 
-.list{
-    list-style:none;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-}
+        .item-text {
+            display: block;
+        }
 
-.list li{
-    background:#F8FAF8;
-    border-left:4px solid #5F8D4E;
-    border-radius:14px;
-    padding:13px 15px;
-    color:#374151;
-    font-weight:500;
-}
+        .item-meals {
+            display: block;
+            font-size: 12px;
+            color: #9CA3AF;
+            margin-top: 2px;
+        }
 
-@media(max-width:900px){
-    .grocery-grid{
-        grid-template-columns:1fr;
-    }
-}
+        #shoppingList li.done .item-text {
+            text-decoration: line-through;
+            color: #9CA3AF;
+        }
 
-@media(max-width:700px){
-    .main{
-        padding:25px;
-    }
+        .empty-card {
+            margin-top: 28px;
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 20px;
+            padding: 40px 25px;
+            text-align: center;
+            color: #6B7280;
+        }
 
-    .main.active{
-        margin-left:0;
-    }
+        .empty-card a {
+            color: #5F8D4E;
+            font-weight: 600;
+        }
 
-    .header h1{
-        font-size:34px;
-    }
-}
-</style>
+        .note {
+            margin-top: 14px;
+            font-size: 13px;
+            color: #9CA3AF;
+        }
 
+        @media (max-width: 800px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="menu" onclick="toggleSidebar()">
-☰
-</div>
+<div class="page">
 
-<div class="sidebar">
+    <a class="back" href="/dashboard/dashboard">← Back to Dashboard</a>
 
-<div class="logo">
-MealMate
-</div>
+    <div class="header">
+        <h1>🛒 Grocery List</h1>
+        <p>Pick the meals you plan to cook and we'll gather everything you need to buy.</p>
+    </div>
 
-<a href="/dashboard/dashboard">
-Dashboard
-</a>
 
-<a href="/dashboard/meals">
-    Meals
-</a>
-<a href="/dashboard/actualmeals">
-    Recipes
-</a>
+    <!-- NO SAVED MEALS -->
+    <div class="empty-card" th:unless="${hasSavedMeals}">
+        <p>
+            You haven't saved any meals yet.<br>
+            Head to <a href="/dashboard/meals">Meals</a> to get suggestions and save some.
+        </p>
+    </div>
 
-<a href="/dashboard/planner">
-Planner
-</a>
 
-<a href="/dashboard/grocery">
-Grocery
-</a>
+    <!-- SAVED MEALS + SHOPPING LIST -->
+    <div class="grid" th:if="${hasSavedMeals}">
 
-<a href="/dashboard/settings">
-Settings
-</a>
+        <!-- PICK MEALS -->
+        <section class="panel">
 
-<form action="/logout" method="post">
-<button type="submit">
-Logout
-</button>
-</form>
+            <div class="panel-head">
+                <h2>Your saved meals</h2>
 
-</div>
+                <div class="btn-row">
+                    <button type="button" class="small-btn" id="selectAll">Select all</button>
+                    <button type="button" class="small-btn" id="clearAll">Clear</button>
+                </div>
+            </div>
 
-<div class="main">
+            <div class="meal-list">
 
-<div class="header">
-<h1>
-Grocery List
-</h1>
-<p>
-Generate ingredients from your saved meals.
-</p>
-</div>
+                <label class="meal-pick"
+                       th:each="meal : ${savedMeals}"
+                       th:with="noIngredients=${meal.ingredients == null or meal.ingredients.isEmpty()}"
+                       th:classappend="${noIngredients} ? 'disabled' : ''">
 
-<form action="/dashboard/grocery/update" method="post" class="ai-form">
-<div class="update-area">
-<button class="update-btn" type="submit">
-Update Grocery List
-</button>
-</div>
+                    <input type="checkbox"
+                           class="meal-check"
+                           th:disabled="${noIngredients}">
 
-<div class="ai-loading">
-<p>
-Building your grocery list...
-</p>
-<div class="loading-track">
-<div class="loading-bar">
-</div>
-</div>
-</div>
+                    <span>
+                        <span class="meal-name" th:text="${meal.mealNames}">Meal Name</span>
 
-</form>
+                        <span class="meal-count"
+                              th:text="${noIngredients ? 'No ingredients saved' : meal.ingredients.size() + (meal.ingredients.size() == 1 ? ' ingredient' : ' ingredients')}">
+                            0 ingredients
+                        </span>
+                    </span>
 
-<div class="grocery-grid">
+                    <!-- read by the script below -->
+                    <ul class="ingredient-data" th:unless="${noIngredients}">
+                        <li th:each="ingredient : ${meal.ingredients}"
+                            th:text="${ingredient}">Ingredient</li>
+                    </ul>
 
-<div class="panel">
-<h2>
-Saved Meals
-</h2>
+                </label>
 
-<ul class="list" th:if="${hasSavedMeals}">
-<li th:each="meal : ${savedMeals}" th:text="${meal.mealNames}">
-Saved Meal
-</li>
-</ul>
+            </div>
 
-<p th:unless="${hasSavedMeals}">
-No saved meals yet.
-</p>
-</div>
+            <p class="note">
+                Meals saved before recipes were being stored have no ingredient list,
+                so they can't be selected. Re-save them from Meals to add one.
+            </p>
 
-<div class="panel">
-<h2>
-Ingredients
-</h2>
+        </section>
 
-<ul class="list" th:if="${hasGroceryIngredients}">
-<li th:each="ingredient : ${groceryIngredients}" th:text="${ingredient.name}">
-Ingredient
-</li>
-</ul>
 
-<p th:unless="${hasGroceryIngredients}" th:text="${groceryStatus}">
-Click update to create a grocery list from your saved meals.
-</p>
-</div>
+        <!-- SHOPPING LIST -->
+        <section class="panel">
+
+            <div class="panel-head">
+                <h2>Shopping list</h2>
+                <button type="button" class="small-btn primary" id="copyBtn">Copy list</button>
+            </div>
+
+            <p id="summary">Pick a meal on the left to see what you need.</p>
+
+            <ul id="shoppingList"></ul>
+
+        </section>
+
+    </div>
 
 </div>
 
-</div>
 
 <script>
-const sidebar = document.querySelector(".sidebar");
-const main = document.querySelector(".main");
-const menu = document.querySelector(".menu");
+    const mealCards = Array.from(document.querySelectorAll(".meal-pick"));
+    const listEl = document.getElementById("shoppingList");
+    const summaryEl = document.getElementById("summary");
+    const copyBtn = document.getElementById("copyBtn");
 
-function toggleSidebar(){
-    sidebar.classList.toggle("active");
-    main.classList.toggle("active");
-}
+    // Items the user has ticked off (kept when the selection changes)
+    const ticked = new Set();
 
-document.addEventListener("click", function(event){
-    if(!sidebar.contains(event.target) && !menu.contains(event.target)){
-        sidebar.classList.remove("active");
-        main.classList.remove("active");
+    // Latest combined list, used by the copy button
+    let currentItems = [];
+
+    function normalize(text) {
+        return text.trim().toLowerCase().replace(/\s+/g, " ");
     }
-});
 
-document.querySelectorAll(".ai-form").forEach((form)=>{
-    form.addEventListener("submit",()=>{
-        const button = form.querySelector("button[type='submit']");
-        const loading = form.querySelector(".ai-loading");
+    function render() {
 
-        if(button){
-            button.disabled = true;
-            button.textContent = "Working...";
+        const items = new Map();
+        let selectedCount = 0;
+
+        mealCards.forEach(card => {
+
+            const checkbox = card.querySelector(".meal-check");
+            card.classList.toggle("selected", checkbox.checked);
+
+            if (!checkbox.checked) {
+                return;
+            }
+
+            selectedCount++;
+
+            const mealName =
+                card.querySelector(".meal-name").textContent.trim();
+
+            card.querySelectorAll(".ingredient-data li").forEach(li => {
+
+                const text = li.textContent.trim();
+
+                if (!text) {
+                    return;
+                }
+
+                const key = normalize(text);
+
+                if (!items.has(key)) {
+                    items.set(key, { key: key, text: text, meals: [] });
+                }
+
+                const entry = items.get(key);
+
+                if (!entry.meals.includes(mealName)) {
+                    entry.meals.push(mealName);
+                }
+            });
+        });
+
+        currentItems = Array.from(items.values());
+        listEl.innerHTML = "";
+
+        if (selectedCount === 0) {
+            summaryEl.textContent =
+                "Pick a meal on the left to see what you need.";
+            return;
         }
 
-        if(loading){
-            loading.classList.add("active");
+        summaryEl.textContent =
+            selectedCount + (selectedCount === 1 ? " meal" : " meals") +
+            " selected \u00B7 " +
+            currentItems.length + (currentItems.length === 1 ? " item" : " items") +
+            " to buy";
+
+        currentItems.forEach(item => {
+
+            const li = document.createElement("li");
+
+            const box = document.createElement("input");
+            box.type = "checkbox";
+            box.className = "item-check";
+            box.checked = ticked.has(item.key);
+
+            const info = document.createElement("span");
+
+            const name = document.createElement("span");
+            name.className = "item-text";
+            name.textContent = item.text;
+
+            const meals = document.createElement("span");
+            meals.className = "item-meals";
+            meals.textContent = "for " + item.meals.join(", ");
+
+            info.appendChild(name);
+            info.appendChild(meals);
+
+            li.classList.toggle("done", box.checked);
+
+            box.addEventListener("change", () => {
+                if (box.checked) {
+                    ticked.add(item.key);
+                } else {
+                    ticked.delete(item.key);
+                }
+                li.classList.toggle("done", box.checked);
+            });
+
+            li.appendChild(box);
+            li.appendChild(info);
+            listEl.appendChild(li);
+        });
+    }
+
+    mealCards.forEach(card => {
+        card.querySelector(".meal-check").addEventListener("change", render);
+    });
+
+    document.getElementById("selectAll").addEventListener("click", () => {
+        mealCards.forEach(card => {
+            const checkbox = card.querySelector(".meal-check");
+            if (!checkbox.disabled) {
+                checkbox.checked = true;
+            }
+        });
+        render();
+    });
+
+    document.getElementById("clearAll").addEventListener("click", () => {
+        mealCards.forEach(card => {
+            card.querySelector(".meal-check").checked = false;
+        });
+        render();
+    });
+
+    copyBtn.addEventListener("click", () => {
+
+        if (currentItems.length === 0) {
+            return;
+        }
+
+        const text = currentItems.map(item => item.text).join("\n");
+
+        const done = () => {
+            copyBtn.textContent = "Copied!";
+            setTimeout(() => { copyBtn.textContent = "Copy list"; }, 1500);
+        };
+
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(done, () => alert(text));
+        } else {
+            alert(text);
         }
     });
-});
+
+    render();
 </script>
 
 </body>
-
 </html>
