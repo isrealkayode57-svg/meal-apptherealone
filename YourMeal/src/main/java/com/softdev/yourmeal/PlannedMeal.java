@@ -1,7 +1,6 @@
 package com.softdev.yourmeal;
 
 import java.time.LocalDate;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,11 +10,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-/*
- * One meal that a user has put on a specific day in the planner.
- * It can come from their saved meals or be typed in as a new meal;
- * either way only the name is stored.
- */
 @Entity
 @Table(name = "planned_meals")
 public class PlannedMeal {
@@ -40,12 +34,8 @@ public class PlannedMeal {
     protected PlannedMeal() {
     }
 
-    public PlannedMeal(
-            AppUser user,
-            LocalDate planDate,
-            String mealType,
-            String mealName) {
-
+    public PlannedMeal(AppUser user, LocalDate planDate,
+                       String mealType, String mealName) {
         this.user = user;
         this.planDate = planDate;
         this.mealType = mealType;
