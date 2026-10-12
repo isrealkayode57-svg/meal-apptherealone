@@ -2,6 +2,7 @@ package com.softdev.yourmeal;
 
 import jakarta.servlet.http.HttpSession;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -369,18 +370,145 @@ public class MainController {
         return "dashboard/dashboard";
     }
     @GetMapping("/dashboard/planner")
-    public String planner(HttpSession session, Model model){
+public String planner(
+        HttpSession session,
+        Model model,
+        @RequestParam(required = false) String month) {
 
-        AppUser user = getLoggedInUser(session);
+    AppUser user = getLoggedInUser(session);
 
-        if(user == null){
-            return "redirect:/";
-        }
-
-
-        return "dashboard/planner";
+    if (user == null) {
+        return "redirect:/login";
     }
 
+    LocalDate selectedMonth;
+
+    try {
+        selectedMonth = (month == null || month.isBlank())
+                ? LocalDate.now().withDayOfMonth(1)
+                : LocalDate.parse(month + "-01");
+    } catch (java.time.format.DateTimeParseException ex) {
+        selectedMonth = LocalDate.now().withDayOfMonth(1);
+    }
+
+    LocalDate start = selectedMonth.withDayOfMonth(1);
+    LocalDate end = start.plusMonths(1).minusDays(1);
+
+    model.addAttribute(
+            "savedMeals",
+            savedMealsRepository.findByUser(user)
+    );
+
+    model.addAttribute(
+            "plannedMeals",
+            plannedMealRepository
+                    .findByUserAndPlanDateBetweenOrderByPlanDateAscIdAsc(
+                            user, start, end)
+    );
+
+    model.addAttribute(
+            "monthValue",
+            start.toString().substring(0, 7)
+    );
+
+    model.addAttribute(
+            "monthLabel",
+            start.getMonth().getDisplayName(
+                    java.time.format.TextStyle.FULL,
+                    java.util.Locale.ENGLISH
+            ) + " " + start.getYear()
+    );
+
+    model.addAttribute(
+            "previousMonth",
+            start.minusMonths(1).toString().substring(0, 7)
+    );
+
+    model.addAttribute(
+            "nextMonth",
+            start.plusMonths(1).toString().substring(0, 7)
+    );
+
+    model.addAttribute("today", LocalDate.now().toString());
+
+    return "dashboard/planner";
+}
+
+
+@PostMapping("/dashboard/planner/add")
+public String addPlannedMeal(
+        HttpSession session,
+        @RequestParam String planDate,
+        @RequestParam String mealType,
+        @RequestParam(required = false) Long savedMealId,
+        @RequestParam(required = false, defaultValue = "") String mealName,
+        @RequestParam(required = false, defaultValue = "") String month) {
+
+    AppUser user = getLoggedInUser(session);
+
+    if (user == null) {
+        return "redirect:/login";
+    }
+
+    LocalDate date;
+
+    try {
+        date = LocalDate.parse(planDate);
+    } catch (java.time.format.DateTimeParseException ex) {
+        return "redirect:/dashboard/planner";
+    }
+
+    if (!java.util.Set.of(
+            "Breakfast", "Lunch", "Dinner", "Snack"
+    ).contains(mealType)) {
+        return "redirect:/dashboard/planner?month="
+                + date.toString().substring(0, 7);
+    }
+
+    String name = mealName.trim();
+
+    if (savedMealId != null) {
+        name = savedMealsRepository.findById(savedMealId)
+                .filter(meal ->
+                        meal.getUser().getId().equals(user.getId()))
+                .map(SavedMeals::getMealNames)
+                .orElse("");
+    }
+
+    if (!name.isBlank() && name.length() <= 150) {
+        plannedMealRepository.save(
+                new PlannedMeal(user, date, mealType, name)
+        );
+    }
+
+    String targetMonth = (month == null || month.isBlank())
+            ? date.toString().substring(0, 7)
+            : month;
+
+    return "redirect:/dashboard/planner?month=" + targetMonth;
+}
+
+
+@PostMapping("/dashboard/planner/delete")
+public String deletePlannedMeal(
+        HttpSession session,
+        @RequestParam Long plannedMealId,
+        @RequestParam(required = false, defaultValue = "") String month) {
+
+    AppUser user = getLoggedInUser(session);
+
+    if (user == null) {
+        return "redirect:/login";
+    }
+
+    plannedMealRepository.findById(plannedMealId)
+            .filter(meal ->
+                    meal.getUser().getId().equals(user.getId()))
+            .ifPresent(plannedMealRepository::delete);
+
+    return "redirect:/dashboard/planner"
+            + (month.isBlank() ? "" : "?month=" + month);
+}
     // The dashboard's "Grocery List" button submits a POST form,
     // so accept it and send the user to the grocery page.
     @PostMapping("/dashboard/grocery")
@@ -405,5 +533,6 @@ public class MainController {
 
         return "dashboard/grocery";
     }
+    
 
 }
