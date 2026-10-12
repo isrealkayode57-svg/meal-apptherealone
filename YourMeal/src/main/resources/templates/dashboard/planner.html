@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Planner | MealMate</title>
+    <title>Meal Planner | YourMeal</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
           rel="stylesheet">
@@ -19,72 +19,78 @@
 
         body {
             background: #f8faf8;
-            color: #1f2937;
+            color: #263326;
         }
 
         .main {
             max-width: 1400px;
             margin: auto;
-            padding: 34px;
+            padding: 30px;
+        }
+
+        .back-dashboard {
+            display: inline-block;
+            margin-bottom: 22px;
+            padding: 10px 16px;
+            background: #eef6ee;
+            color: #416b35;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background .2s;
+        }
+
+        .back-dashboard:hover {
+            background: #dcebd7;
         }
 
         .header {
-            margin: 22px 0 28px;
+            margin-bottom: 26px;
         }
 
         .header h1 {
-            font-size: 36px;
+            font-size: 34px;
+            font-weight: 700;
         }
 
         .header p {
-            color: #6b7280;
-            margin-top: 6px;
+            color: #718071;
+            margin-top: 5px;
         }
 
         .calendar-container,
         .panel {
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 22px;
+            background: white;
+            border: 1px solid #e5eae3;
+            border-radius: 20px;
             padding: 24px;
-            box-shadow: 0 8px 24px #00000008;
+            box-shadow: 0 6px 24px #00000006;
         }
 
         .calendar-top {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            gap: 14px;
+            align-items: center;
+            gap: 12px;
             margin-bottom: 22px;
         }
 
         .calendar-top h2 {
-            color: #5f8d4e;
-            font-size: 24px;
+            font-size: 23px;
             text-align: center;
+            color: #527c43;
         }
 
-        .nav-button,
-        .primary,
-        .secondary {
-            border: 0;
-            border-radius: 10px;
-            padding: 10px 15px;
-            cursor: pointer;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .nav-button,
-        .secondary {
+        .nav-button {
             background: #eef6ee;
             color: #416b35;
-        }
-
-        .primary {
-            background: #5f8d4e;
-            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 15px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
         }
 
         .weekdays,
@@ -95,74 +101,79 @@
 
         .weekdays {
             text-align: center;
-            color: #6b7280;
-            font-size: 13px;
+            color: #718071;
+            font-size: 12px;
             font-weight: 600;
             margin-bottom: 8px;
         }
 
         .weekdays div {
-            padding: 8px;
+            padding: 8px 2px;
         }
 
         .calendar-days {
-            border-top: 1px solid #edf0ed;
-            border-left: 1px solid #edf0ed;
-            border-radius: 12px;
+            border-top: 1px solid #e9eee7;
+            border-left: 1px solid #e9eee7;
+            border-radius: 10px;
             overflow: hidden;
         }
 
         .day {
-            min-height: 125px;
-            padding: 9px;
-            border-right: 1px solid #edf0ed;
-            border-bottom: 1px solid #edf0ed;
-            background: white;
-            cursor: pointer;
+            min-height: 120px;
             min-width: 0;
+            padding: 9px;
+            background: white;
+            border-right: 1px solid #e9eee7;
+            border-bottom: 1px solid #e9eee7;
+            cursor: pointer;
+            transition: background .15s;
         }
 
         .day:hover {
-            background: #f6fbf4;
+            background: #f5faf2;
         }
 
         .day.today {
-            background: #f0f7ed;
+            background: #f0f7ec;
         }
 
         .day.selected {
-            box-shadow: inset 0 0 0 2px #5f8d4e;
+            box-shadow: inset 0 0 0 2px #628e50;
+            background: #f7fbf4;
+        }
+
+        .day-outside .day-number {
+            color: #b6bdb4;
         }
 
         .day-number {
+            font-size: 13px;
             font-weight: 600;
-            font-size: 14px;
             margin-bottom: 7px;
         }
 
-        .day-outside {
-            color: #b4bcb2;
-        }
-
         .event {
-            background: #5f8d4e;
-            color: #fff;
-            border-radius: 7px;
+            background: #628e50;
+            color: white;
+            border-radius: 6px;
             padding: 4px 6px;
-            font-size: 11px;
+            font-size: 10px;
             line-height: 1.4;
             margin: 4px 0;
+            overflow: hidden;
             overflow-wrap: anywhere;
         }
 
         .event small {
             display: block;
             opacity: .85;
+            font-size: 9px;
         }
 
         .more {
-            font-size: 11px;
-            color: #5f8d4e;
+            color: #527c43;
+            font-size: 10px;
+            margin-top: 4px;
         }
 
         .planner-grid {
@@ -174,50 +185,71 @@
 
         .panel h2 {
             font-size: 19px;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .selected-date {
-            color: #5f8d4e;
-            font-size: 14px;
+            color: #628e50;
+            font-size: 13px;
             font-weight: 600;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
         }
 
         .meal-row {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             gap: 12px;
-            background: #f7faf6;
+            padding: 13px;
+            margin: 9px 0;
+            background: #f6f9f4;
+            border: 1px solid #edf1e9;
             border-radius: 12px;
-            padding: 12px;
-            margin: 8px 0;
         }
 
-        .meal-row strong {
+        .meal-info {
+            min-width: 0;
+        }
+
+        .meal-info strong {
             font-size: 13px;
+            overflow-wrap: anywhere;
         }
 
-        .meal-row span {
+        .meal-info span {
             display: block;
-            color: #6b7280;
-            font-size: 12px;
+            color: #788477;
+            font-size: 11px;
+            margin-top: 3px;
         }
 
-        .delete-form button {
-            background: transparent;
-            border: 0;
-            color: #b91c1c;
+        .delete-button {
+            border: none;
+            border-radius: 8px;
+            padding: 7px 9px;
+            background: #fff0ef;
+            color: #b33e35;
             cursor: pointer;
-            font-size: 12px;
-            padding: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            flex-shrink: 0;
         }
 
         .empty-state {
-            color: #7b8478;
-            font-size: 14px;
-            padding: 8px 0 16px;
+            color: #7b8578;
+            font-size: 13px;
+            padding: 5px 0 16px;
+        }
+
+        .add-section {
+            border-top: 1px solid #e9eee7;
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+
+        .add-section h3 {
+            font-size: 16px;
+            margin-bottom: 14px;
         }
 
         .form-grid {
@@ -227,12 +259,12 @@
         }
 
         .field {
-            margin-bottom: 13px;
+            margin-bottom: 14px;
         }
 
         .field label {
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             margin-bottom: 6px;
         }
@@ -240,35 +272,58 @@
         .field input,
         .field select {
             width: 100%;
+            min-width: 0;
             padding: 11px;
-            border: 1px solid #dce3da;
+            border: 1px solid #dce4d8;
             border-radius: 10px;
             background: white;
-            font-size: 14px;
+            color: #263326;
+            font-size: 13px;
         }
 
         .field input:focus,
         .field select:focus {
-            outline: 2px solid #d8e8d1;
-            border-color: #5f8d4e;
+            outline: 2px solid #dcebd7;
+            border-color: #628e50;
         }
 
-        .form-note {
-            font-size: 12px;
-            color: #6b7280;
-            margin: 5px 0 12px;
+        .primary-button {
+            background: #628e50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 17px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .primary-button:hover {
+            background: #507840;
+        }
+
+        .helper-text {
+            color: #778273;
+            font-size: 11px;
+            line-height: 1.6;
+            margin: -4px 0 14px;
         }
 
         .tip {
-            background: #f3f8f0;
-            border-radius: 12px;
-            padding: 15px;
-            color: #58714f;
+            background: #f2f8ee;
+            border-radius: 13px;
+            padding: 16px;
+            color: #55754a;
             font-size: 13px;
-            line-height: 1.7;
+            line-height: 1.8;
         }
 
-        @media (max-width: 800px) {
+        .tip ul {
+            padding-left: 18px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 850px) {
             .main {
                 padding: 18px;
             }
@@ -278,36 +333,36 @@
             }
 
             .day {
-                min-height: 88px;
+                min-height: 85px;
                 padding: 5px;
+            }
+
+            .calendar-container,
+            .panel {
+                padding: 15px;
             }
 
             .event {
-                font-size: 10px;
                 padding: 3px;
-            }
-
-            .calendar-container {
-                padding: 12px;
-            }
-
-            .calendar-top h2 {
-                font-size: 18px;
-            }
-
-            .weekdays div {
-                font-size: 11px;
-                padding: 5px;
+                font-size: 9px;
             }
 
             .header h1 {
-                font-size: 30px;
+                font-size: 29px;
             }
         }
 
-        @media (max-width: 460px) {
+        @media (max-width: 480px) {
+            .calendar-top h2 {
+                font-size: 17px;
+            }
+
+            .nav-button {
+                padding: 8px 10px;
+            }
+
             .day {
-                min-height: 66px;
+                min-height: 62px;
             }
 
             .event small {
@@ -316,26 +371,38 @@
 
             .event {
                 white-space: nowrap;
-                overflow: hidden;
                 text-overflow: ellipsis;
             }
 
             .form-grid {
                 grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .weekdays {
+                font-size: 10px;
             }
         }
     </style>
 </head>
 
 <body>
+
 <main class="main">
+
+    <!-- Back to dashboard -->
+    <a href="/dashboard" class="back-dashboard">
+        ← Back to Dashboard
+    </a>
 
     <header class="header">
         <h1>Meal Planner</h1>
-        <p>Choose a date to add meals you've saved or create something new.</p>
+        <p>Plan your meals, organise your week, and make every day easier.</p>
     </header>
 
+    <!-- Calendar -->
     <section class="calendar-container">
+
         <div class="calendar-top">
             <a class="nav-button"
                th:href="@{/dashboard/planner(month=${previousMonth})}"
@@ -359,12 +426,15 @@
         </div>
 
         <div class="calendar-days" id="calendarDays"></div>
+
     </section>
 
+    <!-- Selected day and add meal form -->
     <section class="planner-grid">
 
-        <div class="panel" id="dayPanel">
-            <h2>Meals for this day</h2>
+        <div class="panel">
+
+            <h2>🍽️ Your Meals</h2>
 
             <div class="selected-date" id="selectedDateLabel">
                 Select a date on the calendar
@@ -372,84 +442,106 @@
 
             <div id="dayMeals">
                 <p class="empty-state">
-                    Click any date to see its planned meals and add new ones.
+                    Select a day to see your planned meals.
                 </p>
             </div>
 
-            <form th:action="@{/dashboard/planner/add}"
-                  method="post"
-                  id="addMealForm">
+            <div class="add-section">
 
-                <input type="hidden"
-                       name="planDate"
-                       id="planDate"
-                       required>
+                <h3>＋ Add a Meal</h3>
 
-                <input type="hidden"
-                       name="month"
-                       th:value="${monthValue}">
+                <form th:action="@{/dashboard/planner/add}"
+                      method="post"
+                      id="addMealForm">
 
-                <div class="form-grid">
-                    <div class="field">
-                        <label for="mealType">Meal time</label>
+                    <input type="hidden"
+                           name="planDate"
+                           id="planDate"
+                           required>
 
-                        <select name="mealType" id="mealType" required>
-                            <option value="Breakfast">Breakfast</option>
-                            <option value="Lunch">Lunch</option>
-                            <option value="Dinner">Dinner</option>
-                            <option value="Snack">Snack</option>
-                        </select>
+                    <input type="hidden"
+                           name="month"
+                           th:value="${monthValue}">
+
+                    <div class="form-grid">
+
+                        <div class="field">
+                            <label for="mealType">Meal category</label>
+
+                            <select name="mealType"
+                                    id="mealType"
+                                    required>
+                                <option value="Breakfast">Breakfast</option>
+                                <option value="Lunch">Lunch</option>
+                                <option value="Dinner">Dinner</option>
+                                <option value="Snack">Snack</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="savedMealId">Saved meals</label>
+
+                            <select name="savedMealId" id="savedMealId">
+                                <option value="">Choose a saved meal...</option>
+
+                                <option th:each="meal : ${savedMeals}"
+                                        th:value="${meal.id}"
+                                        th:text="${meal.mealNames}">
+                                    Saved meal
+                                </option>
+                            </select>
+                        </div>
+
                     </div>
 
                     <div class="field">
-                        <label for="savedMealId">Choose a saved meal</label>
+                        <label for="mealName">Or create a new meal</label>
 
-                        <select name="savedMealId" id="savedMealId">
-                            <option value="">— Or enter a new meal below —</option>
-
-                            <option th:each="meal : ${savedMeals}"
-                                    th:value="${meal.id}"
-                                    th:text="${meal.mealNames}">
-                                Saved meal
-                            </option>
-                        </select>
+                        <input type="text"
+                               name="mealName"
+                               id="mealName"
+                               maxlength="150"
+                               placeholder="e.g. Chicken, rice and vegetables">
                     </div>
-                </div>
 
-                <div class="field">
-                    <label for="mealName">Or create a new meal</label>
+                    <p class="helper-text">
+                        Select one of your saved meals or enter the name
+                        of something new. Choose a date first.
+                    </p>
 
-                    <input type="text"
-                           id="mealName"
-                           name="mealName"
-                           maxlength="150"
-                           placeholder="e.g. Chicken and rice">
-                </div>
+                    <button type="submit" class="primary-button">
+                        Add Meal to Day
+                    </button>
 
-                <p class="form-note">
-                    Choose a saved meal or enter a new name.
-                    Your plan is saved to your account.
-                </p>
+                </form>
 
-                <button class="primary" type="submit">
-                    ＋ Add to this day
-                </button>
-            </form>
+            </div>
+
         </div>
 
+        <!-- Helpful sidebar -->
         <aside class="panel">
-            <h2>🌿 Planner tips</h2>
+
+            <h2>🌱 Plan Ahead</h2>
 
             <div class="tip">
-                Plan breakfast, lunch, dinner, and snacks ahead of time.
-                Click a calendar date to manage that day's meals.
-                Your plans stay saved when you leave the page.
+                Make your week easier by deciding what to eat in advance.
+
+                <ul>
+                    <li>Click any date to select it.</li>
+                    <li>Add meals you've already saved.</li>
+                    <li>Create new meals whenever you want.</li>
+                    <li>Remove meals if your plans change.</li>
+                </ul>
             </div>
+
         </aside>
 
     </section>
 
+    <!-- Planned meals supplied by the controller -->
     <div id="plannedMealData" hidden>
+
         <div th:each="meal : ${plannedMeals}"
              class="planned-item"
              th:attr="data-date=${meal.planDate},
@@ -457,21 +549,23 @@
                       data-type=${meal.mealType},
                       data-name=${meal.mealName}">
         </div>
+
     </div>
 
 </main>
 
 <script th:inline="javascript">
+
     const monthValue = /*[[${monthValue}]]*/ '2026-10';
     const todayValue = /*[[${today}]]*/ '';
 
     const plannedMeals = Array.from(
         document.querySelectorAll('.planned-item')
-    ).map(el => ({
-        date: el.dataset.date,
-        id: el.dataset.id,
-        type: el.dataset.type,
-        name: el.dataset.name
+    ).map(element => ({
+        date: element.dataset.date,
+        id: element.dataset.id,
+        type: element.dataset.type,
+        name: element.dataset.name
     }));
 
     const [year, month] = monthValue.split('-').map(Number);
@@ -485,37 +579,59 @@
 
     let selectedDate = '';
 
-    const monthStart = new Date(year, month - 1, 1);
-    const gridStart = new Date(
-        year,
-        month - 1,
-        1 - monthStart.getDay()
-    );
+    function formatDate(date) {
+        return [
+            date.getFullYear(),
+            String(date.getMonth() + 1).padStart(2, '0'),
+            String(date.getDate()).padStart(2, '0')
+        ].join('-');
+    }
 
-    const dateKey = date =>
-        `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    function formatReadableDate(dateString) {
+        return new Date(dateString + 'T12:00:00').toLocaleDateString(
+            'en-US',
+            {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+            }
+        );
+    }
+
+    function selectDate(dateString) {
+        selectedDate = dateString;
+        planDateInput.value = dateString;
+
+        selectedLabel.textContent = formatReadableDate(dateString);
+
+        renderDayMeals();
+        updateSelectedDay();
+    }
 
     function renderDayMeals() {
-        const matches = plannedMeals.filter(
+        dayMeals.innerHTML = '';
+
+        const meals = plannedMeals.filter(
             meal => meal.date === selectedDate
         );
 
-        dayMeals.innerHTML = '';
+        if (meals.length === 0) {
+            const empty = document.createElement('p');
+            empty.className = 'empty-state';
+            empty.textContent =
+                'Nothing planned for this day yet. Add your first meal below!';
 
-        if (!matches.length) {
-            const paragraph = document.createElement('p');
-            paragraph.className = 'empty-state';
-            paragraph.textContent =
-                'No meals planned yet. Add one below!';
-
-            dayMeals.appendChild(paragraph);
+            dayMeals.appendChild(empty);
+            return;
         }
 
-        matches.forEach(meal => {
+        meals.forEach(meal => {
             const row = document.createElement('div');
             row.className = 'meal-row';
 
             const info = document.createElement('div');
+            info.className = 'meal-info';
 
             const name = document.createElement('strong');
             name.textContent = meal.name;
@@ -523,17 +639,17 @@
             const type = document.createElement('span');
             type.textContent = meal.type;
 
-            info.append(name, type);
+            info.appendChild(name);
+            info.appendChild(type);
 
             const form = document.createElement('form');
-            form.className = 'delete-form';
             form.method = 'post';
             form.action = '/dashboard/planner/delete';
 
-            const id = document.createElement('input');
-            id.type = 'hidden';
-            id.name = 'plannedMealId';
-            id.value = meal.id;
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'plannedMealId';
+            idInput.value = meal.id;
 
             const monthInput = document.createElement('input');
             monthInput.type = 'hidden';
@@ -542,18 +658,22 @@
 
             const button = document.createElement('button');
             button.type = 'submit';
+            button.className = 'delete-button';
             button.textContent = 'Remove';
-            button.setAttribute(
-                'aria-label',
-                'Remove ' + meal.name
-            );
 
-            form.append(id, monthInput, button);
-            row.append(info, form);
+            form.appendChild(idInput);
+            form.appendChild(monthInput);
+            form.appendChild(button);
+
+            row.appendChild(info);
+            row.appendChild(form);
+
             dayMeals.appendChild(row);
         });
+    }
 
-        calendar.querySelectorAll('.day').forEach(day => {
+    function updateSelectedDay() {
+        document.querySelectorAll('.day').forEach(day => {
             day.classList.toggle(
                 'selected',
                 day.dataset.date === selectedDate
@@ -561,40 +681,32 @@
         });
     }
 
-    function selectDate(date) {
-        selectedDate = date;
-        planDateInput.value = date;
-
-        selectedLabel.textContent = new Date(
-            date + 'T12:00:00'
-        ).toLocaleDateString('en-US', {
-            weekday: 'long',
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric'
-        });
-
-        renderDayMeals();
-    }
-
     function renderCalendar() {
         calendar.innerHTML = '';
 
-        for (let i = 0; i < 42; i++) {
-            const date = new Date(gridStart);
-            date.setDate(gridStart.getDate() + i);
+        const firstDay = new Date(year, month - 1, 1);
 
-            const key = dateKey(date);
+        const startDate = new Date(
+            year,
+            month - 1,
+            1 - firstDay.getDay()
+        );
+
+        for (let i = 0; i < 42; i++) {
+            const date = new Date(startDate);
+            date.setDate(startDate.getDate() + i);
+
+            const dateString = formatDate(date);
 
             const cell = document.createElement('div');
             cell.className = 'day';
-            cell.dataset.date = key;
+            cell.dataset.date = dateString;
 
             if (date.getMonth() !== month - 1) {
                 cell.classList.add('day-outside');
             }
 
-            if (key === todayValue) {
+            if (dateString === todayValue) {
                 cell.classList.add('today');
             }
 
@@ -605,7 +717,7 @@
             cell.appendChild(number);
 
             const meals = plannedMeals.filter(
-                meal => meal.date === key
+                meal => meal.date === dateString
             );
 
             meals.slice(0, 2).forEach(meal => {
@@ -613,43 +725,49 @@
                 event.className = 'event';
                 event.textContent = meal.name;
 
-                const small = document.createElement('small');
-                small.textContent = meal.type;
+                const category = document.createElement('small');
+                category.textContent = meal.type;
 
-                event.appendChild(small);
+                event.appendChild(category);
                 cell.appendChild(event);
             });
 
             if (meals.length > 2) {
                 const more = document.createElement('div');
                 more.className = 'more';
-                more.textContent = `+${meals.length - 2} more`;
+                more.textContent = '+' + (meals.length - 2) + ' more';
 
                 cell.appendChild(more);
             }
 
-            cell.addEventListener('click', () => selectDate(key));
+            cell.addEventListener('click', () => {
+                selectDate(dateString);
+            });
+
             calendar.appendChild(cell);
         }
+
+        updateSelectedDay();
     }
 
     savedMealSelect.addEventListener('change', () => {
-        if (savedMealSelect.value) {
+        if (savedMealSelect.value !== '') {
             mealNameInput.value = '';
         }
     });
 
     mealNameInput.addEventListener('input', () => {
-        if (mealNameInput.value.trim()) {
+        if (mealNameInput.value.trim() !== '') {
             savedMealSelect.value = '';
         }
     });
 
     document.getElementById('addMealForm')
         .addEventListener('submit', event => {
+
             if (!selectedDate) {
                 event.preventDefault();
-                alert('Please select a date first.');
+                alert('Please select a date on the calendar first.');
                 return;
             }
 
@@ -658,19 +776,19 @@
                 !mealNameInput.value.trim()
             ) {
                 event.preventDefault();
-                alert(
-                    'Choose a saved meal or enter a new meal name.'
-                );
+                alert('Choose a saved meal or enter a new meal name.');
             }
         });
 
     renderCalendar();
 
-    selectDate(
+    const initialDate =
         todayValue && todayValue.startsWith(monthValue)
             ? todayValue
-            : dateKey(new Date(year, month - 1, 1))
-    );
+            : formatDate(new Date(year, month - 1, 1));
+
+    selectDate(initialDate);
+
 </script>
 
 </body>
