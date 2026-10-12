@@ -980,7 +980,7 @@
                 </h2>
 
 
-                <div style="
+                <div id="motivationQuote" style="
                     font-size:18px;
                     color:#6B7280;
                     line-height:1.8;
@@ -995,7 +995,7 @@
                 <br>
 
 
-                <div style="
+                <div id="motivationTip" style="
                     background:#EEF6EE;
                     padding:18px;
                     border-radius:15px;
@@ -1174,6 +1174,68 @@
             });
 
     </script>
+
+
+<!-- Daily motivation: a different message each day (based on the user's local date) -->
+<script th:inline="none">
+(function () {
+
+    var messages = [
+        { q: "Healthy eating isn't about perfection. It's about making better choices one meal at a time.", t: "Keep building healthy habits. Small improvements every day lead to big results." },
+        { q: "Your body notices every nourishing meal. Feed it something good today.", t: "Start with one vegetable on your plate and build from there." },
+        { q: "You don't have to overhaul everything today. Just make the next meal a good one.", t: "Progress is built meal by meal, not all at once." },
+        { q: "Cooking at home is a small act of care for your future self.", t: "Plan one meal ahead today and tomorrow gets easier." },
+        { q: "Consistency beats intensity. A good meal today matters more than a perfect week someday.", t: "Showing up counts, even on the busy days." },
+        { q: "Food is fuel and food is joy. You're allowed to have both.", t: "Slow down and actually taste your next meal." },
+        { q: "A balanced plate today is a gift to tomorrow's energy.", t: "Add a protein and a color to your next meal." },
+        { q: "One missed plan is not a failed week. Just start again at the next meal.", t: "Every meal is a fresh chance to get back on track." },
+        { q: "Small swaps add up: water for soda, fruit for chips, one more veggie.", t: "Pick one swap to try today." },
+        { q: "Strong habits are built in the kitchen long before they show anywhere else.", t: "Prep something tonight that future you will thank you for." },
+        { q: "Don't wait for motivation. Plan the meal and the motivation will follow.", t: "Open your planner and fill in tomorrow." },
+        { q: "Eat the colors of the rainbow and let your plate do the talking.", t: "Aim for three different colors in your next meal." },
+        { q: "You're not on a diet. You're learning what makes you feel your best.", t: "Notice how your meals make you feel today." },
+        { q: "Great meals start with great planning. Five minutes now saves an hour later.", t: "Check your grocery list before you shop." },
+        { q: "Your body is your home for life. Stock it with good things.", t: "Drink a glass of water before your next meal." },
+        { q: "Hunger is a signal, not a problem. Answer it with something nourishing.", t: "Keep a healthy snack within reach today." },
+        { q: "Every vegetable you add is a vote for the person you're becoming.", t: "Sneak an extra veggie into dinner tonight." },
+        { q: "Slow and steady wins. Rushed and restrictive rarely lasts.", t: "Choose habits you could keep for a year." },
+        { q: "The best meal plan is the one you'll actually follow.", t: "Keep it simple and repeat what works." },
+        { q: "Good food doesn't have to be complicated. Fresh, simple and made with care is plenty.", t: "Try one new simple recipe this week." },
+        { q: "Be proud of showing up for your health, even in small ways.", t: "Celebrate one healthy choice you made today." },
+        { q: "Leftovers are tomorrow's easy win. Cook once, eat twice.", t: "Make a little extra tonight for lunch tomorrow." },
+        { q: "Your goals are built on ordinary days and ordinary meals.", t: "Make today's ordinary meal a good one." },
+        { q: "Treat yourself kindly. Healthy habits grow best with patience.", t: "Be gentle with yourself and keep going." },
+        { q: "Breakfast sets the tone. Start the day with something that fuels you.", t: "Add protein to your morning meal." },
+        { q: "A tough week is easier when the meals are already planned.", t: "Block out ten minutes to plan your meals ahead." },
+        { q: "A fridge full of good options makes good choices easy.", t: "Restock one healthy staple today." },
+        { q: "Nourish, don't punish. Food is on your side.", t: "Choose foods that make you feel energized." },
+        { q: "Today's effort is tomorrow's momentum.", t: "Take one step toward your goal, however small." },
+        { q: "Taste the food, enjoy the company and listen to your body.", t: "Eat without distractions at one meal today." },
+        { q: "Healthy is a habit, not a hurry. Keep going.", t: "You're doing better than you think." }
+    ];
+
+    var now = new Date();
+
+    /* whole days since 1970, using the user's local calendar date */
+    var dayNumber = Math.floor(
+        Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86400000
+    );
+
+    var pick = messages[dayNumber % messages.length];
+
+    var quote = document.getElementById("motivationQuote");
+    var tip = document.getElementById("motivationTip");
+
+    if (quote) {
+        quote.textContent = "\u201C" + pick.q + "\u201D";
+    }
+
+    if (tip) {
+        tip.textContent = "\uD83D\uDD25 " + pick.t;
+    }
+
+})();
+</script>
 
 </body>
 
